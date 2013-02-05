@@ -3,18 +3,18 @@
 return array(
 
 	array(
-		'role' => 'admin',
-		'name' => 'Administrator',
+		'user_id' => 1,
+		'role_id' => 1,
 	),
 
 	array(
-		'role' => 'mod',
-		'name' => 'Moderator',
+		'user_id' => 2,
+		'role_id' => 3,
 	),
 
 	array(
-		'role' => 'member',
-		'name' => 'Member',
+		'user_id' => 3,
+		'role_id' => 3,
 	),
 
 );

@@ -1,7 +1,7 @@
 <?php
 
 $defaultPassword = Hash::make('password');
-$date            = date('Y-m-d H:i:s');
+$dateActivated   = date('Y-m-d H:i:s');
 
 return array(
 
