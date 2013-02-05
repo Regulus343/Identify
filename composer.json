@@ -1,0 +1,24 @@
+{
+    "name": "regulus/identify",
+    "description": "",
+    "authors": [
+        {
+            "name": "Cody Jassman",
+            "email": "me@codyjassman.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.0.x"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations",
+            "src/models"
+        ],
+        "psr-0": {
+            "Regulus\\Identify": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}

@@ -1,0 +1,55 @@
+{
+    "hash": "0be84eedf93d6e2da8cad38ca191f265",
+    "packages": [
+        {
+            "name": "illuminate/support",
+            "version": "dev-master",
+            "target-dir": "Illuminate/Support",
+            "source": {
+                "type": "git",
+                "url": "http://github.com/illuminate/support",
+                "reference": "9d1e025373d89c2fb1a3db74a8f1881c23e22e34"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/9d1e025373d89c2fb1a3db74a8f1881c23e22e34",
+                "reference": "9d1e025373d89c2fb1a3db74a8f1881c23e22e34",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "time": "2013-01-31 01:47:04",
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Illuminate\\Support": ""
+                },
+                "files": [
+                    "Illuminate/Support/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylorotwell@gmail.com"
+                }
+            ],
+            "description": "Various utilities and support functions."
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "dev",
+    "stability-flags": [
+
+    ]
+}
