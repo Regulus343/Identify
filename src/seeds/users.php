@@ -11,7 +11,6 @@ return array(
 		'email'        => 'admin@localhost',
 		'first_name'   => 'Admin',
 		'last_name'    => 'Istrator',
-		'description'  => 'Anything goes here. Discuss anything you want.',
 		'active'       => true,
 		'activated_at' => $dateActivated,
 		'test'         => false,

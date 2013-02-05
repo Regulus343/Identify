@@ -34,6 +34,8 @@ class CreateUsersTable extends Migration {
 			$table->boolean('deleted');
 			$table->dateTime('deleted_at');
 
+			$table->boolean('test'); //used to filter test users out of a live site without removing them
+
 			foreach ($optionalFields as $optionalField) {
 				$table->string($optionalField);
 			}
