@@ -21,17 +21,19 @@ class Identify extends Auth {
 	public static function allow($roles)
 	{
 		$allowed = false;
-		$userRoles = Auth::user()->roles;
-		if (is_array($roles)) {
-			foreach ($userRoles as $userRole) {
-				foreach ($roles as $role) {
-					if (strtolower($userRole->name) == strtolower($role)) $allowed = true;
+		if (Auth::check()) {
+			$userRoles = Auth::user()->roles;
+			if (is_array($roles)) {
+				foreach ($userRoles as $userRole) {
+					foreach ($roles as $role) {
+						if (strtolower($userRole->role) == strtolower($role)) $allowed = true;
+					}
 				}
-			}
-		} else {
-			$role = $roles;
-			foreach ($userRoles as $userRole) {
-				if (strtolower($userRole->name) == strtolower($role)) $allowed = true;
+			} else {
+				$role = $roles;
+				foreach ($userRoles as $userRole) {
+					if (strtolower($userRole->role) == strtolower($role)) $allowed = true;
+				}
 			}
 		}
 		return $allowed;
