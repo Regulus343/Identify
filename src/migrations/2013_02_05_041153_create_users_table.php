@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration {
 		$optionalFields = array();
 		$optionalFields = array('city', 'province', 'country', 'phone', 'website', 'twitter', 'skype');
 
-		Schema::create('users', function($table)
+		Schema::create('users', function($table) use ($optionalFields)
 		{
 			$table->increments('id');
 			$table->string('username');
