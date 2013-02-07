@@ -18,7 +18,7 @@ class Identify extends Auth {
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public static function allow($roles)
+	public static function is($roles)
 	{
 		$allowed = false;
 		if (Auth::check()) {
@@ -40,12 +40,12 @@ class Identify extends Auth {
 	}
 
 	/**
-	 * A simple inversion of the allow() method to check if a user should be denied access to the subsequent content.
+	 * A simple inversion of the is() method to check if a user should be denied access to the subsequent content.
 	 *
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public static function deny($roles)
+	public static function isNot($roles)
 	{
 		return ! static::allow($roles);
 	}

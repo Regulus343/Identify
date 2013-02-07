@@ -2,6 +2,8 @@
 
 use Illuminate\Auth\UserInterface;
 
+use Illuminate\Support\Facades\Input;
+
 class User extends Eloquent implements UserInterface {
 
 	/**
@@ -77,23 +79,17 @@ class User extends Eloquent implements UserInterface {
 	 *
 	 * @return boolean
 	 */
-	public function updateAccount()
+	public function updateAccount($types = 'standard')
 	{
-		$this->username   = trim(Input::get('username'));
-		$this->email      = trim(Input::get('email'));
-		$this->first_name = ucfirst(trim(Input::get('first_name')));
-		$this->last_name  = ucfirst(trim(Input::get('first_name')));
-		$this->website    = trim(Input::get('website'));
-		$this->twitter    =	trim(Input::get('twitter'));
-
-		$purifier         = new HTMLPurifier;
-		$this->about      = $purifier->purify(Input::get('about'));
-
-		$this->listed = 0;
-		$this->listed_email = 0;
-
-		if (isset($_POST['listed']))		$this->listed = 1;
-		if (isset($_POST['listed_email']))	$this->listed_email = 1;
+		$dataSetup = Config::get('identify::dataSetup');
+		if (is_string($types)) $types = array($types);
+		foreach ($types as $type) {
+			if (isset($dataSetup[$type])) {
+				foreach ($dataSetup[$type] as $field => $value) {
+					$this->{$field} = $value;
+				}
+			}
+		}
 
 		$this->save();
 		return true;
