@@ -7,7 +7,7 @@ return array(
 	| User Create/Update Setup
 	|--------------------------------------------------------------------------
 	|
-	| The data setup for creating and updating user. You may create different
+	| The data setup for creating and updating a user. You may create different
 	| types for different situations. There are 2 types already here by
 	| default which are "standard" and "password". This data is
 	| held in the config file so composer update won't overwrite your custom
