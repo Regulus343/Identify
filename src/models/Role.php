@@ -10,6 +10,13 @@ class Role extends Eloquent {
 	protected $table = 'roles';
 
 	/**
+	 * Turn off timestamps.
+	 *
+	 * @var string
+	 */
+	public $timestamps = false;
+
+	/**
 	 * Belongs to User.
 	 *
 	 * @var array

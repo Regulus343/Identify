@@ -6,7 +6,9 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'CreateRolesTable' => $baseDir . '/src/migrations/2013_02_05_041219_create_roles_table.php',
+    'CreateUserRolesTable' => $baseDir . '/src/migrations/2013_02_05_041254_create_user_roles_table.php',
+    'CreateUsersTable' => $baseDir . '/src/migrations/2013_02_05_041153_create_users_table.php',
     'Role' => $baseDir . '/src/models/Role.php',
     'User' => $baseDir . '/src/models/User.php',
-    'UserRole' => $baseDir . '/src/models/UserRole.php',
 );

@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration {
 	{
 		//comment out the second $optionalFields assignment, or alter it as needed
 		$optionalFields = array();
-		$optionalFields = array('city', 'province', 'country', 'phone', 'website', 'twitter', 'skype');
+		$optionalFields = array('city', 'province', 'country', 'phone', 'website', 'twitter', 'skype', 'listed', 'listed_email');
 
 		Schema::create('users', function($table) use ($optionalFields)
 		{

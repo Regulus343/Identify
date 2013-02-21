@@ -1,5 +1,5 @@
 {
-    "hash": "0be84eedf93d6e2da8cad38ca191f265",
+    "hash": "bb964112b51dd56dcb858f48050ffc3b",
     "packages": [
         {
             "name": "illuminate/support",
@@ -7,19 +7,23 @@
             "target-dir": "Illuminate/Support",
             "source": {
                 "type": "git",
-                "url": "http://github.com/illuminate/support",
-                "reference": "9d1e025373d89c2fb1a3db74a8f1881c23e22e34"
+                "url": "https://github.com/illuminate/support.git",
+                "reference": "adb14323ecb85edfa97eb6c569c46ab09c2d258d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/9d1e025373d89c2fb1a3db74a8f1881c23e22e34",
-                "reference": "9d1e025373d89c2fb1a3db74a8f1881c23e22e34",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/adb14323ecb85edfa97eb6c569c46ab09c2d258d",
+                "reference": "adb14323ecb85edfa97eb6c569c46ab09c2d258d",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2013-01-31 01:47:04",
+            "require-dev": {
+                "mockery/mockery": "0.7.2",
+                "patchwork/utf8": "1.0.*"
+            },
+            "time": "2013-02-16 13:26:14",
             "type": "library",
             "extra": {
                 "branch-alias": {
