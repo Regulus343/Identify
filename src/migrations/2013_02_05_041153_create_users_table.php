@@ -35,7 +35,7 @@ class CreateUsersTable extends Migration {
 			/* Optional Fields */
 
 			$table->string('city', 76);
-			$table->string('province', 96);
+			$table->string('region', 96); //province or state
 			$table->string('country', 96);
 			$table->string('phone', 15);
 			$table->string('website');
