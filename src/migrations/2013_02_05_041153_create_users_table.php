@@ -11,17 +11,13 @@ class CreateUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		//comment out the second $optionalFields assignment, or alter it as needed
-		$optionalFields = array();
-		$optionalFields = array('city', 'province', 'country', 'phone', 'website', 'twitter', 'skype', 'listed', 'listed_email');
-
 		Schema::create('users', function($table) use ($optionalFields)
 		{
 			$table->increments('id');
-			$table->string('username');
+			$table->string('username', 36);
 			$table->string('email');
-			$table->string('first_name');
-			$table->string('last_name');
+			$table->string('first_name', 48);
+			$table->string('last_name', 48);
 			$table->string('password');
 
 			$table->boolean('active');
@@ -36,9 +32,19 @@ class CreateUsersTable extends Migration {
 
 			$table->boolean('test'); //used to filter test users out of a live site without removing them
 
-			foreach ($optionalFields as $optionalField) {
-				$table->string($optionalField);
-			}
+			/* Optional Fields */
+
+			$table->string('city', 76);
+			$table->string('province', 96);
+			$table->string('country', 96);
+			$table->string('phone', 15);
+			$table->string('website');
+			$table->string('twitter', 16)
+
+			$table->boolean('listed');
+			$table->boolean('listed_email');
+
+			/* --------------- */
 
 			$table->string('activation_code');
 			$table->string('forgot_password_code');
