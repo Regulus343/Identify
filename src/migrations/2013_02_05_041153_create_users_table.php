@@ -11,7 +11,7 @@ class CreateUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('users', function($table) use ($optionalFields)
+		Schema::create('users', function($table)
 		{
 			$table->increments('id');
 			$table->string('username', 36);
@@ -39,7 +39,7 @@ class CreateUsersTable extends Migration {
 			$table->string('country', 96);
 			$table->string('phone', 15);
 			$table->string('website');
-			$table->string('twitter', 16)
+			$table->string('twitter', 16);
 
 			$table->boolean('listed');
 			$table->boolean('listed_email');
