@@ -9,6 +9,8 @@
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Redirect;
 
 class Identify extends Auth {
 
@@ -48,6 +50,20 @@ class Identify extends Auth {
 	public static function isNot($roles)
 	{
 		return ! static::allow($roles);
+	}
+
+	/**
+	 * Redirect to a specified page with an error message. A default message is supplied if a custom message
+	 * not set.
+	 *
+	 * @param  string   $uri
+	 * @param  mixed    $message
+	 * @return boolean
+	 */
+	public static function unauthorized($uri, $message = false)
+	{
+		if (!$message) $message = Lang::get('identify::messages.unauthorized');
+		return Redirect::to($uri)->with('messageError', $message);
 	}
 
 }
