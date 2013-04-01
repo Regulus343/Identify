@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Config;
+
 class UsersTableSeeder extends Seeder {
 
 	/**
@@ -9,7 +11,7 @@ class UsersTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table('users')->delete();
+		DB::table(Config::get('identify::tablePrefix').'users')->delete();
 
 		$defaultPassword = Hash::make('password');
 		$dateActivated     = date('Y-m-d H:i:s');
