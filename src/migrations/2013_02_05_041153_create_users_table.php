@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
+use Illuminate\Support\Facades\Config;
+
 class CreateUsersTable extends Migration {
 
 	/**
@@ -11,7 +13,7 @@ class CreateUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('users', function($table)
+		Schema::create(Config::get('identify::tablePrefix').'users', function($table)
 		{
 			$table->increments('id');
 			$table->string('username', 36);
@@ -60,7 +62,7 @@ class CreateUsersTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('users');
+		Schema::drop(Config::get('identify::tablePrefix').'users');
 	}
 
 }

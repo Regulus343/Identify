@@ -1,9 +1,13 @@
-<?php
+<?php namespace Regulus\Identify;
+
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\URL;
 
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
@@ -12,7 +16,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var string
 	 */
-	protected $table = 'users';
+	protected $table = Config::get('identify::tablePrefix').'users';
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -29,6 +33,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function roles()
 	{
 		return $this->belongsToMany('Role', 'user_roles');
+	}
+
+	/**
+	 * Allow user to be used in polymorphic relationships.
+	 *
+	 * @var array
+	 */
+	public function events()
+	{
+		echo 'test 2'; exit;
+		return $this->belongsTo('\SocialEvent', 'user_id');
 	}
 
 	/**

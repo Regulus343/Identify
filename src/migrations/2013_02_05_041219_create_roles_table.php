@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 
+use Illuminate\Support\Facades\Config;
+
 class CreateRolesTable extends Migration {
 
 	/**
@@ -11,7 +13,7 @@ class CreateRolesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('roles', function($table)
+		Schema::create(Config::get('identify::tablePrefix').'roles', function($table)
 		{
 			$table->increments('id');
 			$table->string('role');
@@ -26,7 +28,7 @@ class CreateRolesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('roles');
+		Schema::drop(Config::get('identify::tablePrefix').'roles');
 	}
 
 }

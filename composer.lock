@@ -8,12 +8,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "adb14323ecb85edfa97eb6c569c46ab09c2d258d"
+                "reference": "f30bce49f7dc8e57684ac079f94cea70f3eb47f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/adb14323ecb85edfa97eb6c569c46ab09c2d258d",
-                "reference": "adb14323ecb85edfa97eb6c569c46ab09c2d258d",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/f30bce49f7dc8e57684ac079f94cea70f3eb47f5",
+                "reference": "f30bce49f7dc8e57684ac079f94cea70f3eb47f5",
                 "shasum": ""
             },
             "require": {
@@ -21,9 +21,9 @@
             },
             "require-dev": {
                 "mockery/mockery": "0.7.2",
-                "patchwork/utf8": "1.0.*"
+                "patchwork/utf8": "1.0.*",
+                "phpunit/phpunit": "3.7.*"
             },
-            "time": "2013-02-16 13:26:14",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -45,15 +45,24 @@
                     "email": "taylorotwell@gmail.com"
                 }
             ],
-            "description": "Various utilities and support functions."
+            "description": "Various utilities and support functions.",
+            "time": "2013-03-29 21:32:25"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "dev",
     "stability-flags": [
+
+    ],
+    "platform": {
+        "php": ">=5.3.0"
+    },
+    "platform-dev": [
 
     ]
 }

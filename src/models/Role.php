@@ -1,4 +1,8 @@
-<?php
+<?php namespace Regulus\Identify;
+
+use Illuminate\Database\Eloquent\Model as Eloquent;
+
+use Illuminate\Support\Facades\Config;
 
 class Role extends Eloquent {
 
@@ -7,7 +11,7 @@ class Role extends Eloquent {
 	 *
 	 * @var string
 	 */
-	protected $table = 'roles';
+	protected $table = Config::get('identify::tablePrefix').'roles';
 
 	/**
 	 * Turn off timestamps.

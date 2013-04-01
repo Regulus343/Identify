@@ -4,6 +4,17 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Table Prefix
+	|--------------------------------------------------------------------------
+	|
+	| The prefix for Identify's table names. The default is "auth_" which means
+	| your tables will be "auth_users", "auth_roles", and "auth_user_roles".
+	|
+	*/
+	'tablePrefix' => 'auth_',
+
+	/*
+	|--------------------------------------------------------------------------
 	| User Create/Update Setup
 	|--------------------------------------------------------------------------
 	|
@@ -27,4 +38,5 @@ return array(
 			'password'   => Input::get('password'),
 		),
 	),
+
 );

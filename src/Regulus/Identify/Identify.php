@@ -15,6 +15,20 @@ use Illuminate\Support\Facades\Redirect;
 class Identify extends Auth {
 
 	/**
+	 * Returns the active user ID for the session, or 0 if the user is not logged in.
+	 *
+	 * @param  mixed    $roles
+	 * @return boolean
+	 */
+	public static function userID()
+	{
+		if (!static::guest()) {
+			return Auth::user()->user_id;
+		}
+		return 0;
+	}
+
+	/**
 	 * Checks whether the user is in one of the given roles ($roles can be an array of roles or a string of a single role).
 	 *
 	 * @param  mixed    $roles
