@@ -16,7 +16,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var string
 	 */
-	protected $table = Config::get('identify::tablePrefix').'users';
+	protected $table = 'users';
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -24,6 +24,15 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 * @var array
 	 */
 	protected $hidden = array('password');
+
+	/**
+	 * The constructor which adds the table prefix from the config settings.
+	 *
+	 */
+	public function __construct()
+	{
+		$this->table = Config::get('identify::tablePrefix').'users';
+	}
 
 	/**
 	 * The role of the user.
