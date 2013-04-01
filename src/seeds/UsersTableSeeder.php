@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Config;
-
 class UsersTableSeeder extends Seeder {
 
 	/**
@@ -11,9 +9,9 @@ class UsersTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table(Config::get('identify::tablePrefix').'users')->delete();
+		DB::table(Config::get('identify::tablePrefix').'users')->truncate();
 
-		$defaultPassword = Hash::make('password');
+		$defaultPassword   = Hash::make('password');
 		$dateActivated     = date('Y-m-d H:i:s');
 
 		$users = array(
@@ -26,7 +24,6 @@ class UsersTableSeeder extends Seeder {
 				'active'       => true,
 				'activated_at' => $dateActivated,
 			),
-
 			array(
 				'username'     => 'TestUser',
 				'password'     => $defaultPassword,
@@ -37,7 +34,6 @@ class UsersTableSeeder extends Seeder {
 				'activated_at' => $dateActivated,
 				'test'         => true,
 			),
-
 			array(
 				'username'     => 'TestUser2',
 				'password'     => $defaultPassword,
@@ -48,9 +44,8 @@ class UsersTableSeeder extends Seeder {
 				'activated_at' => $dateActivated,
 				'test'         => true,
 			),
-
 			array(
-				'username'     => 'TestUser2',
+				'username'     => 'TestUser3',
 				'password'     => $defaultPassword,
 				'email'        => 'test3@localhost',
 				'first_name'   => 'Test',

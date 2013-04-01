@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Config;
-
 class UserRolesTableSeeder extends Seeder {
 
 	/**
@@ -11,24 +9,21 @@ class UserRolesTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table(Config::get('identify::tablePrefix').'user_roles')->delete();
+		DB::table(Config::get('identify::tablePrefix').'user_roles')->truncate();
 
 		$userRoles = array(
 			array(
 				'user_id' => 1,
 				'role_id' => 1,
 			),
-
 			array(
 				'user_id' => 2,
 				'role_id' => 2,
 			),
-
 			array(
 				'user_id' => 3,
 				'role_id' => 3,
 			),
-
 			array(
 				'user_id' => 4,
 				'role_id' => 3,

@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Config;
-
 class RolesTableSeeder extends Seeder {
 
 	/**
@@ -11,19 +9,17 @@ class RolesTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table(Config::get('identify::tablePrefix').'roles')->delete();
+		DB::table(Config::get('identify::tablePrefix').'roles')->truncate();
 
 		$roles = array(
 			array(
 				'role' => 'admin',
 				'name' => 'Administrator',
 			),
-
 			array(
 				'role' => 'mod',
 				'name' => 'Moderator',
 			),
-
 			array(
 				'role' => 'member',
 				'name' => 'Member',
