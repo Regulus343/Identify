@@ -36,7 +36,7 @@ class UserRolesTableSeeder extends Seeder {
 		);
 
 		foreach ($userRoles as $userRole) {
-			DB::table('user_roles')->insert($userRole);
+			DB::table(Config::get('identify::tablePrefix').'user_roles')->insert($userRole);
 		}
 	}
 

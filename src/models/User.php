@@ -26,6 +26,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	protected $hidden = array('password');
 
 	/**
+	 * The attributes that cannot be updated.
+	 *
+	 * @var array
+	 */
+	protected $guarded = array('id');
+
+	/**
 	 * The constructor which adds the table prefix from the config settings.
 	 *
 	 */

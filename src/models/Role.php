@@ -11,7 +11,7 @@ class Role extends Eloquent {
 	 *
 	 * @var string
 	 */
-	protected $table = Config::get('identify::tablePrefix').'roles';
+	protected $table = 'roles';
 
 	/**
 	 * Turn off timestamps.
@@ -19,6 +19,22 @@ class Role extends Eloquent {
 	 * @var string
 	 */
 	public $timestamps = false;
+
+	/**
+	 * The attributes that cannot be updated.
+	 *
+	 * @var array
+	 */
+	protected $guarded = array('id');
+
+	/**
+	 * The constructor which adds the table prefix from the config settings.
+	 *
+	 */
+	public function __construct()
+	{
+		$this->table = Config::get('identify::tablePrefix').'roles';
+	}
 
 	/**
 	 * Belongs to User.

@@ -62,7 +62,7 @@ class UsersTableSeeder extends Seeder {
 		);
 
 		foreach ($users as $user) {
-			User::create($user);
+			Regulus\Identify\User::create($user);
 		}
 	}
 

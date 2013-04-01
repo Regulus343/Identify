@@ -31,7 +31,7 @@ class RolesTableSeeder extends Seeder {
 		);
 
 		foreach ($roles as $role) {
-			Role::create($role);
+			Regulus\Identify\Role::create($role);
 		}
 	}
 
