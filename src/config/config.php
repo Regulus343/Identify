@@ -35,7 +35,7 @@ return array(
 		),
 
 		'password' => array(
-			'password'   => Input::get('password'),
+			'password' => Input::get('password'),
 		),
 	),
 

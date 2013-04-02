@@ -16,7 +16,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var string
 	 */
-	protected $table = 'auth_users';
+	protected $table = 'users';
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -38,7 +38,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function __construct()
 	{
-		//$this->table = Config::get('identify::tablePrefix').$this->table;
+		$this->table = Config::get('identify::tablePrefix').$this->table;
 	}
 
 	/**
@@ -48,7 +48,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function roles()
 	{
-		return $this->belongsToMany('Role', 'user_roles');
+		return $this->belongsToMany('Regulus\Identify\Role', Config::get('identify::tablePrefix').'user_roles');
 	}
 
 	/**
