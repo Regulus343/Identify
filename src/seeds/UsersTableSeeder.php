@@ -14,7 +14,7 @@ class UsersTableSeeder extends Seeder {
 		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
 
 		$defaultPassword   = Hash::make('password');
-		$dateActivated     = date('Y-m-d H:i:s');
+		$dateCreated       = date('Y-m-d H:i:s');
 
 		$users = array(
 			array(
@@ -24,7 +24,9 @@ class UsersTableSeeder extends Seeder {
 				'first_name'   => 'Admin',
 				'last_name'    => 'Istrator',
 				'active'       => true,
-				'activated_at' => $dateActivated,
+				'activated_at' => $dateCreated,
+				'created_at'   => $dateCreated,
+				'updated_at'   => $dateCreated,
 			),
 			array(
 				'username'     => 'TestUser',
@@ -33,7 +35,9 @@ class UsersTableSeeder extends Seeder {
 				'first_name'   => 'Test',
 				'last_name'    => 'Userone',
 				'active'       => true,
-				'activated_at' => $dateActivated,
+				'activated_at' => $dateCreated,
+				'created_at'   => $dateCreated,
+				'updated_at'   => $dateCreated,
 				'test'         => true,
 			),
 			array(
@@ -43,7 +47,9 @@ class UsersTableSeeder extends Seeder {
 				'first_name'   => 'Test',
 				'last_name'    => 'Usertwo',
 				'active'       => true,
-				'activated_at' => $dateActivated,
+				'activated_at' => $dateCreated,
+				'created_at'   => $dateCreated,
+				'updated_at'   => $dateCreated,
 				'test'         => true,
 			),
 			array(
@@ -53,7 +59,9 @@ class UsersTableSeeder extends Seeder {
 				'first_name'   => 'Test',
 				'last_name'    => 'Userthree',
 				'active'       => true,
-				'activated_at' => $dateActivated,
+				'activated_at' => $dateCreated,
+				'created_at'   => $dateCreated,
+				'updated_at'   => $dateCreated,
 				'test'         => true,
 			),
 		);

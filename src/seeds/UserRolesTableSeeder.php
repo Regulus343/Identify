@@ -13,22 +13,32 @@ class UserRolesTableSeeder extends Seeder {
 
 		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
 
+		$dateCreated = date('Y-m-d H:i:s');
+
 		$userRoles = array(
 			array(
-				'user_id' => 1,
-				'role_id' => 1,
+				'user_id'    => 1,
+				'role_id'    => 1,
+				'created_at' => $dateCreated,
+				'updated_at' => $dateCreated,
 			),
 			array(
-				'user_id' => 2,
-				'role_id' => 2,
+				'user_id'    => 2,
+				'role_id'    => 2,
+				'created_at' => $dateCreated,
+				'updated_at' => $dateCreated,
 			),
 			array(
-				'user_id' => 3,
-				'role_id' => 3,
+				'user_id'    => 3,
+				'role_id'    => 3,
+				'created_at' => $dateCreated,
+				'updated_at' => $dateCreated,
 			),
 			array(
-				'user_id' => 4,
-				'role_id' => 3,
+				'user_id'    => 4,
+				'role_id'    => 3,
+				'created_at' => $dateCreated,
+				'updated_at' => $dateCreated,
 			),
 		);
 
