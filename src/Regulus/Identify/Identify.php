@@ -23,7 +23,7 @@ class Identify extends Auth {
 	public static function userID()
 	{
 		if (!static::guest()) {
-			return Auth::user()->user_id;
+			return Auth::user()->id;
 		}
 		return 0;
 	}

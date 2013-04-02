@@ -42,6 +42,7 @@ class CreateUsersTable extends Migration {
 			$table->string('phone', 15);
 			$table->string('website');
 			$table->string('twitter', 16);
+			$table->string('bitcoin_address', 52);
 
 			$table->boolean('listed');
 			$table->boolean('listed_email');

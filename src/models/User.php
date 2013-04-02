@@ -16,7 +16,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var string
 	 */
-	protected $table = 'users';
+	protected $table = 'auth_users';
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -38,7 +38,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function __construct()
 	{
-		$this->table = Config::get('identify::tablePrefix').$this->table;
+		//$this->table = Config::get('identify::tablePrefix').$this->table;
 	}
 
 	/**
@@ -58,7 +58,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function events()
 	{
-		echo 'test 2'; exit;
 		return $this->belongsTo('\SocialEvent', 'user_id');
 	}
 
