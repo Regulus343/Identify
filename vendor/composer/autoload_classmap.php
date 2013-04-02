@@ -11,4 +11,5 @@ return array(
     'CreateUsersTable' => $baseDir . '/src/migrations/2013_02_05_041153_create_users_table.php',
     'Regulus\\Identify\\Role' => $baseDir . '/src/models/Role.php',
     'Regulus\\Identify\\User' => $baseDir . '/src/models/User.php',
+    'Regulus\\Identify\\UserRole' => $baseDir . '/src/models/UserRole.php',
 );

@@ -9,7 +9,9 @@ class UsersTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table(Config::get('identify::tablePrefix').'users')->truncate();
+		$table = 'users';
+
+		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
 
 		$defaultPassword   = Hash::make('password');
 		$dateActivated     = date('Y-m-d H:i:s');
@@ -57,7 +59,7 @@ class UsersTableSeeder extends Seeder {
 		);
 
 		foreach ($users as $user) {
-			Regulus\Identify\User::create($user);
+			DB::table(Config::get('identify::tablePrefix').$table)->insert($user);
 		}
 	}
 

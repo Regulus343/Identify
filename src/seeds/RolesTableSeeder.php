@@ -9,7 +9,9 @@ class RolesTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table(Config::get('identify::tablePrefix').'roles')->truncate();
+		$table = 'roles';
+
+		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
 
 		$roles = array(
 			array(
@@ -27,7 +29,7 @@ class RolesTableSeeder extends Seeder {
 		);
 
 		foreach ($roles as $role) {
-			Regulus\Identify\Role::create($role);
+			DB::table(Config::get('identify::tablePrefix').$table)->insert($role);
 		}
 	}
 

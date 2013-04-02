@@ -9,7 +9,9 @@ class UserRolesTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		DB::table(Config::get('identify::tablePrefix').'user_roles')->truncate();
+		$table = 'user_roles';
+
+		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
 
 		$userRoles = array(
 			array(
@@ -31,7 +33,7 @@ class UserRolesTableSeeder extends Seeder {
 		);
 
 		foreach ($userRoles as $userRole) {
-			DB::table(Config::get('identify::tablePrefix').'user_roles')->insert($userRole);
+			DB::table(Config::get('identify::tablePrefix').$table)->insert($userRole);
 		}
 	}
 
