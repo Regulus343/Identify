@@ -39,4 +39,29 @@ return array(
 		),
 	),
 
+	/*
+	|--------------------------------------------------------------------------
+	| Path to Picture and Thumbnail Directories
+	|--------------------------------------------------------------------------
+	|
+	| The path to the picture and the thumbnail directories. Ensure that there
+	| is a trailing slash on the defined paths. ":userID" will be automatically
+	| replaced with the user ID.
+	|
+	*/
+	'pathPicture'          => 'uploads/user_images/:userID/',
+	'pathPictureThumbnail' => 'uploads/user_images/thumbs/:userID/',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Filename of Picture and Thumbnail
+	|--------------------------------------------------------------------------
+	|
+	| The filename of the picture and thumbnail for a user. ":userID" will be
+	| automatically replaced with the user ID.
+	|
+	*/
+	'filenamePicture'          => ':userID.jpg',
+	'filenamePictureThumbnail' => ':userID.jpg',
+
 );

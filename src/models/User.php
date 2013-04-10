@@ -94,13 +94,22 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/**
 	 * Get the picture for the user.
 	 *
+	 * @param  boolean  $thumbnail
 	 * @return string
 	 */
-	public function getPicture()
+	public function getPicture($thumbnail = false)
 	{
 		$picture = URL::asset('assets/img/display-pic-default.png');
-		if (is_file('uploads/user_images/thumbs/'.$this->id.'.jpg')) {
-			$picture = URL::to('uploads/user_images/thumbs/'.$this->id.'.jpg');
+
+		if ( ! $thumbnail) {
+			$file = Config::get('identify::pathPicture').Config::get('identify::filenamePicture');
+		} else {
+			$file = Config::get('identify::pathPictureThumbnail').Config::get('identify::filenamePictureThumbnail');
+		}
+		$file = str_replace(':userID', $this->id, $file);
+
+		if (is_file($file)) {
+			$picture = URL::to($file);
 		}
 		return $picture;
 	}
