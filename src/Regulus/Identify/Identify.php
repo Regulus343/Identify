@@ -5,12 +5,16 @@
 		A composer package that adds roles to Laravel 4's basic authentication/authorization.
 
 		created by Cody Jassman
-		last updated on April 1, 2013
+		last updated on May 18, 2013
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\View;
+
+use Regulus\TetraText\TetraText as Format;
 
 class Identify extends Auth {
 
@@ -67,8 +71,7 @@ class Identify extends Auth {
 	}
 
 	/**
-	 * Redirect to a specified page with an error message. A default message is supplied if a custom message
-	 * not set.
+	 * Redirect to a specified page with an error message. A default message is supplied if a custom message not set.
 	 *
 	 * @param  string   $uri
 	 * @param  mixed    $message
@@ -78,6 +81,47 @@ class Identify extends Auth {
 	{
 		if (!$message) $message = Lang::get('identify::messages.unauthorized');
 		return Redirect::to($uri)->with('messageError', $message);
+	}
+
+	/**
+	 * Attempt to activate a user account by the user ID and activation code.
+	 *
+	 * @param  integer  $id
+	 * @param  string   $activationCode
+	 * @return boolean
+	 */
+	public static function activate($id = 0, $activationCode = '')
+	{
+		$user = User::find($id);
+		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code)) {
+			/*$user->active       = true;
+			$user->activated_at = date('Y-m-d H:i:s');
+			$user->save();*/
+
+			return static::email($user, 'Activation');
+
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Email the user based on a specified type.
+	 *
+	 * @param  integer  $id
+	 * @param  string   $type
+	 * @return boolean
+	 */
+	public static function email($user, $type)
+	{
+		foreach (Config::get('identify::emailTypes') as $emailType => $view) {
+			if ($type == $emailType) {
+				$viewLocation = Config::get('identify::viewsLocation').Format::trailingSlash(Config::get('identify::viewsLocationEmail'));
+				return View::make($viewLocation.$view)->with('user', $user);
+				return true;
+			}
+		}
+		return true;
 	}
 
 }

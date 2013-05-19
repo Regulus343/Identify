@@ -1,5 +1,9 @@
 {
-    "hash": "bb964112b51dd56dcb858f48050ffc3b",
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+    ],
+    "hash": "fa883813141a7bea7456c490cf097c00",
     "packages": [
         {
             "name": "illuminate/support",
@@ -8,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "f30bce49f7dc8e57684ac079f94cea70f3eb47f5"
+                "reference": "2d5df48bc75ced96fbd71821a1ea39d317063022"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/f30bce49f7dc8e57684ac079f94cea70f3eb47f5",
-                "reference": "f30bce49f7dc8e57684ac079f94cea70f3eb47f5",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/2d5df48bc75ced96fbd71821a1ea39d317063022",
+                "reference": "2d5df48bc75ced96fbd71821a1ea39d317063022",
                 "shasum": ""
             },
             "require": {
@@ -21,7 +25,7 @@
             },
             "require-dev": {
                 "mockery/mockery": "0.7.2",
-                "patchwork/utf8": "1.0.*",
+                "patchwork/utf8": "1.1.*",
                 "phpunit/phpunit": "3.7.*"
             },
             "type": "library",
@@ -46,7 +50,80 @@
                 }
             ],
             "description": "Various utilities and support functions.",
-            "time": "2013-03-29 21:32:25"
+            "time": "2013-05-16 23:11:19"
+        },
+        {
+            "name": "nick4fake/htmlpurifier",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nick4fake/htmlpurifier.git",
+                "reference": "a33ac67e68c7aa241a3d2aa27174ba88df48b1e8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nick4fake/htmlpurifier/zipball/a33ac67e68c7aa241a3d2aa27174ba88df48b1e8",
+                "reference": "a33ac67e68c7aa241a3d2aa27174ba88df48b1e8",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "HTMLPurifier": "",
+                    "HTMLPurifier_": "HTMLPurifier/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.0"
+            ],
+            "description": "HTML Purifier is a standards-compliant HTML filter library written in PHP.",
+            "homepage": "http://htmlpurifier.org/",
+            "time": "2012-09-19 09:37:36"
+        },
+        {
+            "name": "regulus/tetra-text",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Regulus343/TetraText.git",
+                "reference": "ac89dc23e344a03c9c2b93b8f8aea6a5000c0617"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/ac89dc23e344a03c9c2b93b8f8aea6a5000c0617",
+                "reference": "ac89dc23e344a03c9c2b93b8f8aea6a5000c0617",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "4.0.x",
+                "nick4fake/htmlpurifier": "dev-master",
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/migrations"
+                ],
+                "psr-0": {
+                    "Regulus\\TetraText": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cody Jassman",
+                    "email": "me@codyjassman.com"
+                }
+            ],
+            "description": "A small text/string formatting composer package that formats phone numbers, numeric values, money values and more.",
+            "time": "2013-05-18 22:05:51"
         }
     ],
     "packages-dev": [
@@ -56,9 +133,9 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ],
+    "stability-flags": {
+        "regulus/tetra-text": 20
+    },
     "platform": {
         "php": ">=5.3.0"
     },
