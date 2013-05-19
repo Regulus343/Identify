@@ -29,7 +29,7 @@ return array(
 		'create'   => array(
 			'username'             => trim(Input::get('username')),
 			'email'                => trim(Input::get('email')),
-			'password'             => Hash::make(Input::get('password', '')),
+			'password'             => Input::get('password', '') != '' ? Hash::make(Input::get('password')) : '',
 			'first_name'           => ucfirst(trim(Input::get('first_name'))),
 			'last_name'            => ucfirst(trim(Input::get('last_name'))),
 			'website'              => (Input::get('website') == 'http://') ? '' : 'http://'.str_replace('http://', '', str_replace('https://', '', trim(strtolower(Input::get('website'))))),
@@ -43,7 +43,7 @@ return array(
 			'website'              => (Input::get('website') == 'http://') ? '' : 'http://'.str_replace('http://', '', str_replace('https://', '', trim(strtolower(Input::get('website'))))),
 		),
 		'password' => array(
-			'password'             => Hash::make(Input::get('password', '')),
+			'password'             => Input::get('password', '') != '' ? Hash::make(Input::get('password')) : '',
 		),
 		'passwordReset' => array(
 			'forgot_password_code' => md5(rand(1000, 999999999)),
