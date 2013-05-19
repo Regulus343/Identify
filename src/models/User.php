@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
+use Regulus\Identify\Identify as Auth;
+
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
 	/**
@@ -56,9 +58,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var array
 	 */
-	public function events()
+	public function content()
 	{
-		return $this->belongsTo('\SocialEvent', 'user_id');
+		return $this->morphTo();
 	}
 
 	/**
@@ -130,7 +132,54 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
-	 * Update user account.
+	 * Attempt to activate a user account by the user ID and activation code.
+	 *
+	 * @param  integer  $id
+	 * @param  string   $activationCode
+	 * @return boolean
+	 */
+	public static function activate($id = 0, $activationCode = '')
+	{
+		$user = User::find($id);
+		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code)) {
+			$user->active       = true;
+			$user->activated_at = date('Y-m-d H:i:s');
+			$user->save();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Create a new user account.
+	 *
+	 * @return boolean
+	 */
+	public static function createAccount()
+	{
+		//check for role
+		if (Auth::is('admin')) {
+			$roleName = Input::get('role');
+		} else {
+			$roleName = "Member";
+		}
+		$role = Role::where('name', '=', $roleName)->first();
+		if (empty($role)) return false;
+
+		$user = new static;
+		$user->updateAccount('create');
+
+		//add user role
+		$userRole = new UserRole;
+		$userRole->user_id = $user->id;
+		$userRole->role_id = $role->id;
+		$userRole->save();
+
+		return $user;
+	}
+
+	/**
+	 * Update a user account.
 	 *
 	 * @return boolean
 	 */

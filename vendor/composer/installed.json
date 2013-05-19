@@ -89,12 +89,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/Regulus343/TetraText.git",
-            "reference": "ac89dc23e344a03c9c2b93b8f8aea6a5000c0617"
+            "reference": "8ac56f436a96ff3c66b0d1f11679f1297cd9771b"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/ac89dc23e344a03c9c2b93b8f8aea6a5000c0617",
-            "reference": "ac89dc23e344a03c9c2b93b8f8aea6a5000c0617",
+            "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/8ac56f436a96ff3c66b0d1f11679f1297cd9771b",
+            "reference": "8ac56f436a96ff3c66b0d1f11679f1297cd9771b",
             "shasum": ""
         },
         "require": {
@@ -102,7 +102,7 @@
             "nick4fake/htmlpurifier": "dev-master",
             "php": ">=5.3.0"
         },
-        "time": "2013-05-18 22:05:51",
+        "time": "2013-05-19 03:08:43",
         "type": "library",
         "installation-source": "source",
         "autoload": {

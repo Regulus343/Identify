@@ -26,16 +26,47 @@ return array(
 	|
 	*/
 	'dataSetup' => array(
-		'standard' => array(
-			'username'   => trim(Input::get('username')),
-			'email'      => trim(Input::get('email')),
-			'first_name' => ucfirst(trim(Input::get('first_name'))),
-			'last_name'  => ucfirst(trim(Input::get('last_name'))),
-			'website'    => (Input::get('website') == 'http://') ? '' : 'http://'.str_replace('http://', '', trim(strtolower(Input::get('website')))),
+		'create'   => array(
+			'username'             => trim(Input::get('username')),
+			'email'                => trim(Input::get('email')),
+			'password'             => Hash::make(Input::get('password', '')),
+			'first_name'           => ucfirst(trim(Input::get('first_name'))),
+			'last_name'            => ucfirst(trim(Input::get('last_name'))),
+			'website'              => (Input::get('website') == 'http://') ? '' : 'http://'.str_replace('http://', '', str_replace('https://', '', trim(strtolower(Input::get('website'))))),
+			'activation_code'      => md5(rand(1000, 999999999)),
 		),
-
+		'standard' => array(
+			'username'             => trim(Input::get('username')),
+			'email'                => trim(Input::get('email')),
+			'first_name'           => ucfirst(trim(Input::get('first_name'))),
+			'last_name'            => ucfirst(trim(Input::get('last_name'))),
+			'website'              => (Input::get('website') == 'http://') ? '' : 'http://'.str_replace('http://', '', str_replace('https://', '', trim(strtolower(Input::get('website'))))),
+		),
 		'password' => array(
-			'password' => Input::get('password'),
+			'password'             => Hash::make(Input::get('password', '')),
+		),
+		'passwordReset' => array(
+			'forgot_password_code' => md5(rand(1000, 999999999)),
+		),
+		'activate' => array(
+			'active'               => true,
+			'activated_at'         => date('Y-m-d H:i:s'),
+		),
+		'delete'   => array(
+			'deleted'              => true,
+			'deleted_at'           => date('Y-m-d H:i:s'),
+		),
+		'undelete' => array(
+			'deleted'              => false,
+			'deleted_at'           => '0000-00-00 00:00:00',
+		),
+		'ban'      => array(
+			'banned'               => false,
+			'banned_at'            => date('Y-m-d H:i:s'),
+		),
+		'unban'    => array(
+			'banned'               => false,
+			'banned_at'            => '0000-00-00 00:00:00',
 		),
 	),
 
@@ -107,8 +138,7 @@ return array(
 	| The location of the email views relative to the specified Views Location.
 	| By default "emails" is used meaning the emails view will be in
 	| "identify::emails/view". If you do not use "identify::" as your Views
-	| Location, you may want to use "emails/auth". You do not have to worry
-	| about the trailing slash. Identify will take care of that for you.
+	| Location, you may want to use "emails/auth".
 	|
 	*/
 	'viewsLocationEmail'       => 'emails',
@@ -118,18 +148,15 @@ return array(
 	| Email Types Setup
 	|--------------------------------------------------------------------------
 	|
-	| The data setup for creating and updating a user. You may create different
-	| types for different situations. There are 2 types already here by
-	| default which are "standard" and "password". This data is
-	| held in the config file so composer update won't overwrite your custom
-	| settings that will vary based on your users table setup.
+	| An array of view => subject line pairs for the different
+	| authorization email types.
 	|
 	*/
 	'emailTypes' => array(
-		'Signup Confirmation' => 'signup_confirmation',
-		'Activation'          => 'activation',
-		'Activated'           => 'activated',
-		'Reset Password'      => 'reset_password',
+		'signup_confirmation' => 'Account Activation Instructions',
+		'reset_password'      => 'Reset Your Password',
+		'banned'              => 'Account Banned',
+		'deleted'             => 'Account Deleted',
 	),
 
 );

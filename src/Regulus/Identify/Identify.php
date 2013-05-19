@@ -94,12 +94,9 @@ class Identify extends Auth {
 	{
 		$user = User::find($id);
 		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code)) {
-			/*$user->active       = true;
+			$user->active       = true;
 			$user->activated_at = date('Y-m-d H:i:s');
-			$user->save();*/
-
-			return static::email($user, 'Activation');
-
+			$user->save();
 			return true;
 		}
 		return false;
@@ -114,10 +111,13 @@ class Identify extends Auth {
 	 */
 	public static function email($user, $type)
 	{
-		foreach (Config::get('identify::emailTypes') as $emailType => $view) {
-			if ($type == $emailType) {
-				$viewLocation = Config::get('identify::viewsLocation').Format::trailingSlash(Config::get('identify::viewsLocationEmail'));
-				return View::make($viewLocation.$view)->with('user', $user);
+		foreach (Config::get('identify::emailTypes') as $view => $subject) {
+			if ($type == $view) {
+				$viewLocation = Config::get('identify::viewsLocation').Config::get('identify::viewsLocationEmail').'.';
+				Mail::send($viewLocation.$view, array('user' => $user), function($m) use ($user)
+				{
+					$m->to($user->email, $user->getName())->subject($subject);
+				});
 				return true;
 			}
 		}
