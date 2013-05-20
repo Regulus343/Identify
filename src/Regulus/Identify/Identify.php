@@ -5,7 +5,7 @@
 		A composer package that adds roles to Laravel 4's basic authentication/authorization.
 
 		created by Cody Jassman
-		last updated on May 18, 2013
+		last updated on May 19, 2013
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Support\Facades\Auth;
