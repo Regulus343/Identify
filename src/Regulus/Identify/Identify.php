@@ -109,7 +109,7 @@ class Identify extends Auth {
 	 * @param  string   $type
 	 * @return boolean
 	 */
-	public static function email($user, $type)
+	public static function sendEmail($user, $type)
 	{
 		foreach (Config::get('identify::emailTypes') as $view => $subject) {
 			if ($type == $view) {

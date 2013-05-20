@@ -175,8 +175,12 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		$userRole->role_id = $role->id;
 		$userRole->save();
 
+		//send account activation email to registrant
+		Auth::sendEmail($user, 'signup_confirmation');
+
 		return $user;
 	}
+
 
 	/**
 	 * Update a user account.
