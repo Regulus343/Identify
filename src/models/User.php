@@ -217,6 +217,20 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
+	 * Get an active user by ID.
+	 *
+	 * @return object
+	 */
+	public static function getActiveByID($id)
+	{
+		return static::orderBy('id')
+			->where('active', '=', true)
+			->where('banned', '=', false)
+			->where('deleted', '=', false)
+			->where('id', '=', $id)->first();
+	}
+
+	/**
 	 * Get a user by their username or email address.
 	 *
 	 * @return boolean

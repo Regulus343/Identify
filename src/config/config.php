@@ -43,7 +43,7 @@ return array(
 			'website'              => (Input::get('website') == 'http://') ? '' : 'http://'.str_replace('http://', '', str_replace('https://', '', trim(strtolower(Input::get('website'))))),
 		),
 		'password' => array(
-			'password'             => Input::get('password', '') != '' ? Hash::make(Input::get('password')) : '',
+			'password'             => Input::get('new_password', '') != '' ? Hash::make(Input::get('new_password')) : '',
 		),
 		'passwordReset' => array(
 			'reset_password_code'  => md5(rand(1000, 999999999)),
