@@ -43,6 +43,7 @@ class CreateUsersTable extends Migration {
 			$table->string('website');
 			$table->string('twitter', 16);
 			$table->string('bitcoin_address', 52);
+			$table->string('litecoin_address', 52);
 
 			$table->boolean('listed');
 			$table->boolean('listed_email');
@@ -50,7 +51,7 @@ class CreateUsersTable extends Migration {
 			/* --------------- */
 
 			$table->string('activation_code');
-			$table->string('forgot_password_code');
+			$table->string('reset_password_code');
 
 			$table->timestamps();
 		});

@@ -11,6 +11,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
@@ -93,7 +94,7 @@ class Identify extends Auth {
 	public static function activate($id = 0, $activationCode = '')
 	{
 		$user = User::find($id);
-		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code)) {
+		if (!empty($user) && !$user->active && (static::is('admin') || $activationCode == $user->activation_code)) {
 			$user->active       = true;
 			$user->activated_at = date('Y-m-d H:i:s');
 			$user->save();
@@ -114,7 +115,7 @@ class Identify extends Auth {
 		foreach (Config::get('identify::emailTypes') as $view => $subject) {
 			if ($type == $view) {
 				$viewLocation = Config::get('identify::viewsLocation').Config::get('identify::viewsLocationEmail').'.';
-				Mail::send($viewLocation.$view, array('user' => $user), function($m) use ($user)
+				Mail::send($viewLocation.$view, array('user' => $user), function($m) use ($user, $subject)
 				{
 					$m->to($user->email, $user->getName())->subject($subject);
 				});

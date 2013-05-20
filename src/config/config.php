@@ -46,7 +46,7 @@ return array(
 			'password'             => Input::get('password', '') != '' ? Hash::make(Input::get('password')) : '',
 		),
 		'passwordReset' => array(
-			'forgot_password_code' => md5(rand(1000, 999999999)),
+			'reset_password_code'  => md5(rand(1000, 999999999)),
 		),
 		'activate' => array(
 			'active'               => true,

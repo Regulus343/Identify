@@ -6,6 +6,7 @@ use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
@@ -201,6 +202,34 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 		$this->save();
 		return true;
+	}
+
+	/**
+	 * Create a reset password code for a user.
+	 *
+	 * @return boolean
+	 */
+	public function resetPasswordCode()
+	{
+		$this->updateAccount('passwordReset');
+		Auth::sendEmail($this, 'reset_password');
+		return true;
+	}
+
+	/**
+	 * Get a user by their username or email address.
+	 *
+	 * @return boolean
+	 */
+	public static function getByUsernameOrEmail($username = '')
+	{
+		$username = trim(strtolower($username));
+		return User::where(function($query) use ($username)
+		{
+			$query
+				->where(DB::raw('lower(username)'), '=', $username)
+				->orWhere(DB::raw('lower(email)'), '=', $username);
+		})->first();
 	}
 
 }
