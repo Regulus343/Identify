@@ -68,7 +68,7 @@ class Identify extends Auth {
 	 */
 	public static function isNot($roles)
 	{
-		return ! static::allow($roles);
+		return ! static::is($roles);
 	}
 
 	/**
