@@ -5,7 +5,7 @@
 		A composer package that adds roles to Laravel 4's basic authentication/authorization.
 
 		created by Cody Jassman
-		last updated on May 19, 2013
+		last updated on June 24, 2013
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
 use Regulus\TetraText\TetraText as Format;
@@ -47,13 +48,15 @@ class Identify extends Auth {
 			if (is_array($roles)) {
 				foreach ($userRoles as $userRole) {
 					foreach ($roles as $role) {
-						if (strtolower($userRole->role) == strtolower($role)) $allowed = true;
+						if (strtolower($userRole->role) == strtolower($role))
+							$allowed = true;
 					}
 				}
 			} else {
 				$role = $roles;
 				foreach ($userRoles as $userRole) {
-					if (strtolower($userRole->role) == strtolower($role)) $allowed = true;
+					if (strtolower($userRole->role) == strtolower($role))
+						$allowed = true;
 				}
 			}
 		}
@@ -76,12 +79,53 @@ class Identify extends Auth {
 	 *
 	 * @param  string   $uri
 	 * @param  mixed    $message
+	 * @param  string   $messageVar
 	 * @return boolean
 	 */
-	public static function unauthorized($uri, $message = false)
+	public static function unauthorized($uri = '', $message = false, $messagesVar = 'messages')
 	{
 		if (!$message) $message = Lang::get('identify::messages.unauthorized');
-		return Redirect::to($uri)->with('messageError', $message);
+		return Redirect::to($uri)->with($messagesVar, array('error' => $message));
+	}
+
+	/**
+	 * Redirect to a specified page with an error message. A default message is supplied if a custom message not set.
+	 *
+	 * @param  mixed    $roles
+	 * @param  string   $uri
+	 * @param  mixed    $message
+	 * @param  string   $messageVar
+	 * @return boolean
+	 */
+	public static function authorize($roles, $uri = '', $message = false, $messagesVar = 'messages')
+	{
+		if (static::isNot($roles))
+			return static::unauthorized($uri, $message, $messagesVar);
+
+		return false;
+	}
+
+	/**
+	 * Redirect to a specified page with an error message. A default message is supplied if a custom message not set.
+	 *
+	 * @param  array    $routeFilters
+	 * @param  boolean  $includeSubRoutes
+	 * @return boolean
+	 */
+	public static function setRouteFilters($routeFilters = array(), $includeSubRoutes = true)
+	{
+		foreach ($routeFilters as $route => $filter) {
+			$ignoreSubRoutes = false;
+			if (substr($route, 0, 1) == "[" && substr($route, -1) == "]") {
+				$route = str_replace('[', '', str_replace(']', '', $route));
+				$ignoreSubRoutes = true;
+			}
+
+			Route::when($route, $filter);
+			if ($includeSubRoutes && !$ignoreSubRoutes) {
+				Route::when($route.'/*', $filter);
+			}
+		}
 	}
 
 	/**
