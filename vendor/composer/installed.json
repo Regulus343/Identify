@@ -7,12 +7,12 @@
         "source": {
             "type": "git",
             "url": "https://github.com/illuminate/support.git",
-            "reference": "e09f68ae78aab398fd3c8e8f814df89b03c2a817"
+            "reference": "4104d2c4228922f62420accc50221ec56e424759"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/illuminate/support/zipball/e09f68ae78aab398fd3c8e8f814df89b03c2a817",
-            "reference": "e09f68ae78aab398fd3c8e8f814df89b03c2a817",
+            "url": "https://api.github.com/repos/illuminate/support/zipball/4104d2c4228922f62420accc50221ec56e424759",
+            "reference": "4104d2c4228922f62420accc50221ec56e424759",
             "shasum": ""
         },
         "require": {
@@ -23,11 +23,11 @@
             "patchwork/utf8": "1.1.*",
             "phpunit/phpunit": "3.7.*"
         },
-        "time": "2013-05-19 03:05:01",
+        "time": "2013-08-27 16:10:10",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "4.0-dev"
+                "dev-master": "4.1-dev"
             }
         },
         "installation-source": "source",
@@ -40,47 +40,63 @@
             ]
         },
         "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
         "authors": [
             {
                 "name": "Taylor Otwell",
-                "email": "taylorotwell@gmail.com"
+                "email": "taylorotwell@gmail.com",
+                "homepage": "https://github.com/taylorotwell",
+                "role": "Developer"
             }
-        ],
-        "description": "Various utilities and support functions."
+        ]
     },
     {
-        "name": "nick4fake/htmlpurifier",
+        "name": "ezyang/htmlpurifier",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
-            "url": "https://github.com/nick4fake/htmlpurifier.git",
-            "reference": "a33ac67e68c7aa241a3d2aa27174ba88df48b1e8"
+            "url": "https://github.com/ezyang/htmlpurifier.git",
+            "reference": "fac747bdbdba6aeaba4bed91ef49b2378c1798e4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/nick4fake/htmlpurifier/zipball/a33ac67e68c7aa241a3d2aa27174ba88df48b1e8",
-            "reference": "a33ac67e68c7aa241a3d2aa27174ba88df48b1e8",
+            "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/fac747bdbdba6aeaba4bed91ef49b2378c1798e4",
+            "reference": "fac747bdbdba6aeaba4bed91ef49b2378c1798e4",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.2.4"
+            "php": ">=5.2"
         },
-        "time": "2012-09-19 09:37:36",
+        "time": "2013-08-18 02:27:26",
         "type": "library",
         "installation-source": "source",
         "autoload": {
             "psr-0": {
-                "HTMLPurifier": "",
-                "HTMLPurifier_": "HTMLPurifier/"
-            }
+                "HTMLPurifier": "library/"
+            },
+            "files": [
+                "library/HTMLPurifier.composer.php"
+            ]
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "LGPL-2.0"
+            "LGPL"
         ],
-        "description": "HTML Purifier is a standards-compliant HTML filter library written in PHP.",
-        "homepage": "http://htmlpurifier.org/"
+        "authors": [
+            {
+                "name": "Edward Z. Yang",
+                "email": "admin@htmlpurifier.org",
+                "homepage": "http://ezyang.com"
+            }
+        ],
+        "description": "Standards compliant HTML filter written in PHP",
+        "homepage": "http://htmlpurifier.org/",
+        "keywords": [
+            "html"
+        ]
     },
     {
         "name": "regulus/tetra-text",
@@ -89,20 +105,20 @@
         "source": {
             "type": "git",
             "url": "https://github.com/Regulus343/TetraText.git",
-            "reference": "1210e42f4ba6c0a7cb2a59eec7210ef2d836946c"
+            "reference": "861ac94b555f9e3b0bb2b530cc205e96e3090e7d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/1210e42f4ba6c0a7cb2a59eec7210ef2d836946c",
-            "reference": "1210e42f4ba6c0a7cb2a59eec7210ef2d836946c",
+            "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/861ac94b555f9e3b0bb2b530cc205e96e3090e7d",
+            "reference": "861ac94b555f9e3b0bb2b530cc205e96e3090e7d",
             "shasum": ""
         },
         "require": {
+            "ezyang/htmlpurifier": "dev-master",
             "illuminate/support": "4.0.x",
-            "nick4fake/htmlpurifier": "dev-master",
             "php": ">=5.3.0"
         },
-        "time": "2013-05-19 17:58:01",
+        "time": "2013-08-28 01:01:41",
         "type": "library",
         "installation-source": "source",
         "autoload": {

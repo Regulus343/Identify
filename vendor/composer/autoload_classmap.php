@@ -12,4 +12,7 @@ return array(
     'Regulus\\Identify\\Role' => $baseDir . '/src/models/Role.php',
     'Regulus\\Identify\\User' => $baseDir . '/src/models/User.php',
     'Regulus\\Identify\\UserRole' => $baseDir . '/src/models/UserRole.php',
+    'RolesTableSeeder' => $baseDir . '/src/seeds/RolesTableSeeder.php',
+    'UserRolesTableSeeder' => $baseDir . '/src/seeds/UserRolesTableSeeder.php',
+    'UsersTableSeeder' => $baseDir . '/src/seeds/UsersTableSeeder.php',
 );
