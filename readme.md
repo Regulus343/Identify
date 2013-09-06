@@ -1,4 +1,140 @@
 Identify
 ========
 
-A composer package that adds roles to Laravel 4's basic authentication/authorization.
+**A composer package that adds roles and many other features to Laravel 4's basic authentication/authorization.**
+
+- [Installation](#installation)
+- [Migrations and Database Seeding](#migrations-seeding)
+- [Basic Usage](#basic-usage)
+
+<a name="installation"></a>
+## Installation
+
+**Basic installation, service provider registration, and aliasing:**
+
+To install Identify, make sure "regulus/identify" has been added to Laravel 4's `composer.json` file.
+
+	"require": {
+		"regulus/identify": "dev-master"
+	},
+
+Then run `php composer.phar update` from the command line. Composer will install the Identify package. Now, all you have to do is register the service provider, set up Identify's alias in `app/config/app.php`, and set 'model' to `Regulus\Identify\User` in `app/config/auth.php`. Add this to the `providers` array:
+
+	'Regulus\Identify\IdentifyServiceProvider',
+
+And add this to the `aliases` array:
+
+	'Auth' => 'Regulus\Identify\Identify',
+
+You may use 'Identify', or another alias, but 'Auth' is recommended for the sake of simplicity.
+
+**Publishing config file:**
+
+If you wish to customize the configuration of Identify, you will need to publish the config file. Run this from the command line:
+
+	php artisan config:publish regulus/identify
+
+You will now be able to edit the config file in `app/config/packages/regulus/identify`.
+
+<a name="migrations-seeding"></a>
+## Migrations and Database Seeding
+
+The default table prefix is 'auth_'. If you would like to remove it or use a different table prefix, you may do so in `config.php`. To run Identify's migrations run the following from the command line:
+
+	php artisan migrate --package=regulus/identify
+
+This will add the 'auth_users', 'auth_roles', and 'auth_user_roles' table. To start with 3 initial users, you may seed the database by adding the following to the `run()` method in `database/seeds/DatabaseSeeder.php`:
+
+	$this->call('UsersTableSeeder');
+	$this->command->info('Users table seeded.');
+
+	$this->call('RolesTableSeeder');
+	$this->command->info('Roles table seeded.');
+
+	$this->call('UserRolesTableSeeder');
+	$this->command->info('User Roles table seeded.');
+
+...And then running `php artisan db:seed` from the command line. You should now have 3 users, 'Admin', 'TestUser', and 'TestUser2'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in.
+
+<a name="basic-usage"></a>
+## Basic Usage
+
+**Checking whether a user is logged in:**
+
+	if (Auth::check()) {
+		//the user is logged in
+	}
+
+**Checking whether a user has a particular role:**
+
+	if (Auth::is('admin')) {
+		//the user has an "admin" role
+	}
+
+	if (Auth::is(array('admin', 'user'))) {
+		//the user has an "admin" role and/or a "user" role
+	}
+
+**Checking whether a user has is not particular role:**
+
+	if (Auth::isNot('admin')) {
+		//the user lacks an "admin" role
+	}
+
+	if (Auth::isNot(array('admin', 'user'))) {
+		//the user lacks the "admin" and "user" roles
+	}
+
+**Authorize a specific role or roles:**
+
+	//redirect to "home" URI if the user does not have one of the specified roles
+	Auth::authorize(array('admin', 'user'), 'home');
+
+	//with a custom message (otherwise a default one is provided)
+	Auth::authorize(array('admin', 'user'), 'home', 'You are not authorized to access the requested page.');
+
+**Automatically redirect to a URI with the unauthorized message:**
+
+	//redirect to "home" URI if the user does not have one of the specified roles
+	return Auth::unauthorized('home');
+
+	//with a custom message (otherwise a default one is provided)
+	Auth::authorize('home', 'You are not authorized to access the requested page.');
+
+The third argument is the name of the session variable. The default is 'messages' so if the user is redirected, `Session::get('messages')` will return an array like:
+
+	array('error' => 'You are not authorized to access the requested page.')
+
+**Activate a user account by ID and activation code:**
+
+	if (Auth::activate(1, '47381703b56f583133011c8899ffa1bd')) {
+		//user ID #1 has been activated
+	}
+
+**Create a new user account:**
+
+	Auth::createAccount();
+
+Create account will use `'dataSetup' => 'create'` in `config.php` to add the account data.
+
+**Update a user account:**
+
+	//the default data setup is 'standard' in the 'dataSetup' config array
+	$user->updateAccount();
+
+	//you may update one or more data types by specifying them
+	$user->updateAccount('password');
+	$user->updateAccount('ban');
+	$user->updateAccount('delete');
+
+	$user->updateAccount(array('standard', 'password'));
+
+**Send an email to a user with a specific view in `views/emails`:**
+
+	Auth::sendEmail($user, 'signup_confirmation');
+
+	Auth::sendEmail($user, 'banned');
+
+	Auth::sendEmail($user, 'deleted');
+
+	Auth::sendEmail($user, 'reset_password');
