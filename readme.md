@@ -43,7 +43,7 @@ The default table prefix is 'auth_'. If you would like to remove it or use a dif
 
 	php artisan migrate --package=regulus/identify
 
-This will add the 'auth_users', 'auth_roles', and 'auth_user_roles' table. To start with 3 initial users, you may seed the database by adding the following to the `run()` method in `database/seeds/DatabaseSeeder.php`:
+This will add the 'auth_users', 'auth_roles', and 'auth_user_roles' table. To start with 4 initial users, you may seed the database by adding the following to the `run()` method in `database/seeds/DatabaseSeeder.php`:
 
 	$this->call('UsersTableSeeder');
 	$this->command->info('Users table seeded.');
@@ -54,7 +54,7 @@ This will add the 'auth_users', 'auth_roles', and 'auth_user_roles' table. To st
 	$this->call('UserRolesTableSeeder');
 	$this->command->info('User Roles table seeded.');
 
-...And then running `php artisan db:seed` from the command line. You should now have 3 users, 'Admin', 'TestUser', and 'TestUser2'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in.
+...And then running `php artisan db:seed` from the command line. You should now have 4 users, 'Admin', 'TestUser', 'TestUser2', and 'TestUser3'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in. The 3 initial roles are 'Administrator', 'Moderator', and 'Member'. 'Admin' has the 'Administrator' role, 'TestUser' has the 'Moderator' role, the final 2 users have the 'Member' role.
 
 <a name="basic-usage"></a>
 ## Basic Usage
