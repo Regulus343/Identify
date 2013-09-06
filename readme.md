@@ -105,12 +105,6 @@ The third argument is the name of the session variable. The default is 'messages
 
 	array('error' => 'You are not authorized to access the requested page.')
 
-**Activate a user account by ID and activation code:**
-
-	if (Auth::activate(1, '47381703b56f583133011c8899ffa1bd')) {
-		//user ID #1 has been activated
-	}
-
 **Create a new user account:**
 
 	Auth::createAccount();
@@ -138,3 +132,13 @@ Create account will use `'dataSetup' => 'create'` in `config.php` to add the acc
 	Auth::sendEmail($user, 'deleted');
 
 	Auth::sendEmail($user, 'reset_password');
+
+**Activate a user account by ID and activation code:**
+
+	if (Auth::activate(1, '47381703b56f583133011c8899ffa1bd')) {
+		//user ID #1 has been activated
+	}
+
+**Set the reset password code and send the user an email with password reset instructions:**
+
+	$user->resetPasswordCode();
