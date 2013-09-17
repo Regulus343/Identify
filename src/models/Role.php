@@ -14,13 +14,6 @@ class Role extends Eloquent {
 	protected $table = 'roles';
 
 	/**
-	 * Turn off timestamps.
-	 *
-	 * @var string
-	 */
-	public $timestamps = false;
-
-	/**
 	 * The attributes that cannot be updated.
 	 *
 	 * @var array
