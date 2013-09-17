@@ -28,6 +28,8 @@ And add this to the `aliases` array:
 
 You may use 'Identify', or another alias, but 'Auth' is recommended for the sake of simplicity.
 
+Lastly, change the `model` variable in `app/config/auth.php` to `Regulus\Identify\User`.
+
 **Publishing config file:**
 
 If you wish to customize the configuration of Identify, you will need to publish the config file. Run this from the command line:
