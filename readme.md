@@ -77,6 +77,20 @@ This will add the 'auth_users', 'auth_roles', and 'auth_user_roles' table. To st
 
 ...And then running `php artisan db:seed` from the command line. You should now have 4 users, 'Admin', 'TestUser', 'TestUser2', and 'TestUser3'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in. The 3 initial roles are 'Administrator', 'Moderator', and 'Member'. 'Admin' has the 'Administrator' role, 'TestUser' has the 'Moderator' role, the final 2 users have the 'Member' role.
 
+**Register service provider and set up alias:**
+
+Now, all you have to do is register the service provider, set up Identify's alias in `app/config/app.php`, and set 'model' to `Regulus\Identify\User` in `app/config/auth.php`. Add this to the `providers` array:
+
+	'Regulus\Identify\IdentifyServiceProvider',
+
+And add this to the `aliases` array:
+
+	'Auth' => 'Regulus\Identify\Identify',
+
+You may use 'Identify', or another alias, but 'Auth' is recommended for the sake of simplicity.
+
+Lastly, change the `model` variable in `app/config/auth.php` to `Regulus\Identify\User`.
+
 <a name="basic-usage"></a>
 ## Basic Usage
 
