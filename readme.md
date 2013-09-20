@@ -3,12 +3,14 @@ Identify
 
 **A composer package that adds roles and many other features to Laravel 4's basic authentication/authorization.**
 
-- [Installation](#installation)
+- [Composer Package Installation](#composer-package-installation)
+- [Installation: Command Line](#command-line-installation)
+- [Installation: Manual](#manual-installation)
 - [Migrations and Database Seeding](#migrations-seeding)
 - [Basic Usage](#basic-usage)
 
-<a name="installation"></a>
-## Installation
+<a name="composer-package-installation"></a>
+## Composer Package Installation
 
 **Basic installation, service provider registration, and aliasing:**
 
@@ -18,7 +20,20 @@ To install Identify, make sure "regulus/identify" has been added to Laravel 4's 
 		"regulus/identify": "dev-master"
 	},
 
-Then run `php composer.phar update` from the command line. Composer will install the Identify package. Now, all you have to do is register the service provider, set up Identify's alias in `app/config/app.php`, and set 'model' to `Regulus\Identify\User` in `app/config/auth.php`. Add this to the `providers` array:
+Then run `php composer.phar update` from the command line. Composer will install the Identify package.
+
+<a name="command-line-installation"></a>
+## Command Line Installation
+
+Run the following from the command line:
+
+	php artisan identify:install
+
+Identify should now be installed.
+
+You should now have 4 users, 'Admin', 'TestUser', 'TestUser2', and 'TestUser3'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in. The 3 initial roles are 'Administrator', 'Moderator', and 'Member'. 'Admin' has the 'Administrator' role, 'TestUser' has the 'Moderator' role, the final 2 users have the 'Member' role.
+
+Now, all you have to do is register the service provider, set up Identify's alias in `app/config/app.php`, and set 'model' to `Regulus\Identify\User` in `app/config/auth.php`. Add this to the `providers` array:
 
 	'Regulus\Identify\IdentifyServiceProvider',
 
@@ -30,6 +45,11 @@ You may use 'Identify', or another alias, but 'Auth' is recommended for the sake
 
 Lastly, change the `model` variable in `app/config/auth.php` to `Regulus\Identify\User`.
 
+You may now skip ahead to the [Basic Usage](#basic-usage) section.
+
+<a name="manual-installation"></a>
+## Manual Installation
+
 **Publishing config file:**
 
 If you wish to customize the configuration of Identify, you will need to publish the config file. Run this from the command line:
@@ -38,8 +58,7 @@ If you wish to customize the configuration of Identify, you will need to publish
 
 You will now be able to edit the config file in `app/config/packages/regulus/identify`.
 
-<a name="migrations-seeding"></a>
-## Migrations and Database Seeding
+**Run the migrations and seed the database:**
 
 The default table prefix is 'auth_'. If you would like to remove it or use a different table prefix, you may do so in `config.php`. To run Identify's migrations run the following from the command line:
 
