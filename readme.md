@@ -12,8 +12,6 @@ Identify
 <a name="composer-package-installation"></a>
 ## Composer Package Installation
 
-**Basic installation, service provider registration, and aliasing:**
-
 To install Identify, make sure "regulus/identify" has been added to Laravel 4's `composer.json` file.
 
 	"require": {
