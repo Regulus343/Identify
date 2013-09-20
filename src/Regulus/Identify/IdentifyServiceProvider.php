@@ -28,7 +28,13 @@ class IdentifyServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		//add the install command
+		$this->app['identify:install'] = $this->app->share(function($app)
+		{
+			return new Commands\InstallCommand($app);
+		});
+
+		$this->commands('identify:install');
 	}
 
 	/**
