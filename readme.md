@@ -23,17 +23,9 @@ Then run `php composer.phar update` from the command line. Composer will install
 <a name="command-line-installation"></a>
 ## Command Line Installation
 
-Run the following from the command line:
-
-	php artisan identify:install
-
-Identify should now be installed.
-
-You should now have 4 users, 'Admin', 'TestUser', 'TestUser2', and 'TestUser3'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in. The 3 initial roles are 'Administrator', 'Moderator', and 'Member'. 'Admin' has the 'Administrator' role, 'TestUser' has the 'Moderator' role, the final 2 users have the 'Member' role.
-
 **Register service provider and set up alias:**
 
-Now, all you have to do is register the service provider, set up Identify's alias in `app/config/app.php`, and set 'model' to `Regulus\Identify\User` in `app/config/auth.php`. Add this to the `providers` array:
+Now, all you have to do is register the service provider, set up Identify's alias in `app/config/app.php`, set 'model' to `Regulus\Identify\User` in `app/config/auth.php`, and run the install command. Add this to the `providers` array:
 
 	'Regulus\Identify\IdentifyServiceProvider',
 
@@ -43,7 +35,15 @@ And add this to the `aliases` array:
 
 You may use 'Identify', or another alias, but 'Auth' is recommended for the sake of simplicity.
 
-Lastly, change the `model` variable in `app/config/auth.php` to `Regulus\Identify\User`.
+Next, change the `model` variable in `app/config/auth.php` to `Regulus\Identify\User`.
+
+**Run the install command:**
+
+	php artisan identify:install
+
+Identify should now be installed.
+
+You should now have 4 users, 'Admin', 'TestUser', 'TestUser2', and 'TestUser3'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in. The 3 initial roles are 'Administrator', 'Moderator', and 'Member'. 'Admin' has the 'Administrator' role, 'TestUser' has the 'Moderator' role, the final 2 users have the 'Member' role.
 
 You may now skip ahead to the [Basic Usage](#basic-usage) section.
 
