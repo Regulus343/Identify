@@ -45,6 +45,8 @@ class CreateUsersTable extends Migration {
 			$table->string('bitcoin_address', 52);
 			$table->string('litecoin_address', 52);
 
+			$table->text('about');
+
 			$table->boolean('listed');
 			$table->boolean('listed_email');
 
