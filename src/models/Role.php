@@ -36,7 +36,8 @@ class Role extends Eloquent {
 	 */
 	public function users()
 	{
-		return $this->hasMany('Regulus\Identify\User', 'role_id')->orderBy('username');
+		return $this->hasMany('Regulus\Identify\User', 'role_id')
+			->orderBy('username');
 	}
 
 }
