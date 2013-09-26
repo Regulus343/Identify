@@ -17,22 +17,25 @@ class RolesTableSeeder extends Seeder {
 
 		$roles = array(
 			array(
-				'role'       => 'admin',
-				'name'       => 'Administrator',
-				'created_at' => $dateCreated,
-				'updated_at' => $dateCreated,
+				'role'           => 'admin',
+				'name'           => 'Administrator',
+				'display_order'  => 1,
+				'created_at'     => $dateCreated,
+				'updated_at'     => $dateCreated,
 			),
 			array(
-				'role'       => 'mod',
-				'name'       => 'Moderator',
-				'created_at' => $dateCreated,
-				'updated_at' => $dateCreated,
+				'role'           => 'mod',
+				'name'           => 'Moderator',
+				'display_order'  => 2,
+				'created_at'     => $dateCreated,
+				'updated_at'     => $dateCreated,
 			),
 			array(
-				'role'       => 'member',
-				'name'       => 'Member',
-				'created_at' => $dateCreated,
-				'updated_at' => $dateCreated,
+				'role'           => 'member',
+				'name'           => 'Member',
+				'display_order'  => 3,
+				'created_at'     => $dateCreated,
+				'updated_at'     => $dateCreated,
 			),
 		);
 

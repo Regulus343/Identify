@@ -51,7 +51,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function roles()
 	{
-		return $this->belongsToMany('Regulus\Identify\Role', Config::get('identify::tablePrefix').'user_roles');
+		return $this->belongsToMany('Regulus\Identify\Role', Config::get('identify::tablePrefix').'user_roles')->orderBy('display_order', 'name');
 	}
 
 	/**

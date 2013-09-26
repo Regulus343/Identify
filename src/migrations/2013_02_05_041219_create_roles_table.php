@@ -18,6 +18,7 @@ class CreateRolesTable extends Migration {
 			$table->increments('id');
 			$table->string('role');
 			$table->string('name');
+			$table->integer('display_order');
 			$table->timestamps();
 		});
 	}
