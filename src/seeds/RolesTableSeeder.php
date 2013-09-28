@@ -34,6 +34,7 @@ class RolesTableSeeder extends Seeder {
 				'role'           => 'member',
 				'name'           => 'Member',
 				'display_order'  => 3,
+				'default'        => true,
 				'created_at'     => $dateCreated,
 				'updated_at'     => $dateCreated,
 			),
