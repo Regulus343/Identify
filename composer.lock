@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "bf323595343087f3cfad5723097982d5",
+    "hash": "c52febc33156099ec0d2d560ea2ca582",
     "packages": [
         {
             "name": "ezyang/htmlpurifier",
@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "fac747bdbdba6aeaba4bed91ef49b2378c1798e4"
+                "reference": "18b8a0e44aa873bc7b4208ce5c94a76f6e4566ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/fac747bdbdba6aeaba4bed91ef49b2378c1798e4",
-                "reference": "fac747bdbdba6aeaba4bed91ef49b2378c1798e4",
+                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/18b8a0e44aa873bc7b4208ce5c94a76f6e4566ba",
+                "reference": "18b8a0e44aa873bc7b4208ce5c94a76f6e4566ba",
                 "shasum": ""
             },
             "require": {
@@ -39,7 +39,8 @@
                 {
                     "name": "Edward Z. Yang",
                     "email": "admin@htmlpurifier.org",
-                    "homepage": "http://ezyang.com"
+                    "homepage": "http://ezyang.com",
+                    "role": "Developer"
                 }
             ],
             "description": "Standards compliant HTML filter written in PHP",
@@ -47,7 +48,7 @@
             "keywords": [
                 "html"
             ],
-            "time": "2013-08-18 02:27:26"
+            "time": "2013-12-08 23:51:56"
         },
         {
             "name": "illuminate/support",
@@ -56,12 +57,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "4104d2c4228922f62420accc50221ec56e424759"
+                "reference": "48db89ad7bd5f6b384377abc7ad1f96a387eabd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/4104d2c4228922f62420accc50221ec56e424759",
-                "reference": "4104d2c4228922f62420accc50221ec56e424759",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/48db89ad7bd5f6b384377abc7ad1f96a387eabd9",
+                "reference": "48db89ad7bd5f6b384377abc7ad1f96a387eabd9",
                 "shasum": ""
             },
             "require": {
@@ -75,7 +76,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.1-dev"
+                    "dev-master": "4.2-dev"
                 }
             },
             "autoload": {
@@ -98,7 +99,7 @@
                     "role": "Developer"
                 }
             ],
-            "time": "2013-08-27 16:10:10"
+            "time": "2013-12-13 02:49:39"
         },
         {
             "name": "regulus/tetra-text",
@@ -106,17 +107,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Regulus343/TetraText.git",
-                "reference": "861ac94b555f9e3b0bb2b530cc205e96e3090e7d"
+                "reference": "60d0e232dae40cc6ea2a776b9950d087ca2cb517"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/861ac94b555f9e3b0bb2b530cc205e96e3090e7d",
-                "reference": "861ac94b555f9e3b0bb2b530cc205e96e3090e7d",
+                "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/60d0e232dae40cc6ea2a776b9950d087ca2cb517",
+                "reference": "60d0e232dae40cc6ea2a776b9950d087ca2cb517",
                 "shasum": ""
             },
             "require": {
                 "ezyang/htmlpurifier": "dev-master",
-                "illuminate/support": "4.0.x",
+                "illuminate/support": "4.x",
                 "php": ">=5.3.0"
             },
             "type": "library",
@@ -139,7 +140,7 @@
                 }
             ],
             "description": "A small text/string formatting composer package that formats phone numbers, numeric values, money values and more.",
-            "time": "2013-08-28 01:01:41"
+            "time": "2014-01-06 00:10:43"
         }
     ],
     "packages-dev": [
