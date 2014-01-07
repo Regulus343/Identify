@@ -42,9 +42,9 @@ class InstallCommand extends Command {
 		$divider = '----------------------';
 
 		$this->output->writeln('');
-		$this->info('----------------------');
+		$this->info($divider);
 		$this->comment('Installing Identify...');
-		$this->info('----------------------');
+		$this->info($divider);
 		$this->output->writeln('');
 
 		$package = "regulus/identify";
