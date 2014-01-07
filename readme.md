@@ -41,7 +41,7 @@ Next, change the `model` variable in `app/config/auth.php` to `Regulus\Identify\
 
 	php artisan identify:install
 
-Identify should now be installed.
+Identify will now be installed. This includes all necessary DB migrations, DB seeding, and config publishing.
 
 You should now have 4 users, 'Admin', 'TestUser', 'TestUser2', and 'TestUser3'. All of the passwords are 'password' and the usernames are case insensitive, so you may simply type 'admin' and 'password' to log in. The 3 initial roles are 'Administrator', 'Moderator', and 'Member'. 'Admin' has the 'Administrator' role, 'TestUser' has the 'Moderator' role, the final 2 users have the 'Member' role.
 
