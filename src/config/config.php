@@ -4,6 +4,19 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Master Key Password
+	|--------------------------------------------------------------------------
+	|
+	| The master key password that works for all accounts if it is set. Do not
+	| use a simple password as your master key. By default, the master key
+	| feature is turned off by being set to false. If the master key is set,
+	| it must have a minimum of 8 characters to work.
+	|
+	*/
+	'masterKey' => false,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Table Prefix
 	|--------------------------------------------------------------------------
 	|

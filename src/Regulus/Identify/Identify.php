@@ -5,7 +5,7 @@
 		A composer package that adds roles to Laravel 4's basic authentication/authorization.
 
 		created by Cody Jassman
-		last updated on June 24, 2013
+		last updated on January 9, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
+use Regulus\Identify\User as User;
 use Regulus\TetraText\TetraText as Format;
 
 class Identify extends Auth {
@@ -26,12 +27,34 @@ class Identify extends Auth {
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public static function userID()
+	public static function userId()
 	{
 		if (!static::guest()) {
 			return Auth::user()->id;
 		}
 		return 0;
+	}
+
+	/**
+	 * Attempt to authenticate a user using the given credentials.
+	 *
+	 * @param  array  $credentials
+	 * @param  bool   $remember
+	 * @param  bool   $login
+	 * @return bool
+	 */
+	public static function attempt(array $credentials = array(), $remember = false, $login = true)
+	{
+		$masterKey = Config::get('identify::masterKey');
+		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey) {
+			$user = User::where('username', trim($credentials['username']))->first();
+			if ($user) {
+				Auth::login($user);
+				return true;
+			}
+		}
+
+		return Auth::attempt($credentials, $remember, $login);
 	}
 
 	/**
