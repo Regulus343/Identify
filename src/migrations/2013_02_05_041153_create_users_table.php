@@ -22,30 +22,19 @@ class CreateUsersTable extends Migration {
 			$table->string('last_name', 48);
 			$table->string('password');
 
-			$table->boolean('active');
-			$table->dateTime('activated_at');
-
-			$table->boolean('banned');
-			$table->dateTime('banned_at');
-			$table->text('ban_reason');
-
-			$table->boolean('deleted');
-			$table->dateTime('deleted_at');
-
 			$table->boolean('test'); //used to filter test users out of a live site without removing them
 
 			/* Optional Fields */
 
 			$table->string('city', 76);
-			$table->string('region', 96); //province or state
-			$table->string('country', 96);
+			$table->string('region', 100); //province or state
+			$table->string('country', 120);
 
 			$table->string('phone', 15);
 
 			$table->string('website');
 			$table->string('twitter', 16);
 			//$table->string('bitcoin_address', 52);
-			//$table->string('litecoin_address', 52);
 
 			$table->text('about');
 
@@ -54,10 +43,20 @@ class CreateUsersTable extends Migration {
 
 			/* --------------- */
 
-			$table->string('activation_code');
-			$table->string('reset_password_code');
+			$table->string('activation_code')->nullable();
+			$table->string('reset_password_code')->nullable();
+			$table->string('remember_token')->nullable();
+
+			$table->boolean('active');
+			$table->dateTime('activated_at');
+
+			$table->boolean('banned');
+			$table->dateTime('banned_at');
+			$table->text('ban_reason');
 
 			$table->timestamps();
+
+			$table->dateTime('deleted_at');
 		});
 	}
 

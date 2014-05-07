@@ -36,6 +36,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	protected $guarded = array('id');
 
 	/**
+	 * Enable soft delete for the model.
+	 *
+	 * @var boolean
+	 */
+	protected $softDelete = true;
+
+	/**
 	 * The constructor which adds the table prefix from the config settings.
 	 *
 	 */
@@ -184,7 +191,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		return $user;
 	}
 
-
 	/**
 	 * Update a user account.
 	 *
@@ -246,6 +252,36 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 				->where(DB::raw('lower(username)'), '=', $username)
 				->orWhere(DB::raw('lower(email)'), '=', $username);
 		})->first();
+	}
+
+	/**
+	 * Get the remember token.
+	 *
+	 * @return string
+	 */
+	public function getRememberToken()
+	{
+		return $this->remember_token;
+	}
+
+	/**
+	 * Get the remember token.
+	 *
+	 * @return void
+	 */
+	public function setRememberToken($value)
+	{
+		$this->remember_token = $value;
+	}
+
+	/**
+	 * Get the name of the remember token field.
+	 *
+	 * @return string
+	 */
+	public function getRememberTokenName()
+	{
+		return 'remember_token';
 	}
 
 }
