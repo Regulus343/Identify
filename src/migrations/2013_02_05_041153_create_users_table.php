@@ -50,6 +50,7 @@ class CreateUsersTable extends Migration {
 			$table->boolean('active');
 			$table->dateTime('activated_at')->nullable();
 
+			$table->boolean('banned');
 			$table->dateTime('banned_at')->nullable();
 			$table->text('ban_reason');
 
