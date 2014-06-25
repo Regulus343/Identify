@@ -48,15 +48,14 @@ class CreateUsersTable extends Migration {
 			$table->string('remember_token')->nullable();
 
 			$table->boolean('active');
-			$table->dateTime('activated_at');
+			$table->dateTime('activated_at')->nullable();
 
-			$table->boolean('banned');
-			$table->dateTime('banned_at');
+			$table->dateTime('banned_at')->nullable();
 			$table->text('ban_reason');
 
 			$table->timestamps();
 
-			$table->dateTime('deleted_at');
+			$table->softDeletes();
 		});
 	}
 

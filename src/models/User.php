@@ -40,7 +40,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var boolean
 	 */
-	protected $softDelete = true;
+	use SoftDeletingTrait;
+
+	protected $dates = ['deleted_at'];
 
 	/**
 	 * The constructor which adds the table prefix from the config settings.
