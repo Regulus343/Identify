@@ -20,7 +20,7 @@ class UsersTableSeeder extends Seeder {
 			array(
 				'username'     => 'Admin',
 				'password'     => $defaultPassword,
-				'email'        => 'admin@localhost',
+				'email'        => 'admin@localhost.com',
 				'first_name'   => 'Admin',
 				'last_name'    => 'Istrator',
 				'active'       => true,
@@ -31,7 +31,7 @@ class UsersTableSeeder extends Seeder {
 			array(
 				'username'     => 'TestUser',
 				'password'     => $defaultPassword,
-				'email'        => 'test@localhost',
+				'email'        => 'test@localhost.com',
 				'first_name'   => 'Test',
 				'last_name'    => 'Userone',
 				'active'       => true,
@@ -43,7 +43,7 @@ class UsersTableSeeder extends Seeder {
 			array(
 				'username'     => 'TestUser2',
 				'password'     => $defaultPassword,
-				'email'        => 'test2@localhost',
+				'email'        => 'test2@localhost.com',
 				'first_name'   => 'Test',
 				'last_name'    => 'Usertwo',
 				'active'       => true,
@@ -55,7 +55,7 @@ class UsersTableSeeder extends Seeder {
 			array(
 				'username'     => 'TestUser3',
 				'password'     => $defaultPassword,
-				'email'        => 'test3@localhost',
+				'email'        => 'test3@localhost.com',
 				'first_name'   => 'Test',
 				'last_name'    => 'Userthree',
 				'active'       => true,
