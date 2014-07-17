@@ -113,7 +113,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function getPicture($thumbnail = false)
 	{
-		$picture = URL::asset('assets/img/display-pic-default.png');
+		$picture = URL::asset('assets/images/display-pic-default.png');
 
 		if ( ! $thumbnail) {
 			$file = Config::get('identify::pathPicture').Config::get('identify::filenamePicture');
@@ -231,13 +231,14 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @return object
 	 */
-	public static function getActiveByID($id)
+	public static function getActiveById($id)
 	{
 		return static::orderBy('id')
-			->where('active', '=', true)
-			->where('banned', '=', false)
-			->where('deleted', '=', false)
-			->where('id', '=', $id)->first();
+			->where('id', $id)
+			->where('active', true)
+			->where('banned', false)
+			->where('deleted_at', null)
+			->first();
 	}
 
 	/**
