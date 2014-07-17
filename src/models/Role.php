@@ -42,12 +42,34 @@ class Role extends Eloquent {
 	/**
 	 * Belongs to User.
 	 *
-	 * @var array
+	 * @return Collection
 	 */
 	public function users()
 	{
 		return $this->belongsToMany('Regulus\Identify\User', Config::get('identify::tablePrefix').'user_roles')
 			->orderBy('username');
+	}
+
+	/**
+	 * Belongs to User.
+	 *
+	 * @return array
+	 */
+	public static function getSelectable($select = null)
+	{
+		if (is_null($select) || !is_array($select) || count($select) == 0)
+			$select = array('role', 'name');
+
+		if (count($select) == 1)
+			$select[1] = $select[0];
+
+		$roles   = static::orderBy('display_order')->get();
+		$options = array();
+		foreach ($roles as $role) {
+			$options[$role->{$select[0]}] = $role->{$select[1]};
+		}
+
+		return $options;
 	}
 
 }
