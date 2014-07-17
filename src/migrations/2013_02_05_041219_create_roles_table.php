@@ -21,6 +21,7 @@ class CreateRolesTable extends Migration {
 			$table->integer('display_order');
 			$table->boolean('default');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

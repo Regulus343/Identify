@@ -1,6 +1,7 @@
 <?php namespace Regulus\Identify;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 use Illuminate\Auth\UserInterface;
 use Illuminate\Auth\Reminders\RemindableInterface;
@@ -38,7 +39,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/**
 	 * Enable soft delete for the model.
 	 *
-	 * @var boolean
+	 * @var array
 	 */
 	use SoftDeletingTrait;
 

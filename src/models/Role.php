@@ -1,6 +1,7 @@
 <?php namespace Regulus\Identify;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 use Illuminate\Support\Facades\Config;
 
@@ -19,6 +20,15 @@ class Role extends Eloquent {
 	 * @var array
 	 */
 	protected $guarded = array('id');
+
+	/**
+	 * Enable soft delete for the model.
+	 *
+	 * @var array
+	 */
+	use SoftDeletingTrait;
+
+	protected $dates = ['deleted_at'];
 
 	/**
 	 * The constructor which adds the table prefix from the config settings.
