@@ -107,6 +107,49 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
+	 * Check whether user's account is active (activated and not banned).
+	 *
+	 * @return boolean
+	 */
+	public function isActive()
+	{
+		return $this->isActivated() && !$this->isBanned();
+	}
+
+	/**
+	 * Check whether user's account is activated.
+	 *
+	 * @return boolean
+	 */
+	public function isActivated()
+	{
+		return $this->activated_at != null;
+	}
+
+	/**
+	 * Check whether user's account is banned.
+	 *
+	 * @return boolean
+	 */
+	public function isBanned()
+	{
+		return $this->banned_at != null;
+	}
+
+	/**
+	 * Get the reason a user was banned.
+	 *
+	 * @return string
+	 */
+	public function getBanReason()
+	{
+		if (!$this->isBanned())
+			return "";
+
+		return $this->ban_reason;
+	}
+
+	/**
 	 * Get the picture for the user.
 	 *
 	 * @param  boolean  $thumbnail
@@ -155,7 +198,6 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		$user = User::find($id);
 		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code)) {
-			$user->active       = true;
 			$user->activated_at = date('Y-m-d H:i:s');
 			$user->save();
 			return true;
@@ -236,8 +278,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		return static::orderBy('id')
 			->where('id', $id)
-			->where('active', true)
-			->where('banned', false)
+			->where('activated_at', '!=', null)
+			->where('banned_at', null)
 			->where('deleted_at', null)
 			->first();
 	}
