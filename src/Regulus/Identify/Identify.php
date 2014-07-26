@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
 use Regulus\Identify\User as User;
-use Regulus\TetraText\TetraText as Format;
 
 class Identify extends Auth {
 

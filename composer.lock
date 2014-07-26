@@ -1,77 +1,32 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "c52febc33156099ec0d2d560ea2ca582",
+    "hash": "8ff4819f35d59cad063ff1633f15fc9a",
     "packages": [
         {
-            "name": "ezyang/htmlpurifier",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ezyang/htmlpurifier.git",
-                "reference": "18b8a0e44aa873bc7b4208ce5c94a76f6e4566ba"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ezyang/htmlpurifier/zipball/18b8a0e44aa873bc7b4208ce5c94a76f6e4566ba",
-                "reference": "18b8a0e44aa873bc7b4208ce5c94a76f6e4566ba",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "HTMLPurifier": "library/"
-                },
-                "files": [
-                    "library/HTMLPurifier.composer.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL"
-            ],
-            "authors": [
-                {
-                    "name": "Edward Z. Yang",
-                    "email": "admin@htmlpurifier.org",
-                    "homepage": "http://ezyang.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Standards compliant HTML filter written in PHP",
-            "homepage": "http://htmlpurifier.org/",
-            "keywords": [
-                "html"
-            ],
-            "time": "2013-12-08 23:51:56"
-        },
-        {
             "name": "illuminate/support",
-            "version": "dev-master",
+            "version": "4.2.x-dev",
             "target-dir": "Illuminate/Support",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "48db89ad7bd5f6b384377abc7ad1f96a387eabd9"
+                "reference": "b658e4cf1251d059c184a8909a4e670e2b00a683"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/48db89ad7bd5f6b384377abc7ad1f96a387eabd9",
-                "reference": "48db89ad7bd5f6b384377abc7ad1f96a387eabd9",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/b658e4cf1251d059c184a8909a4e670e2b00a683",
+                "reference": "b658e4cf1251d059c184a8909a4e670e2b00a683",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": ">=5.4.0"
             },
             "require-dev": {
-                "mockery/mockery": "0.7.2",
-                "patchwork/utf8": "1.1.*",
-                "phpunit/phpunit": "3.7.*"
+                "jeremeamia/superclosure": "~1.0",
+                "patchwork/utf8": "1.1.*"
             },
             "type": "library",
             "extra": {
@@ -94,53 +49,10 @@
             "authors": [
                 {
                     "name": "Taylor Otwell",
-                    "email": "taylorotwell@gmail.com",
-                    "homepage": "https://github.com/taylorotwell",
-                    "role": "Developer"
+                    "email": "taylorotwell@gmail.com"
                 }
             ],
-            "time": "2013-12-13 02:49:39"
-        },
-        {
-            "name": "regulus/tetra-text",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Regulus343/TetraText.git",
-                "reference": "60d0e232dae40cc6ea2a776b9950d087ca2cb517"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Regulus343/TetraText/zipball/60d0e232dae40cc6ea2a776b9950d087ca2cb517",
-                "reference": "60d0e232dae40cc6ea2a776b9950d087ca2cb517",
-                "shasum": ""
-            },
-            "require": {
-                "ezyang/htmlpurifier": "dev-master",
-                "illuminate/support": "4.x",
-                "php": ">=5.3.0"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "src/migrations"
-                ],
-                "psr-0": {
-                    "Regulus\\TetraText": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Cody Jassman",
-                    "email": "me@codyjassman.com"
-                }
-            ],
-            "description": "A small text/string formatting composer package that formats phone numbers, numeric values, money values and more.",
-            "time": "2014-01-06 00:10:43"
+            "time": "2014-07-23 18:26:20"
         }
     ],
     "packages-dev": [
@@ -150,9 +62,10 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "regulus/tetra-text": 20
-    },
+    "stability-flags": [
+
+    ],
+    "prefer-stable": false,
     "platform": {
         "php": ">=5.3.0"
     },
