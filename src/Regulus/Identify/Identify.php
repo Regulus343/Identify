@@ -5,10 +5,12 @@
 		A composer package that adds roles to Laravel 4's basic authentication/authorization.
 
 		created by Cody Jassman
-		last updated on January 9, 2014
+		v0.3.0
+		last updated on July 26, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Auth\AuthManager as Auth;
+
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
@@ -27,11 +29,11 @@ class Identify extends Auth {
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public static function userId()
+	public function userId()
 	{
-		if (!static::guest()) {
+		if (!$this->guest())
 			return Auth::user()->id;
-		}
+
 		return 0;
 	}
 
@@ -43,7 +45,7 @@ class Identify extends Auth {
 	 * @param  bool   $login
 	 * @return bool
 	 */
-	public static function attempt(array $credentials = array(), $remember = false, $login = true)
+	public function attempt(array $credentials = array(), $remember = false, $login = true)
 	{
 		$masterKey = Config::get('identify::masterKey');
 		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey) {
@@ -58,32 +60,50 @@ class Identify extends Auth {
 	}
 
 	/**
-	 * Checks whether the user is in one of the given roles ($roles can be an array of roles or a string of a single role).
+	 * Checks whether the user is in one or all of the given roles ($roles can be an array of roles
+	 * or a string of a single role).
+	 *
+	 * @param  mixed    $roles
+	 * @param  boolean  $all
+	 * @return boolean
+	 */
+	public function is($roles, $all = false)
+	{
+		$allowed = false;
+		$matches = 0;
+
+		if (Auth::check()) {
+			$userRoles = Auth::user()->roles;
+
+			if (!is_array($roles))
+				$roles = [$roles];
+
+			foreach ($userRoles as $userRole) {
+				foreach ($roles as $role) {
+					if (strtolower($userRole->role) == strtolower($role)) {
+						$allowed = true;
+						$matches ++;
+					}
+				}
+			}
+
+			if ($all && $matches < count($roles))
+				$allowed = false;
+		}
+
+		return $allowed;
+	}
+
+	/**
+	 * Checks whether the user is in all of the given roles ($roles can be an array of roles
+	 * or a string of a single role).
 	 *
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public static function is($roles)
+	public function isAll($roles)
 	{
-		$allowed = false;
-		if (Auth::check()) {
-			$userRoles = Auth::user()->roles;
-			if (is_array($roles)) {
-				foreach ($userRoles as $userRole) {
-					foreach ($roles as $role) {
-						if (strtolower($userRole->role) == strtolower($role))
-							$allowed = true;
-					}
-				}
-			} else {
-				$role = $roles;
-				foreach ($userRoles as $userRole) {
-					if (strtolower($userRole->role) == strtolower($role))
-						$allowed = true;
-				}
-			}
-		}
-		return $allowed;
+		return $this->is($roles, true);
 	}
 
 	/**
@@ -92,9 +112,9 @@ class Identify extends Auth {
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public static function isNot($roles)
+	public function isNot($roles)
 	{
-		return ! static::is($roles);
+		return ! $this->is($roles);
 	}
 
 	/**
@@ -105,9 +125,11 @@ class Identify extends Auth {
 	 * @param  string   $messageVar
 	 * @return boolean
 	 */
-	public static function unauthorized($uri = '', $message = false, $messagesVar = 'messages')
+	public function unauthorized($uri = '', $message = false, $messagesVar = 'messages')
 	{
-		if (!$message) $message = Lang::get('identify::messages.unauthorized');
+		if (!$message)
+			$message = Lang::get('identify::messages.unauthorized');
+
 		return Redirect::to($uri)->with($messagesVar, array('error' => $message));
 	}
 
@@ -120,10 +142,10 @@ class Identify extends Auth {
 	 * @param  string   $messageVar
 	 * @return boolean
 	 */
-	public static function authorize($roles, $uri = '', $message = false, $messagesVar = 'messages')
+	public function authorize($roles, $uri = '', $message = false, $messagesVar = 'messages')
 	{
-		if (static::isNot($roles))
-			return static::unauthorized($uri, $message, $messagesVar);
+		if ($this->isNot($roles))
+			return $this->unauthorized($uri, $message, $messagesVar);
 
 		return false;
 	}
@@ -133,9 +155,9 @@ class Identify extends Auth {
 	 *
 	 * @param  array    $routeFilters
 	 * @param  boolean  $includeSubRoutes
-	 * @return boolean
+	 * @return void
 	 */
-	public static function setRouteFilters($routeFilters = array(), $includeSubRoutes = true)
+	public function setRouteFilters($routeFilters = array(), $includeSubRoutes = true)
 	{
 		foreach ($routeFilters as $route => $filter) {
 			$ignoreSubRoutes = false;
@@ -158,15 +180,16 @@ class Identify extends Auth {
 	 * @param  string   $activationCode
 	 * @return boolean
 	 */
-	public static function activate($id = 0, $activationCode = '')
+	public function activate($id = 0, $activationCode = '')
 	{
 		$user = User::find($id);
-		if (!empty($user) && !$user->active && (static::is('admin') || $activationCode == $user->activation_code)) {
+		if (!empty($user) && !$user->active && ($this->is('admin') || $activationCode == $user->activation_code)) {
 			$user->active       = true;
 			$user->activated_at = date('Y-m-d H:i:s');
 			$user->save();
 			return true;
 		}
+
 		return false;
 	}
 
@@ -177,18 +200,21 @@ class Identify extends Auth {
 	 * @param  string   $type
 	 * @return boolean
 	 */
-	public static function sendEmail($user, $type)
+	public function sendEmail($user, $type)
 	{
 		foreach (Config::get('identify::emailTypes') as $view => $subject) {
 			if ($type == $view) {
 				$viewLocation = Config::get('identify::viewsLocation').Config::get('identify::viewsLocationEmail').'.';
+
 				Mail::send($viewLocation.$view, array('user' => $user), function($m) use ($user, $subject)
 				{
 					$m->to($user->email, $user->getName())->subject($subject);
 				});
+
 				return true;
 			}
 		}
+
 		return true;
 	}
 
