@@ -15,7 +15,7 @@ Identify
 To install Identify, make sure "regulus/identify" has been added to Laravel 4's `composer.json` file.
 
 	"require": {
-		"regulus/identify": "dev-master"
+		"regulus/identify": "0.3.0"
 	},
 
 Then run `php composer.phar update` from the command line. Composer will install the Identify package.
@@ -31,7 +31,7 @@ Now, all you have to do is register the service provider, set up Identify's alia
 
 And add this to the `aliases` array:
 
-	'Auth' => 'Regulus\Identify\Identify',
+	'Auth' => 'Regulus\Identify\Facade',
 
 You may use 'Identify', or another alias, but 'Auth' is recommended for the sake of simplicity.
 
