@@ -5,8 +5,8 @@
 		A composer package that adds roles to Laravel 4's basic authentication/authorization.
 
 		created by Cody Jassman
-		v0.3.0
-		last updated on July 26, 2014
+		v0.3.1
+		last updated on October 13, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\AuthManager as Auth;
@@ -23,26 +23,46 @@ use Regulus\Identify\User as User;
 class Identify extends Auth {
 
 	/**
-	 * Returns the active user ID for the session, or 0 if the user is not logged in.
+	 * The views location for the current controller.
 	 *
-	 * @param  mixed    $roles
+	 * @var    mixed
+	 */
+	public $user = array();
+
+	/**
+	 * Returns the active user ID for the session, or null if the user is not logged in.
+	 *
 	 * @return boolean
 	 */
 	public function userId()
 	{
 		if (!$this->guest())
-			return Auth::user()->id;
+			return $this->user()->id;
 
-		return 0;
+		return null;
+	}
+
+	/**
+	 * Returns the active user for the session.
+	 *
+	 * @param  mixed    $roles
+	 * @return boolean
+	 */
+	public function user()
+	{
+		if (empty($this->user))
+			$this->user = Auth::user();
+
+		return $this->user;
 	}
 
 	/**
 	 * Attempt to authenticate a user using the given credentials.
 	 *
-	 * @param  array  $credentials
-	 * @param  bool   $remember
-	 * @param  bool   $login
-	 * @return bool
+	 * @param  array    $credentials
+	 * @param  boolean  $remember
+	 * @param  boolean  $login
+	 * @return boolean
 	 */
 	public function attempt(array $credentials = array(), $remember = false, $login = true)
 	{
@@ -195,7 +215,7 @@ class Identify extends Auth {
 	/**
 	 * Email the user based on a specified type.
 	 *
-	 * @param  integer  $id
+	 * @param  object   $user
 	 * @param  string   $type
 	 * @return boolean
 	 */
