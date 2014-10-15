@@ -2,11 +2,12 @@
 
 /*----------------------------------------------------------------------------------------------------------
 	Identify
-		A composer package that adds roles to Laravel 4's basic authentication/authorization.
+		A Laravel 4 authentication/authorization package that adds roles, permissions, access levels,
+		and user states and allows simple to complex user access control implementation.
 
 		created by Cody Jassman
-		v0.3.1
-		last updated on October 13, 2014
+		v0.4.0
+		last updated on October 14, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\AuthManager as Auth;
@@ -23,11 +24,25 @@ use Regulus\Identify\User as User;
 class Identify extends Auth {
 
 	/**
-	 * The views location for the current controller.
+	 * The user object for the currently logged in user.
 	 *
 	 * @var    mixed
 	 */
-	public $user = array();
+	public $user = null;
+
+	/**
+	 * The permissions array for the currently logged in user.
+	 *
+	 * @var    array
+	 */
+	public $permissions = array();
+
+	/**
+	 * The state array for the currently logged in user.
+	 *
+	 * @var    array
+	 */
+	public $state = array();
 
 	/**
 	 * Returns the active user ID for the session, or null if the user is not logged in.
@@ -50,7 +65,7 @@ class Identify extends Auth {
 	 */
 	public function user()
 	{
-		if (empty($this->user))
+		if (is_null($this->user))
 			$this->user = Auth::user();
 
 		return $this->user;
@@ -193,6 +208,124 @@ class Identify extends Auth {
 	}
 
 	/**
+	 * Get the permissions of the currently logged in user.
+	 *
+	 * @return array
+	 */
+	public function getPermissions()
+	{
+		if ($this->guest())
+			return array();
+
+		if (empty($this->permissions))
+			$this->permissions = $this->user()->getPermissions();
+
+		return $this->permissions;
+	}
+
+	/**
+	 * Check if currently logged in user has a particular permission.
+	 *
+	 * @param  string   $permission
+	 * @return boolean
+	 */
+	public function hasPermission($permission)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->hasPermission($permission);
+	}
+
+	/**
+	 * Check if currently logged in user has a particular access level.
+	 *
+	 * @param  integer  $level
+	 * @return boolean
+	 */
+	public function hasAccessLevel($level)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->hasAccessLevel($level);
+	}
+
+	/**
+	 * Check a particular state for currently logged in user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $state
+	 * @param  mixed    $default
+	 * @return boolean
+	 */
+	public function checkState($name, $state = true, $default = false)
+	{
+		if ($this->guest())
+			return $default;
+
+		return $this->user()->checkState($name, $state, $default);
+	}
+
+	/**
+	 * Get a particular state for currently logged in user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $default
+	 * @return mixed
+	 */
+	public function getState($name, $default = null)
+	{
+		if ($this->guest())
+			return $default;
+
+		return $this->user()->getState($name, $default);
+	}
+
+	/**
+	 * Set a particular name for currently logged in user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $state
+	 * @return boolean
+	 */
+	public function setState($name, $state = true)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->setState($name, $state);
+	}
+
+	/**
+	 * Remove a particular name for currently logged in user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $state
+	 * @return boolean
+	 */
+	public function removeState($name, $state = true)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->removeState($name, $state);
+	}
+
+	/**
+	 * Clear state data for currently logged in user.
+	 *
+	 * @return boolean
+	 */
+	public function clearStateData()
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->clearStateData();
+	}
+
+	/**
 	 * Attempt to activate a user account by the user ID and activation code.
 	 *
 	 * @param  integer  $id
@@ -202,10 +335,12 @@ class Identify extends Auth {
 	public function activate($id = 0, $activationCode = '')
 	{
 		$user = User::find($id);
-		if (!empty($user) && !$user->active && ($this->is('admin') || $activationCode == $user->activation_code)) {
+		if (!empty($user) && !$user->active && ($this->is('admin') || $activationCode == $user->activation_code))
+		{
 			$user->active       = true;
 			$user->activated_at = date('Y-m-d H:i:s');
 			$user->save();
+
 			return true;
 		}
 

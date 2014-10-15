@@ -39,6 +39,8 @@ class InstallCommand extends Command {
 	 */
 	public function fire()
 	{
+		$workbench = Config::get('identify::workbench');
+
 		$divider = '----------------------';
 
 		$this->output->writeln('');
@@ -54,7 +56,17 @@ class InstallCommand extends Command {
 		$this->info($divider);
 
 		$this->output->writeln('<info>Migrating DB tables:</info> '.$package);
-		$this->call('migrate', array('--env' => $this->option('env'), '--package' => $package));
+
+		if ($workbench)
+			$prefix = 'workbench';
+		else
+			$prefix = 'vendor';
+
+		$this->call('migrate', [
+			'--env'     => $this->option('env'),
+			'--package' => $package,
+			'--path'    => $prefix.'/regulus/identify/src/migrations',
+		]);
 
 		$this->output->writeln('');
 
@@ -62,14 +74,15 @@ class InstallCommand extends Command {
 		$this->comment('Seeding DB tables...');
 		$this->info($divider);
 
-		$seedTables = array(
+		$seedTables = [
 			'Users',
 			'Roles',
 			'UserRoles',
-		);
+		];
+
 		foreach ($seedTables as $seedTable) {
 			$this->output->writeln('<info>Seeding DB table:</info> '.$seedTable);
-			$this->call('db:seed', array('--class' => $seedTable.'TableSeeder'));
+			$this->call('db:seed', ['--class' => $seedTable.'TableSeeder']);
 		}
 
 		$this->output->writeln('');
@@ -78,7 +91,11 @@ class InstallCommand extends Command {
 		$this->comment('Publishing configuration...');
 		$this->info($divider);
 
-		$this->call('config:publish', array('--env' => $this->option('env'), 'package' => $package, '--path' => 'vendor/'.$package.'/src/config'));
+		$this->call('config:publish', [
+			'--env'   => $this->option('env'),
+			'package' => $package,
+			'--path'  => 'vendor/'.$package.'/src/config',
+		]);
 
 		$this->output->writeln('');
 		$this->info($divider);

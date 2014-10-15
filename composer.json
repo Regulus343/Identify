@@ -1,6 +1,6 @@
 {
 	"name": "regulus/identify",
-	"description": "A composer package that adds roles to Laravel 4's basic authentication/authorization and adds many features. Identify aims to remain a lightweight Authorization package that has a great balance of simplicity, versatility, and ease-of-use.",
+	"description": "A Laravel 4 authentication/authorization package that adds roles, permissions, access levels, and user states and allows simple to complex user access control implementation.",
 	"license": "MIT",
 	"authors": [
 		{

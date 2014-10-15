@@ -1,7 +1,7 @@
 Identify
 ========
 
-**A composer package that adds roles and many other features to Laravel 4's basic authentication/authorization.**
+**A Laravel 4 authentication/authorization package that adds roles, permissions, access levels, and user states and allows simple to complex user access control implementation.**
 
 - [Composer Package Installation](#composer-package-installation)
 - [Installation: Command Line](#command-line-installation)
@@ -15,7 +15,7 @@ Identify
 To install Identify, make sure "regulus/identify" has been added to Laravel 4's `composer.json` file.
 
 	"require": {
-		"regulus/identify": "0.3.0"
+		"regulus/identify": "0.4.0"
 	},
 
 Then run `php composer.phar update` from the command line. Composer will install the Identify package.

@@ -172,4 +172,14 @@ return array(
 		'deleted'             => 'Account Deleted',
 	),
 
+	/*
+	|--------------------------------------------------------------------------
+	| Workbench
+	|--------------------------------------------------------------------------
+	|
+	| Set this to true if the package is being run from Laravel's Workbench.
+	|
+	*/
+	'workbench' => false,
+
 );

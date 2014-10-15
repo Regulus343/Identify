@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\SoftDeletingTrait;
 
 use Illuminate\Support\Facades\Config;
 
+use Regulus\Identify\Permission;
+
 class Role extends Eloquent {
 
 	/**
@@ -31,6 +33,13 @@ class Role extends Eloquent {
 	protected $dates = ['deleted_at'];
 
 	/**
+	 * The permissions array for the role.
+	 *
+	 * @var    array
+	 */
+	public $permissions = array();
+
+	/**
 	 * The constructor which adds the table prefix from the config settings.
 	 *
 	 */
@@ -40,7 +49,7 @@ class Role extends Eloquent {
 	}
 
 	/**
-	 * Belongs to User.
+	 * The users of the role.
 	 *
 	 * @return Collection
 	 */
@@ -51,8 +60,22 @@ class Role extends Eloquent {
 	}
 
 	/**
-	 * Belongs to User.
+	 * The permissions of the role.
 	 *
+	 * @return Collection
+	 */
+	public function rolePermissions()
+	{
+		return $this->belongsToMany('Regulus\Identify\Permission', Config::get('identify::tablePrefix').'role_permissions')
+			->orderBy('display_order')
+			->orderBy('name');
+	}
+
+
+	/**
+	 * Get a select box list of roles.
+	 *
+	 * @param  mixed    $select
 	 * @return array
 	 */
 	public static function getSelectable($select = null)
@@ -70,6 +93,37 @@ class Role extends Eloquent {
 		}
 
 		return $options;
+	}
+
+	/**
+	 * Get the permissions of the role.
+	 *
+	 * @return array
+	 */
+	public function getPermissions()
+	{
+		if (empty($this->permissions)) {
+			$this->permissions = array();
+
+			//get role derived permissions
+			foreach ($this->roles as $role) {
+				foreach ($role->rolePermissions as $permission) {
+					if (!in_array($permission->name, $permissions))
+						$this->permissions[] = $permission->name;
+				}
+			}
+
+			//get access level derived permissions
+			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
+			foreach ($permissions as $permission) {
+				if (!in_array($permission->name, $permissions))
+					$this->permissions[] = $permission->name;
+			}
+
+			asort($this->permissions);
+		}
+
+		return $this->permissions;
 	}
 
 }

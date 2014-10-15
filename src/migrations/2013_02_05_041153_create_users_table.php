@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 use Illuminate\Support\Facades\Config;
@@ -13,7 +14,7 @@ class CreateUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create(Config::get('identify::tablePrefix').'users', function($table)
+		Schema::create(Config::get('identify::tablePrefix').'users', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('username', 36);
@@ -42,6 +43,8 @@ class CreateUsersTable extends Migration {
 			$table->boolean('listed_email');
 
 			/* --------------- */
+
+			$table->integer('access_level');
 
 			$table->string('activation_code')->nullable();
 			$table->string('reset_password_code')->nullable();

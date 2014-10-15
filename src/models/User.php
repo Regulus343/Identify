@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\URL;
 
 use Regulus\Identify\Identify as Auth;
 
+use Regulus\Identify\Permission;
+
 class User extends Eloquent implements UserInterface, RemindableInterface {
 
 	/**
@@ -46,6 +48,27 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	protected $dates = ['deleted_at'];
 
 	/**
+	 * The permissions array for the user.
+	 *
+	 * @var    array
+	 */
+	public $permissions = array();
+
+	/**
+	 * The access level of the user.
+	 *
+	 * @var    array
+	 */
+	public $accessLevel = 0;
+
+	/**
+	 * The state data for the user.
+	 *
+	 * @var    array
+	 */
+	public $stateData = array();
+
+	/**
 	 * The constructor which adds the table prefix from the config settings.
 	 *
 	 */
@@ -55,9 +78,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
-	 * The role of the user.
+	 * The roles of the user.
 	 *
-	 * @var array
+	 * @return Collection
 	 */
 	public function roles()
 	{
@@ -67,9 +90,31 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
+	 * The permissions of the user.
+	 *
+	 * @return Collection
+	 */
+	public function userPermissions()
+	{
+		return $this->belongsToMany('Regulus\Identify\Permission', Config::get('identify::tablePrefix').'user_permissions')
+			->orderBy('display_order')
+			->orderBy('name');
+	}
+
+	/**
+	 * The state that belongs to the user.
+	 *
+	 * @return object
+	 */
+	public function stateItem()
+	{
+		return $this->hasOne('Regulus\Identify\StateItem');
+	}
+
+	/**
 	 * Allow user to be used in polymorphic relationships.
 	 *
-	 * @var array
+	 * @return Collection
 	 */
 	public function content()
 	{
@@ -272,6 +317,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/**
 	 * Get an active user by ID.
 	 *
+	 * @param  integer  $id
 	 * @return object
 	 */
 	public static function getActiveById($id)
@@ -287,16 +333,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/**
 	 * Get a user by their username or email address.
 	 *
+	 * @param  string   $identifier
 	 * @return boolean
 	 */
-	public static function getByUsernameOrEmail($username = '')
+	public static function getByUsernameOrEmail($identifier = '')
 	{
-		$username = trim(strtolower($username));
-		return User::where(function($query) use ($username)
+		$identifier = trim(strtolower($identifier));
+		return User::where(function($query) use ($identifier)
 		{
 			$query
-				->where(DB::raw('lower(username)'), '=', $username)
-				->orWhere(DB::raw('lower(email)'), '=', $username);
+				->where(DB::raw('lower(username)'), '=', $identifier)
+				->orWhere(DB::raw('lower(email)'), '=', $identifier);
 		})->first();
 	}
 
@@ -328,6 +375,257 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function getRememberTokenName()
 	{
 		return 'remember_token';
+	}
+
+	/**
+	 * Get the highest access level assigned to the user, either directly or via the user's roles.
+	 *
+	 * @return integer
+	 */
+	public function getAccessLevel()
+	{
+		$this->accessLevel = 0;
+
+		if ($this->access_level > $accessLevel)
+			$this->accessLevel = $this->access_level;
+
+		foreach ($this->roles as $role) {
+			if ($role->access_level > $accessLevel)
+				$this->accessLevel = $role->access_level;
+		}
+
+		return $this->accessLevel;
+	}
+
+	/**
+	 * Get the permissions of the user.
+	 *
+	 * @return array
+	 */
+	public function getPermissions()
+	{
+		if (empty($this->permissions))
+		{
+			//get user derived permissions
+			foreach ($this->userPermissions as $permission) {
+				if (!in_array($permission->name, $permissions))
+					$this->permissions[] = $permission->name;
+			}
+
+			//get role derived permissions
+			foreach ($this->roles as $role) {
+				foreach ($role->rolePermissions as $permission) {
+					if (!in_array($permission->name, $permissions))
+						$this->permissions[] = $permission->name;
+				}
+			}
+
+			//get access level derived permissions
+			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
+			foreach ($permissions as $permission) {
+				if (!in_array($permission->name, $permissions))
+					$this->permissions[] = $permission->name;
+			}
+
+			asort($this->permissions);
+		}
+
+		return $this->permissions;
+	}
+
+	/**
+	 * Check if a user has a particular permission.
+	 *
+	 * @param  string   $permission
+	 * @return boolean
+	 */
+	public function hasPermission($permission)
+	{
+		return in_array($permission, $this->getPermissions());
+	}
+
+	/**
+	 * Check if a user has a particular access level.
+	 *
+	 * @param  integer  $level
+	 * @return boolean
+	 */
+	public function hasAccessLevel($level)
+	{
+		return $this->getAccessLevel() >= (int) $level;
+	}
+
+	/**
+	 * Get the state data for a user.
+	 *
+	 * @return object
+	 */
+	public function getStateData()
+	{
+		if (empty($this->stateData))
+		{
+			if ($this->stateItem && !is_null($this->stateItem->data))
+				$this->stateData = json_decode($this->stateItem->data);
+			else
+				$this->stateData = (object) array();
+		}
+
+		return $this->stateData;
+	}
+
+	/**
+	 * Check a particular state for a user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $state
+	 * @param  mixed    $default
+	 * @return boolean
+	 */
+	public function checkState($name, $state = true, $default = false)
+	{
+		$stateData = $this->getStateData();
+
+		if (!isset($stateData->{$name}))
+			return $default;
+
+		if (is_array($stateData->{$name}))
+			return is_array($stateData->{$name}) && in_array($state, $stateData->{$name});
+		else
+			return $stateData->{$name} == $state;
+	}
+
+	/**
+	 * Get a particular state for a user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $default
+	 * @return mixed
+	 */
+	public function getState($name, $default = null)
+	{
+		$stateData = $this->getStateData();
+
+		if (!isset($stateData->{$name}))
+			return $default;
+
+		return $stateData->{$name};
+	}
+
+	/**
+	 * Set a particular state for a user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $state
+	 * @return boolean
+	 */
+	public function setState($name, $state = true)
+	{
+		if ($state == "true")
+			$state = 1;
+
+		if ($state == "false")
+			$state = 0;
+
+		if (is_bool($state))
+			$state = (int) $state;
+
+		$stateData = $this->getStateData();
+
+		if (substr($name, -2) == "[]")
+		{
+			$name = str_replace('[]', '', $name);
+
+			if (!isset($stateData->{$name}) || !is_array($stateData->{$name}))
+				$stateData->{$name} = [];
+
+			if (!in_array($state, $stateData->{$name}))
+				$stateData->{$name}[] = $state;
+
+		} else {
+			$stateData->{$name} = $state;
+		}
+
+		if (!$this->stateItem) {
+			$this->stateItem = new StateItem;
+			$this->stateItem->user_id = $this->id;
+		}
+
+		$this->stateItem->data = json_encode($stateData);
+		$this->stateItem->save();
+
+		return true;
+	}
+
+	/**
+	 * Remove a particular state for a user.
+	 *
+	 * @param  string   $name
+	 * @param  mixed    $state
+	 * @return boolean
+	 */
+	public function removeState($name, $state = true)
+	{
+		if ($state == "true")
+			$state = 1;
+
+		if ($state == "false")
+			$state = 0;
+
+		if (is_bool($state))
+			$state = (int) $state;
+
+		$stateData = $this->getStateData();
+
+		if (substr($name, -2) == "[]")
+		{
+			$name = str_replace('[]', '', $name);
+
+			if (!isset($stateData->{$name}) || !is_array($stateData->{$name}))
+				$stateData->{$name} = [];
+
+			if (in_array($state, $stateData->{$name}))
+			{
+				foreach ($stateData->{$name} as $key => $value) {
+					if ($value == $state)
+						unset($stateData->{$name}[$key]);
+				}
+
+				if (empty($stateData->{$name}))
+					unset($stateData->{$name});
+			}
+		} else {
+			if (isset($stateData->{$name}))
+				unset($stateData->{$name});
+		}
+
+		if (!$this->stateItem) {
+			$this->stateItem = new StateItem;
+			$this->stateItem->user_id = $this->id;
+		}
+
+		$this->stateItem->data = json_encode($stateData);
+
+		if ($this->stateItem->data == "{}")
+			$this->stateItem->data = null;
+
+		$this->stateItem->save();
+
+		return true;
+	}
+
+	/**
+	 * Clear state data for a user.
+	 *
+	 * @return boolean
+	 */
+	public function clearStateData($state)
+	{
+		if (!$this->stateItem)
+			return false;
+
+		$this->stateItem->data = null;
+		$this->stateItem->save();
+		return true;
 	}
 
 }

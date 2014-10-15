@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 
 use Illuminate\Support\Facades\Config;
 
-class CreateUserRolesTable extends Migration {
+class CreateUserStatesTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,13 +14,12 @@ class CreateUserRolesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create(Config::get('identify::tablePrefix').'user_roles', function(Blueprint $table)
+		Schema::create(Config::get('identify::tablePrefix').'user_states', function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('user_id');
-			$table->integer('role_id');
+			$table->text('data')->nullable();
 			$table->timestamps();
-			$table->softDeletes();
 		});
 	}
 
@@ -31,7 +30,7 @@ class CreateUserRolesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop(Config::get('identify::tablePrefix').'user_roles');
+		Schema::drop(Config::get('identify::tablePrefix').'user_states');
 	}
 
 }
