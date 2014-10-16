@@ -488,7 +488,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if (!isset($stateData->{$name}))
 			return $default;
 
-		if (is_array($stateData->{$name}))
+		if (is_array($stateData->{$name}) || is_object($stateData->{$name}))
 			return is_array($stateData->{$name}) && in_array($state, $stateData->{$name});
 		else
 			return $stateData->{$name} == $state;
