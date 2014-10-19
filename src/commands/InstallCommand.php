@@ -77,6 +77,7 @@ class InstallCommand extends Command {
 		$seedTables = [
 			'Users',
 			'Roles',
+			'Permissions',
 		];
 
 		foreach ($seedTables as $seedTable) {

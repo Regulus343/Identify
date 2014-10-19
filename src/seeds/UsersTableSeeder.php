@@ -12,6 +12,7 @@ class UsersTableSeeder extends Seeder {
 		$table = 'users';
 
 		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
+		DB::table(Config::get('identify::tablePrefix').'user_roles')->truncate();
 
 		$defaultPassword   = Hash::make('password');
 		$dateCreated       = date('Y-m-d H:i:s');

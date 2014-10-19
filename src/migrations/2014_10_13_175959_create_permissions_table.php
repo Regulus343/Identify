@@ -22,6 +22,7 @@ class CreatePermissionsTable extends Migration {
 			$table->string('name');
 			$table->text('description')->nullable();
 			$table->integer('access_level');
+			$table->integer('display_order');
 			$table->timestamps();
 			$table->softDeletes();
 		});

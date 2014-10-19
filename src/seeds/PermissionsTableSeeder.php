@@ -1,6 +1,6 @@
 <?php
 
-class RolesTableSeeder extends Seeder {
+class PermissionsTableSeeder extends Seeder {
 
 	/**
 	 * Run the database seeds.
@@ -9,13 +9,13 @@ class RolesTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		$table = 'roles';
+		$table = 'permissions';
 
 		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
 
 		$dateCreated = date('Y-m-d H:i:s');
 
-		$roles = [
+		$permissions = [
 			[
 				'permission'     => 'admin',
 				'name'           => 'Administration',
@@ -23,25 +23,10 @@ class RolesTableSeeder extends Seeder {
 				'created_at'     => $dateCreated,
 				'updated_at'     => $dateCreated,
 			],
-			[
-				'role'           => 'mod',
-				'name'           => 'Moderator',
-				'display_order'  => 2,
-				'created_at'     => $dateCreated,
-				'updated_at'     => $dateCreated,
-			],
-			[
-				'role'           => 'member',
-				'name'           => 'Member',
-				'display_order'  => 3,
-				'default'        => true,
-				'created_at'     => $dateCreated,
-				'updated_at'     => $dateCreated,
-			],
 		];
 
-		foreach ($roles as $role) {
-			DB::table(Config::get('identify::tablePrefix').$table)->insert($role);
+		foreach ($permissions as $permission) {
+			DB::table(Config::get('identify::tablePrefix').$table)->insert($permission);
 		}
 	}
 
