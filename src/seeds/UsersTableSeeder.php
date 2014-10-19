@@ -26,6 +26,7 @@ class UsersTableSeeder extends Seeder {
 				'created_at'   => $dateCreated,
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
+				'roles'        => [1],
 			],
 			[
 				'username'     => 'TestUser',
@@ -37,6 +38,7 @@ class UsersTableSeeder extends Seeder {
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
 				'test'         => true,
+				'roles'        => [2],
 			],
 			[
 				'username'     => 'TestUser2',
@@ -48,6 +50,7 @@ class UsersTableSeeder extends Seeder {
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
 				'test'         => true,
+				'roles'        => [3],
 			],
 			[
 				'username'     => 'TestUser3',
@@ -59,11 +62,28 @@ class UsersTableSeeder extends Seeder {
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
 				'test'         => true,
+				'roles'        => [3],
 			],
 		];
 
 		foreach ($users as $user) {
-			DB::table(Config::get('identify::tablePrefix').$table)->insert($user);
+			$roles = isset($user['roles']) ? $user['roles'] : [];
+
+			if (isset($user['roles']))
+				unset($user['roles']);
+
+			$userId = DB::table(Config::get('identify::tablePrefix').$table)->insertGetId($user);
+
+			foreach ($roles as $roleId) {
+				$userRole = [
+					'user_id'    => $userId,
+					'role_id'    => $roleId,
+					'created_at' => $dateCreated,
+					'updated_at' => $dateCreated,
+				];
+
+				DB::table(Config::get('identify::tablePrefix').'user_roles')->insert($userRole);
+			}
 		}
 	}
 
