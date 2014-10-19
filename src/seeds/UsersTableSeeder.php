@@ -16,8 +16,8 @@ class UsersTableSeeder extends Seeder {
 		$defaultPassword   = Hash::make('password');
 		$dateCreated       = date('Y-m-d H:i:s');
 
-		$users = array(
-			array(
+		$users = [
+			[
 				'username'     => 'Admin',
 				'password'     => $defaultPassword,
 				'email'        => 'admin@localhost.com',
@@ -26,8 +26,8 @@ class UsersTableSeeder extends Seeder {
 				'created_at'   => $dateCreated,
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
-			),
-			array(
+			],
+			[
 				'username'     => 'TestUser',
 				'password'     => $defaultPassword,
 				'email'        => 'test@localhost.com',
@@ -37,8 +37,8 @@ class UsersTableSeeder extends Seeder {
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
 				'test'         => true,
-			),
-			array(
+			],
+			[
 				'username'     => 'TestUser2',
 				'password'     => $defaultPassword,
 				'email'        => 'test2@localhost.com',
@@ -48,8 +48,8 @@ class UsersTableSeeder extends Seeder {
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
 				'test'         => true,
-			),
-			array(
+			],
+			[
 				'username'     => 'TestUser3',
 				'password'     => $defaultPassword,
 				'email'        => 'test3@localhost.com',
@@ -59,8 +59,8 @@ class UsersTableSeeder extends Seeder {
 				'updated_at'   => $dateCreated,
 				'activated_at' => $dateCreated,
 				'test'         => true,
-			),
-		);
+			],
+		];
 
 		foreach ($users as $user) {
 			DB::table(Config::get('identify::tablePrefix').$table)->insert($user);

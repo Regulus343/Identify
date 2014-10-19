@@ -15,30 +15,30 @@ class RolesTableSeeder extends Seeder {
 
 		$dateCreated = date('Y-m-d H:i:s');
 
-		$roles = array(
-			array(
+		$roles = [
+			[
 				'role'           => 'admin',
 				'name'           => 'Administrator',
 				'display_order'  => 1,
 				'created_at'     => $dateCreated,
 				'updated_at'     => $dateCreated,
-			),
-			array(
+			],
+			[
 				'role'           => 'mod',
 				'name'           => 'Moderator',
 				'display_order'  => 2,
 				'created_at'     => $dateCreated,
 				'updated_at'     => $dateCreated,
-			),
-			array(
+			],
+			[
 				'role'           => 'member',
 				'name'           => 'Member',
 				'display_order'  => 3,
 				'default'        => true,
 				'created_at'     => $dateCreated,
 				'updated_at'     => $dateCreated,
-			),
-		);
+			],
+		];
 
 		foreach ($roles as $role) {
 			DB::table(Config::get('identify::tablePrefix').$table)->insert($role);

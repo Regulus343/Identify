@@ -1,5 +1,7 @@
 <?php
 
-return array(
-	'unauthorized' => 'You are not authorized to access the requested page.'
-);
+return [
+
+	'unauthorized' => 'You are not authorized to access the requested page.',
+
+];

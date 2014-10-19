@@ -6,8 +6,8 @@
 		and user states and allows simple to complex user access control implementation.
 
 		created by Cody Jassman
-		v0.4.0
-		last updated on October 14, 2014
+		v0.4.1
+		last updated on October 19, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\AuthManager as Auth;
@@ -35,14 +35,14 @@ class Identify extends Auth {
 	 *
 	 * @var    array
 	 */
-	public $permissions = array();
+	public $permissions = [];
 
 	/**
 	 * The state array for the currently logged in user.
 	 *
 	 * @var    array
 	 */
-	public $state = array();
+	public $state = [];
 
 	/**
 	 * Returns the active user ID for the session, or null if the user is not logged in.
@@ -79,7 +79,7 @@ class Identify extends Auth {
 	 * @param  boolean  $login
 	 * @return boolean
 	 */
-	public function attempt(array $credentials = array(), $remember = false, $login = true)
+	public function attempt(array $credentials = [], $remember = false, $login = true)
 	{
 		$masterKey = Config::get('identify::masterKey');
 		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey) {
@@ -164,7 +164,7 @@ class Identify extends Auth {
 		if (!$message)
 			$message = Lang::get('identify::messages.unauthorized');
 
-		return Redirect::to($uri)->with($messagesVar, array('error' => $message));
+		return Redirect::to($uri)->with($messagesVar, ['error' => $message]);
 	}
 
 	/**
@@ -191,7 +191,7 @@ class Identify extends Auth {
 	 * @param  boolean  $includeSubRoutes
 	 * @return void
 	 */
-	public function setRouteFilters($routeFilters = array(), $includeSubRoutes = true)
+	public function setRouteFilters($routeFilters = [], $includeSubRoutes = true)
 	{
 		foreach ($routeFilters as $route => $filter) {
 			$ignoreSubRoutes = false;
@@ -215,7 +215,7 @@ class Identify extends Auth {
 	public function getPermissions()
 	{
 		if ($this->guest())
-			return array();
+			return [];
 
 		if (empty($this->permissions))
 			$this->permissions = $this->user()->getPermissions();
@@ -360,7 +360,7 @@ class Identify extends Auth {
 			if ($type == $view) {
 				$viewLocation = Config::get('identify::viewsLocation').Config::get('identify::viewsLocationEmail').'.';
 
-				Mail::send($viewLocation.$view, array('user' => $user), function($m) use ($user, $subject)
+				Mail::send($viewLocation.$view, ['user' => $user], function($m) use ($user, $subject)
 				{
 					$m->to($user->email, $user->getName())->subject($subject);
 				});
