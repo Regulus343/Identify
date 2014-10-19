@@ -71,7 +71,6 @@ class Role extends Eloquent {
 			->orderBy('name');
 	}
 
-
 	/**
 	 * Get a select box list of roles.
 	 *
@@ -98,9 +97,10 @@ class Role extends Eloquent {
 	/**
 	 * Get the permissions of the role.
 	 *
+	 * @param  string   $field
 	 * @return array
 	 */
-	public function getPermissions()
+	public function getPermissions($field = 'permission')
 	{
 		if (empty($this->permissions)) {
 			$this->permissions = array();
@@ -108,22 +108,32 @@ class Role extends Eloquent {
 			//get role derived permissions
 			foreach ($this->roles as $role) {
 				foreach ($role->rolePermissions as $permission) {
-					if (!in_array($permission->name, $permissions))
-						$this->permissions[] = $permission->name;
+					if (!in_array($permission->{$field}, $permissions))
+						$this->permissions[] = $permission->{$field};
 				}
 			}
 
 			//get access level derived permissions
 			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
 			foreach ($permissions as $permission) {
-				if (!in_array($permission->name, $permissions))
-					$this->permissions[] = $permission->name;
+				if (!in_array($permission->{$field}, $permissions))
+					$this->permissions[] = $permission->{$field};
 			}
 
 			asort($this->permissions);
 		}
 
 		return $this->permissions;
+	}
+
+	/**
+	 * Get the permission names of the role.
+	 *
+	 * @return array
+	 */
+	public function getPermissionNames()
+	{
+		return $this->getPermissions('name');
 	}
 
 }

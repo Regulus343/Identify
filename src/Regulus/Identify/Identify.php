@@ -6,7 +6,7 @@
 		and user states and allows simple to complex user access control implementation.
 
 		created by Cody Jassman
-		v0.4.1
+		v0.4.2
 		last updated on October 19, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
@@ -210,31 +210,56 @@ class Identify extends Auth {
 	/**
 	 * Get the permissions of the currently logged in user.
 	 *
+	 * @param  string   $field
 	 * @return array
 	 */
-	public function getPermissions()
+	public function getPermissions($field = 'permission')
 	{
 		if ($this->guest())
 			return [];
 
 		if (empty($this->permissions))
-			$this->permissions = $this->user()->getPermissions();
+			$this->permissions = $this->user()->getPermissions($field);
 
 		return $this->permissions;
 	}
 
 	/**
+	 * Get the permission names of the currently logged in user.
+	 *
+	 * @return array
+	 */
+	public function getPermissionNames()
+	{
+		return $this->getPermissions('name');
+	}
+
+	/**
 	 * Check if currently logged in user has a particular permission.
 	 *
-	 * @param  string   $permission
+	 * @param  mixed    $permissions
 	 * @return boolean
 	 */
-	public function hasPermission($permission)
+	public function hasPermission($permissions)
 	{
 		if ($this->guest())
 			return false;
 
-		return $this->user()->hasPermission($permission);
+		return $this->user()->hasPermission($permissions);
+	}
+
+	/**
+	 * Check if currently logged in user has a set of specified permissions.
+	 *
+	 * @param  mixed    $permissions
+	 * @return boolean
+	 */
+	public function hasPermissions($permissions)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->hasPermissions($permissions);
 	}
 
 	/**

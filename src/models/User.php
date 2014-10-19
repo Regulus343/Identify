@@ -400,31 +400,32 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	/**
 	 * Get the permissions of the user.
 	 *
+	 * @param  string   $field
 	 * @return array
 	 */
-	public function getPermissions()
+	public function getPermissions($field = 'permission')
 	{
 		if (empty($this->permissions))
 		{
 			//get user derived permissions
 			foreach ($this->userPermissions as $permission) {
-				if (!in_array($permission->name, $permissions))
-					$this->permissions[] = $permission->name;
+				if (!in_array($permission->{$field}, $permissions))
+					$this->permissions[] = $permission->{$field};
 			}
 
 			//get role derived permissions
 			foreach ($this->roles as $role) {
 				foreach ($role->rolePermissions as $permission) {
-					if (!in_array($permission->name, $permissions))
-						$this->permissions[] = $permission->name;
+					if (!in_array($permission->{$field}, $permissions))
+						$this->permissions[] = $permission->{$field};
 				}
 			}
 
 			//get access level derived permissions
 			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
 			foreach ($permissions as $permission) {
-				if (!in_array($permission->name, $permissions))
-					$this->permissions[] = $permission->name;
+				if (!in_array($permission->{$field}, $permissions))
+					$this->permissions[] = $permission->{$field};
 			}
 
 			asort($this->permissions);
@@ -434,14 +435,51 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	}
 
 	/**
+	 * Get the permission names of the user.
+	 *
+	 * @return array
+	 */
+	public function getPermissionNames()
+	{
+		return $this->getPermissions('name');
+	}
+
+	/**
 	 * Check if a user has a particular permission.
 	 *
-	 * @param  string   $permission
+	 * @param  mixed    $permissions
 	 * @return boolean
 	 */
-	public function hasPermission($permission)
+	public function hasPermission($permissions)
 	{
-		return in_array($permission, $this->getPermissions());
+		if (is_string($permissions))
+			$permissions = [$permissions];
+
+		foreach ($permissions as $permission) {
+			if (in_array($permission, $this->getPermissions()))
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a user has a set of specified permissions.
+	 *
+	 * @param  mixed    $permissions
+	 * @return boolean
+	 */
+	public function hasPermissions($permissions)
+	{
+		if (is_string($permissions))
+			$permissions = [$permissions];
+
+		foreach ($permissions as $permission) {
+			if (!in_array($permission, $this->getPermissions()))
+				return false;
+		}
+
+		return true;
 	}
 
 	/**
