@@ -74,6 +74,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function __construct()
 	{
+		parent::__construct();
+
 		$this->table = Config::get('identify::tablePrefix').$this->table;
 	}
 

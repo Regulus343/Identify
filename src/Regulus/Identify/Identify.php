@@ -2,12 +2,12 @@
 
 /*----------------------------------------------------------------------------------------------------------
 	Identify
-		A Laravel 4 authentication/authorization package that adds roles, permissions, access levels,
+		A Laravel authentication/authorization package that adds roles, permissions, access levels,
 		and user states and allows simple to complex user access control implementation.
 
 		created by Cody Jassman
-		v0.4.2
-		last updated on October 19, 2014
+		v0.4.3
+		last updated on December 20, 2014
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\AuthManager as Auth;
