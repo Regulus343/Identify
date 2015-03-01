@@ -1,5 +1,9 @@
 <?php
 
+use Illuminate\Database\Seeder;
+
+use Regulus\Identify\Facade as Auth;
+
 class PermissionsTableSeeder extends Seeder {
 
 	/**
@@ -9,24 +13,25 @@ class PermissionsTableSeeder extends Seeder {
 	 */
 	public function run()
 	{
-		$table = 'permissions';
+		$table = Auth::getTableName('permissions');
 
-		DB::table(Config::get('identify::tablePrefix').$table)->truncate();
+		DB::table($table)->truncate();
 
-		$dateCreated = date('Y-m-d H:i:s');
+		$timestamp = date('Y-m-d H:i:s');
 
 		$permissions = [
 			[
-				'permission'     => 'admin',
-				'name'           => 'Administration',
-				'display_order'  => 1,
-				'created_at'     => $dateCreated,
-				'updated_at'     => $dateCreated,
+				'permission'    => 'admin',
+				'name'          => 'Administration',
+				'display_order' => 1,
+				'created_at'    => $timestamp,
+				'updated_at'    => $timestamp,
 			],
 		];
 
-		foreach ($permissions as $permission) {
-			DB::table(Config::get('identify::tablePrefix').$table)->insert($permission);
+		foreach ($permissions as $permission)
+		{
+			DB::table($table)->insert($permission);
 		}
 	}
 

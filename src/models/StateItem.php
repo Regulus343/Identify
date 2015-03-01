@@ -1,10 +1,12 @@
-<?php namespace Regulus\Identify;
+<?php namespace Regulus\Identify\Models;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\Config;
 
-class StateItem extends Eloquent {
+use Regulus\Identify\Facade as Auth;
+
+class StateItem extends Model {
 
 	/**
 	 * The database table used by the model.
@@ -18,7 +20,7 @@ class StateItem extends Eloquent {
 	 *
 	 * @var array
 	 */
-	protected $guarded = array('id');
+	protected $guarded = ['id'];
 
 	/**
 	 * The constructor which adds the table prefix from the config settings.
@@ -28,7 +30,7 @@ class StateItem extends Eloquent {
 	{
 		parent::__construct();
 
-		$this->table = Config::get('identify::tablePrefix').$this->table;
+		$this->table = Auth::getTableName($this->table);
 	}
 
 	/**
@@ -38,7 +40,7 @@ class StateItem extends Eloquent {
 	 */
 	public function user()
 	{
-		return $this->belongsTo('Regulus\Identify\User');
+		return $this->belongsTo(config('auth.model'));
 	}
 
 }

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-use Illuminate\Support\Facades\Config;
+use Regulus\Identify\Facade as Auth;
 
 class CreateUserStatesTable extends Migration {
 
@@ -14,7 +14,7 @@ class CreateUserStatesTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create(Config::get('identify::tablePrefix').'user_states', function(Blueprint $table)
+		Schema::create(Auth::getTableName('user_states'), function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->integer('user_id');
@@ -30,7 +30,7 @@ class CreateUserStatesTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop(Config::get('identify::tablePrefix').'user_states');
+		Schema::drop(Auth::getTableName('user_states'));
 	}
 
 }

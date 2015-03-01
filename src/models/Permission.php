@@ -1,11 +1,16 @@
-<?php namespace Regulus\Identify;
+<?php namespace Regulus\Identify\Models;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Illuminate\Database\Eloquent\Model;
+
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\Config;
 
-class Permission extends Eloquent {
+use Regulus\Identify\Facade as Auth;
+
+class Permission extends Model {
+
+	use SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -19,15 +24,13 @@ class Permission extends Eloquent {
 	 *
 	 * @var array
 	 */
-	protected $guarded = array('id');
+	protected $guarded = ['id'];
 
 	/**
 	 * Enable soft delete for the model.
 	 *
 	 * @var array
 	 */
-	use SoftDeletingTrait;
-
 	protected $dates = ['deleted_at'];
 
 	/**
@@ -38,7 +41,7 @@ class Permission extends Eloquent {
 	{
 		parent::__construct();
 
-		$this->table = Config::get('identify::tablePrefix').$this->table;
+		$this->table = Auth::getTableName($this->table);
 	}
 
 	/**
@@ -48,7 +51,7 @@ class Permission extends Eloquent {
 	 */
 	public function users()
 	{
-		return $this->belongsToMany('Regulus\Identify\User', Config::get('identify::tablePrefix').'user_permissions')
+		return $this->belongsToMany(config('auth.model'), Auth::getTableName('user_permissions'))
 			->orderBy('username');
 	}
 
@@ -59,7 +62,7 @@ class Permission extends Eloquent {
 	 */
 	public function roles()
 	{
-		return $this->belongsToMany('Regulus\Identify\Role', Config::get('identify::tablePrefix').'role_permissions')
+		return $this->belongsToMany('Regulus\Identify\Models\Role', Auth::getTableName('role_permissions'))
 			->orderBy('name');
 	}
 
@@ -72,13 +75,14 @@ class Permission extends Eloquent {
 	public static function getSelectable($select = null)
 	{
 		if (is_null($select) || !is_array($select) || count($select) == 0)
-			$select = array('id', 'name');
+			$select = ['id', 'name'];
 
 		if (count($select) == 1)
 			$select[1] = $select[0];
 
-		$permissions   = static::orderBy('name')->get();
-		$options = array();
+		$permissions = static::orderBy('name')->get();
+		$options     = [];
+
 		foreach ($permissions as $permission) {
 			$options[$permission->{$select[0]}] = $permission->{$select[1]};
 		}

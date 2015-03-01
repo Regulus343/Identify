@@ -2,17 +2,16 @@
 
 /*----------------------------------------------------------------------------------------------------------
 	Identify
-		A Laravel authentication/authorization package that adds roles, permissions, access levels,
-		and user states and allows simple to complex user access control implementation.
+		A Laravel 5 authentication/authorization package that adds roles, permissions, access levels,
+		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.4.3
-		last updated on December 20, 2014
+		v0.8.0
+		last updated on March 1, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\AuthManager as Auth;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -45,6 +44,27 @@ class Identify extends Auth {
 	public $state = [];
 
 	/**
+	 * Create a new Identify instance.
+	 *
+	 * @param  \Illuminate\Foundation\Application  $app
+	 * @return void
+	 */
+	public function __construct($app)
+	{
+		$this->app = $app;
+	}
+
+	/**
+	 * Adds the table prefix to the auth tables based on the "auth.table" config variable.
+	 *
+	 * @return string
+	 */
+	public function getTableName($name = 'users')
+	{
+		return str_replace('users', $name, config('auth.table'));
+	}
+
+	/**
 	 * Returns the active user ID for the session, or null if the user is not logged in.
 	 *
 	 * @return boolean
@@ -66,7 +86,7 @@ class Identify extends Auth {
 	public function user()
 	{
 		if (is_null($this->user))
-			$this->user = Auth::user();
+			$this->user = static::user();
 
 		return $this->user;
 	}
@@ -81,16 +101,21 @@ class Identify extends Auth {
 	 */
 	public function attempt(array $credentials = [], $remember = false, $login = true)
 	{
-		$masterKey = Config::get('identify::masterKey');
-		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey) {
+		$masterKey = config('auth.master_key');
+
+		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey)
+		{
 			$user = User::where('username', trim($credentials['username']))->first();
-			if ($user) {
-				Auth::login($user);
+
+			if ($user)
+			{
+				static::login($user);
+
 				return true;
 			}
 		}
 
-		return Auth::attempt($credentials, $remember, $login);
+		return static::attempt($credentials, $remember, $login);
 	}
 
 	/**
@@ -106,8 +131,9 @@ class Identify extends Auth {
 		$allowed = false;
 		$matches = 0;
 
-		if (Auth::check()) {
-			$userRoles = Auth::user()->roles;
+		if (static::check())
+		{
+			$userRoles = static::user()->roles;
 
 			if (!is_array($roles))
 				$roles = [$roles];
@@ -381,13 +407,17 @@ class Identify extends Auth {
 	 */
 	public function sendEmail($user, $type)
 	{
-		foreach (Config::get('identify::emailTypes') as $view => $subject) {
-			if ($type == $view) {
-				$viewLocation = Config::get('identify::viewsLocation').Config::get('identify::viewsLocationEmail').'.';
+		foreach (config('auth.email_types') as $view => $subject)
+		{
+			if ($type == $view)
+			{
+				$viewLocation = config('auth.views_location').config('auth.views_location_email').'.';
 
-				Mail::send($viewLocation.$view, ['user' => $user], function($m) use ($user, $subject)
+				Mail::send($viewLocation.$view, ['user' => $user], function($mail) use ($user, $subject)
 				{
-					$m->to($user->email, $user->getName())->subject($subject);
+					$mail
+						->to($user->email, $user->getName())
+						->subject($subject);
 				});
 
 				return true;

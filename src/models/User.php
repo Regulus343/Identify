@@ -1,21 +1,26 @@
-<?php namespace Regulus\Identify;
+<?php namespace Regulus\Identify\Models;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Auth\UserInterface;
-use Illuminate\Auth\Reminders\RemindableInterface;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
-use Regulus\Identify\Identify as Auth;
+use Regulus\Identify\Facade as Auth;
 
 use Regulus\Identify\Permission;
 
-class User extends Eloquent implements UserInterface, RemindableInterface {
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
+
+	use Authenticatable, CanResetPassword, SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -29,22 +34,20 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var array
 	 */
-	protected $hidden = array('password');
+	protected $hidden = ['password'];
 
 	/**
 	 * The attributes that cannot be updated.
 	 *
 	 * @var array
 	 */
-	protected $guarded = array('id');
+	protected $guarded = ['id'];
 
 	/**
 	 * Enable soft delete for the model.
 	 *
 	 * @var array
 	 */
-	use SoftDeletingTrait;
-
 	protected $dates = ['deleted_at'];
 
 	/**
@@ -52,7 +55,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var    array
 	 */
-	public $permissions = array();
+	public $permissions = [];
 
 	/**
 	 * The access level of the user.
@@ -66,7 +69,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @var    array
 	 */
-	public $stateData = array();
+	public $stateData = [];
 
 	/**
 	 * The constructor which adds the table prefix from the config settings.
@@ -76,7 +79,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		parent::__construct();
 
-		$this->table = Config::get('identify::tablePrefix').$this->table;
+		$this->table = Auth::getTableName($this->table);
 	}
 
 	/**
@@ -86,7 +89,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function roles()
 	{
-		return $this->belongsToMany('Regulus\Identify\Role', Config::get('identify::tablePrefix').'user_roles')
+		return $this->belongsToMany('Regulus\Identify\Models\Role', Auth::getTableName('user_roles'))
 			->orderBy('display_order')
 			->orderBy('name');
 	}
@@ -98,7 +101,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function userPermissions()
 	{
-		return $this->belongsToMany('Regulus\Identify\Permission', Config::get('identify::tablePrefix').'user_permissions')
+		return $this->belongsToMany('Regulus\Identify\Models\Permission', Auth::getTableName('user_permissions'))
 			->orderBy('display_order')
 			->orderBy('name');
 	}
@@ -110,7 +113,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 */
 	public function stateItem()
 	{
-		return $this->hasOne('Regulus\Identify\StateItem');
+		return $this->hasOne('Regulus\Identify\Models\StateItem');
 	}
 
 	/**
@@ -206,16 +209,16 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		$picture = URL::asset('assets/images/display-pic-default.png');
 
-		if ( ! $thumbnail) {
-			$file = Config::get('identify::pathPicture').Config::get('identify::filenamePicture');
-		} else {
-			$file = Config::get('identify::pathPictureThumbnail').Config::get('identify::filenamePictureThumbnail');
-		}
-		$file = str_replace(':userID', $this->id, $file);
+		if (!$thumbnail)
+			$file = config('auth.path_picture').config('auth.filename_picture');
+		else
+			$file = config('auth.path_picture_thumbnail').config('auth.filename_picture_thumbnail');
 
-		if (is_file($file)) {
+		$file = str_replace(':userId', $this->id, $file);
+
+		if (is_file($file))
 			$picture = URL::to($file);
-		}
+
 		return $picture;
 	}
 
@@ -224,14 +227,17 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	 *
 	 * @return string
 	 */
-	public function getName()
+	public function getName($format = 'F L')
 	{
-		$name = $this->first_name;
-		if ($this->last_name != "") {
-			if ($name != "") $name .= " ";
-			$name .= $this->last_name;
-		}
-		return $name;
+		$name = str_replace('F', '{first}', $name);
+		$name = str_replace('L', '{last}', $name);
+		$name = str_replace('U', '{user}', $name);
+
+		$name = str_replace('{first}', $this->first_name, $name);
+		$name = str_replace('{last}', $this->last_name, $name);
+		$name = str_replace('{user}', $this->username, $name);
+
+		return trim($name);
 	}
 
 	/**
@@ -244,64 +250,60 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public static function activate($id = 0, $activationCode = '')
 	{
 		$user = User::find($id);
-		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code)) {
+
+		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code))
+		{
 			$user->activated_at = date('Y-m-d H:i:s');
 			$user->save();
+
 			return true;
 		}
+
 		return false;
 	}
 
 	/**
 	 * Create a new user account.
 	 *
-	 * @return boolean
+	 * @param  mixed    $input
+	 * @return User
 	 */
-	public static function createAccount()
+	public static function createAccount($input = null)
 	{
-		//check for role
-		if (Auth::is('admin')) {
-			$roleName = Input::get('role');
-		} else {
-			$roleName = "Member";
-		}
-		$role = Role::where('name', '=', $roleName)->first();
-		if (empty($role)) return false;
+		//get input values
+		if (is_null($input))
+			$input = Input::all();
 
-		$user = new static;
-		$user->updateAccount('create');
+		//check for role
+		$roleId = Auth::is('admin') && isset($input['role_id']) ? $input['role_id'] : null;
+		$role   = Role::find($roleId);
+
+		if (empty($role) || is_null($roleId))
+			$role = Role::where('default', true)->orderBy('id')->first();
+
+		//format name, username, and email address
+		if (isset($input['first_name']))
+			$input['first_name'] = ucfirst(trim($input['first_name']));
+
+		if (isset($input['last_name']))
+			$input['last_name'] = ucfirst(trim($input['last_name']));
+
+		if (isset($input['username']))
+			$input['username'] = trim($input['username']);
+
+		if (isset($input['email']))
+			$input['email'] = trim($input['email']);
+
+		//create user
+		$user = static::create($input);
 
 		//add user role
-		$userRole = new UserRole;
-		$userRole->user_id = $user->id;
-		$userRole->role_id = $role->id;
-		$userRole->save();
+		$user->roles()->sync([$roleId]);
 
-		//send account activation email to registrant
+		//send account activation email to user
 		Auth::sendEmail($user, 'signup_confirmation');
 
 		return $user;
-	}
-
-	/**
-	 * Update a user account.
-	 *
-	 * @return boolean
-	 */
-	public function updateAccount($types = 'standard')
-	{
-		$dataSetup = Config::get('identify::dataSetup');
-		if (is_string($types)) $types = array($types);
-		foreach ($types as $type) {
-			if (isset($dataSetup[$type])) {
-				foreach ($dataSetup[$type] as $field => $value) {
-					$this->{$field} = $value;
-				}
-			}
-		}
-
-		$this->save();
-		return true;
 	}
 
 	/**
@@ -312,7 +314,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public function resetPasswordCode()
 	{
 		$this->updateAccount('passwordReset');
+
 		Auth::sendEmail($this, 'reset_password');
+
 		return true;
 	}
 
@@ -326,9 +330,9 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	{
 		return static::orderBy('id')
 			->where('id', $id)
-			->where('activated_at', '!=', null)
-			->where('banned_at', null)
-			->where('deleted_at', null)
+			->whereNotNull('activated_at')
+			->whereNull('banned_at')
+			->whereNull('deleted_at')
 			->first();
 	}
 
@@ -341,12 +345,13 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 	public static function getByUsernameOrEmail($identifier = '')
 	{
 		$identifier = trim(strtolower($identifier));
+
 		return User::where(function($query) use ($identifier)
-		{
-			$query
-				->where(DB::raw('lower(username)'), '=', $identifier)
-				->orWhere(DB::raw('lower(email)'), '=', $identifier);
-		})->first();
+			{
+				$query
+					->where(DB::raw('lower(username)'), $identifier)
+					->orWhere(DB::raw('lower(email)'), $identifier);
+			})->first();
 	}
 
 	/**
@@ -391,7 +396,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if ($this->access_level > $accessLevel)
 			$this->accessLevel = $this->access_level;
 
-		foreach ($this->roles as $role) {
+		foreach ($this->roles as $role)
+		{
 			if ($role->access_level > $accessLevel)
 				$this->accessLevel = $role->access_level;
 		}
@@ -410,14 +416,16 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if (empty($this->permissions))
 		{
 			//get user derived permissions
-			foreach ($this->userPermissions as $permission) {
+			foreach ($this->userPermissions as $permission)
+			{
 				if (!in_array($permission->{$field}, $permissions))
 					$this->permissions[] = $permission->{$field};
 			}
 
 			//get role derived permissions
 			foreach ($this->roles as $role) {
-				foreach ($role->rolePermissions as $permission) {
+				foreach ($role->rolePermissions as $permission)
+				{
 					if (!in_array($permission->{$field}, $permissions))
 						$this->permissions[] = $permission->{$field};
 				}
@@ -425,7 +433,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 			//get access level derived permissions
 			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
-			foreach ($permissions as $permission) {
+			foreach ($permissions as $permission)
+			{
 				if (!in_array($permission->{$field}, $permissions))
 					$this->permissions[] = $permission->{$field};
 			}
@@ -457,7 +466,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if (is_string($permissions))
 			$permissions = [$permissions];
 
-		foreach ($permissions as $permission) {
+		foreach ($permissions as $permission)
+		{
 			if (in_array($permission, $this->getPermissions()))
 				return true;
 		}
@@ -476,7 +486,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 		if (is_string($permissions))
 			$permissions = [$permissions];
 
-		foreach ($permissions as $permission) {
+		foreach ($permissions as $permission)
+		{
 			if (!in_array($permission, $this->getPermissions()))
 				return false;
 		}
@@ -507,7 +518,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 			if ($this->stateItem && !is_null($this->stateItem->data))
 				$this->stateData = json_decode($this->stateItem->data);
 			else
-				$this->stateData = (object) array();
+				$this->stateData = (object) [];
 		}
 
 		return $this->stateData;
@@ -585,7 +596,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 			$stateData->{$name} = $state;
 		}
 
-		if (!$this->stateItem) {
+		if (!$this->stateItem)
+		{
 			$this->stateItem = new StateItem;
 			$this->stateItem->user_id = $this->id;
 		}
@@ -625,7 +637,8 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 			if (in_array($state, $stateData->{$name}))
 			{
-				foreach ($stateData->{$name} as $key => $value) {
+				foreach ($stateData->{$name} as $key => $value)
+				{
 					if ($value == $state)
 						unset($stateData->{$name}[$key]);
 				}
@@ -665,6 +678,7 @@ class User extends Eloquent implements UserInterface, RemindableInterface {
 
 		$this->stateItem->data = null;
 		$this->stateItem->save();
+
 		return true;
 	}
 

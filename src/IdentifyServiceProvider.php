@@ -18,7 +18,9 @@ class IdentifyServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('regulus/identify');
+		$this->publishes([
+			__DIR__.'/config/auth.php' => config_path('auth.php'),
+		]);
 	}
 
 	/**
@@ -28,17 +30,12 @@ class IdentifyServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['identify'] = $this->app->share(function($app) {
+		$this->mergeConfigFrom(__DIR__.'/config/auth.php', 'auth');
+
+		$this->app->singleton('Regulus\Identify\Identify', function($app)
+		{
 			return new Identify($app);
 		});
-
-		//add the install command
-		$this->app['identify:install'] = $this->app->share(function($app)
-		{
-			return new Commands\InstallCommand($app);
-		});
-
-		$this->commands('identify:install');
 	}
 
 	/**

@@ -3,9 +3,9 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-use Illuminate\Support\Facades\Config;
+use Regulus\Identify\Facade as Auth;
 
-class CreatePermissionsTable extends Migration {
+class CreateRolesTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,15 +14,15 @@ class CreatePermissionsTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create(Config::get('identify::tablePrefix').'permissions', function(Blueprint $table)
+		Schema::create(Auth::getTableName('roles'), function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->integer('parent_id');
-			$table->string('permission');
+			$table->string('role');
 			$table->string('name');
 			$table->text('description')->nullable();
 			$table->integer('access_level');
 			$table->integer('display_order');
+			$table->boolean('default');
 			$table->timestamps();
 			$table->softDeletes();
 		});
@@ -35,7 +35,7 @@ class CreatePermissionsTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop(Config::get('identify::tablePrefix').'permissions');
+		Schema::drop(Auth::getTableName('roles'));
 	}
 
 }

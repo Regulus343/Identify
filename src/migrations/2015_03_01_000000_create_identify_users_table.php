@@ -3,9 +3,9 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-use Illuminate\Support\Facades\Config;
+use Regulus\Identify\Facade as Auth;
 
-class CreateUsersTable extends Migration {
+class CreateIdentifyUsersTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -14,30 +14,26 @@ class CreateUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create(Config::get('identify::tablePrefix').'users', function(Blueprint $table)
+		Schema::dropIfExists('users');
+
+		Schema::create(Auth::getTableName('users'), function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('username', 36);
-			$table->string('email');
+			$table->string('username', 64);
+			$table->string('email')->unique();
 			$table->string('first_name', 48);
 			$table->string('last_name', 48);
-			$table->string('password');
+			$table->string('password', 60);
 
 			$table->boolean('test'); //used to filter test users out of a live site without removing them
 
 			/* Optional Fields */
 
-			$table->string('city', 76);
-			$table->string('region', 100); //province or state
-			$table->string('country', 120);
+			$table->string('city', 76)->nullable();
+			$table->string('region', 100)->nullable(); //province or state
+			$table->string('country', 120)->nullable();
 
-			$table->string('phone', 15);
-
-			$table->string('website');
-			$table->string('twitter', 16);
-			//$table->string('bitcoin_address', 52);
-
-			$table->text('about');
+			$table->text('about')->nullable();
 
 			$table->boolean('listed');
 			$table->boolean('listed_email');
@@ -47,8 +43,7 @@ class CreateUsersTable extends Migration {
 			$table->integer('access_level');
 
 			$table->string('activation_code')->nullable();
-			$table->string('reset_password_code')->nullable();
-			$table->string('remember_token')->nullable();
+			$table->rememberToken();
 
 			$table->timestamps();
 
@@ -67,7 +62,17 @@ class CreateUsersTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop(Config::get('identify::tablePrefix').'users');
+		Schema::drop(Auth::getTableName('users'));
+
+		Schema::create('users', function(Blueprint $table)
+		{
+			$table->increments('id');
+			$table->string('name');
+			$table->string('email')->unique();
+			$table->string('password', 60);
+			$table->rememberToken();
+			$table->timestamps();
+		});
 	}
 
 }

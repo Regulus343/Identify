@@ -6,7 +6,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 use Illuminate\Support\Facades\Config;
 
-class InstallCommand extends Command {
+class Install extends Command {
 
 	/**
 	 * The console command name.
@@ -39,33 +39,48 @@ class InstallCommand extends Command {
 	 */
 	public function fire()
 	{
-		$workbench = Config::get('identify::workbench');
-
 		$divider = '----------------------';
 
 		$this->output->writeln('');
 		$this->info($divider);
 		$this->comment('Installing Identify...');
 		$this->info($divider);
-		$this->output->writeln('');
 
-		$package = "regulus/identify";
+		//publish config files for Identify and its required packages
+		$this->output->writeln('');
+		$this->comment('Publishing configuration...');
+		$this->info($divider);
+
+		$this->call('vendor:publish', [
+			'--env'   => $this->option('env'),
+			'--force' => true,
+		]);
+
+		//adjust table name if a table name option is set
+		$defaultTableName = "auth_users";
+		if ($this->option('table') != $defaultTableName)
+		{
+			$config = str_replace($defaultTableName, $this->option('table'), file_get_contents('config/auth.php'));
+
+			file_put_contents('config/auth.php', $config);
+
+			Config::set('auth.table', $this->option('table'));
+		}
 
 		//run database migrations
+		$this->output->writeln('');
 		$this->comment('Migrating DB tables...');
 		$this->info($divider);
 
-		$this->output->writeln('<info>Migrating DB tables:</info> '.$package);
-
-		if ($workbench)
-			$prefix = 'workbench';
-		else
-			$prefix = 'vendor';
+		$this->info('Migrating DB tables...');
 
 		$this->call('migrate', [
-			'--env'     => $this->option('env'),
-			'--package' => $package,
-			'--path'    => $prefix.'/regulus/identify/src/migrations',
+			'--env' => $this->option('env'),
+		]);
+
+		$this->call('migrate', [
+			'--env'  => $this->option('env'),
+			'--path' => 'vendor/regulus/identify/src/migrations',
 		]);
 
 		$this->output->writeln('');
@@ -74,34 +89,26 @@ class InstallCommand extends Command {
 		$this->comment('Seeding DB tables...');
 		$this->info($divider);
 
-		$seedTables = [
-			'Users',
-			'Roles',
-			'Permissions',
-		];
-
-		foreach ($seedTables as $seedTable) {
-			$this->output->writeln('<info>Seeding DB table:</info> '.$seedTable);
-			$this->call('db:seed', ['--class' => $seedTable.'TableSeeder']);
-		}
-
-		$this->output->writeln('');
-
-		//publish config files for Identify and its required packages
-		$this->comment('Publishing configuration...');
-		$this->info($divider);
-
-		$this->call('config:publish', [
-			'--env'   => $this->option('env'),
-			'package' => $package,
-			'--path'  => 'vendor/'.$package.'/src/config',
-		]);
+		$this->call('db:seed', ['--class' => 'IdentifySeeder']);
 
 		$this->output->writeln('');
 		$this->info($divider);
 		$this->comment('Identify installed!');
 		$this->info($divider);
 		$this->output->writeln('');
+	}
+
+	public function getOptions()
+	{
+		return [
+			[
+				'table',
+				't',
+				InputOption::VALUE_OPTIONAL,
+				'The name of the users table (from which the other table names are derived).',
+				'auth_users',
+			],
+		];
 	}
 
 }

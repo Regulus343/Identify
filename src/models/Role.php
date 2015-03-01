@@ -1,13 +1,18 @@
-<?php namespace Regulus\Identify;
+<?php namespace Regulus\Identify\Models;
 
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Database\Eloquent\SoftDeletingTrait;
+use Illuminate\Database\Eloquent\Model;
+
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\Config;
 
+use Regulus\Identify\Facade as Auth;
+
 use Regulus\Identify\Permission;
 
-class Role extends Eloquent {
+class Role extends Model {
+
+	use SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -21,15 +26,13 @@ class Role extends Eloquent {
 	 *
 	 * @var array
 	 */
-	protected $guarded = array('id');
+	protected $guarded = ['id'];
 
 	/**
 	 * Enable soft delete for the model.
 	 *
 	 * @var array
 	 */
-	use SoftDeletingTrait;
-
 	protected $dates = ['deleted_at'];
 
 	/**
@@ -37,7 +40,7 @@ class Role extends Eloquent {
 	 *
 	 * @var    array
 	 */
-	public $permissions = array();
+	public $permissions = [];
 
 	/**
 	 * The constructor which adds the table prefix from the config settings.
@@ -47,7 +50,7 @@ class Role extends Eloquent {
 	{
 		parent::__construct();
 
-		$this->table = Config::get('identify::tablePrefix').$this->table;
+		$this->table = Auth::getTableName($this->table);
 	}
 
 	/**
@@ -57,7 +60,7 @@ class Role extends Eloquent {
 	 */
 	public function users()
 	{
-		return $this->belongsToMany('Regulus\Identify\User', Config::get('identify::tablePrefix').'user_roles')
+		return $this->belongsToMany(config('auth.model'), Auth::getTableName('user_roles'))
 			->orderBy('username');
 	}
 
@@ -68,7 +71,7 @@ class Role extends Eloquent {
 	 */
 	public function rolePermissions()
 	{
-		return $this->belongsToMany('Regulus\Identify\Permission', Config::get('identify::tablePrefix').'role_permissions')
+		return $this->belongsToMany('Regulus\Identify\Permission', Auth::getTableName('role_permissions'))
 			->orderBy('display_order')
 			->orderBy('name');
 	}
@@ -82,13 +85,14 @@ class Role extends Eloquent {
 	public static function getSelectable($select = null)
 	{
 		if (is_null($select) || !is_array($select) || count($select) == 0)
-			$select = array('role', 'name');
+			$select = ['role', 'name'];
 
 		if (count($select) == 1)
 			$select[1] = $select[0];
 
 		$roles   = static::orderBy('display_order')->get();
-		$options = array();
+		$options = [];
+
 		foreach ($roles as $role) {
 			$options[$role->{$select[0]}] = $role->{$select[1]};
 		}
@@ -105,7 +109,7 @@ class Role extends Eloquent {
 	public function getPermissions($field = 'permission')
 	{
 		if (empty($this->permissions)) {
-			$this->permissions = array();
+			$this->permissions = [];
 
 			//get role derived permissions
 			foreach ($this->roles as $role) {

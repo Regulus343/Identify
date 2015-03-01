@@ -1,6 +1,6 @@
 {
 	"name": "regulus/identify",
-	"description": "A Laravel 4 authentication/authorization package that adds roles, permissions, access levels, and user states and allows simple to complex user access control implementation.",
+	"description": "A Laravel 5 authentication/authorization package that adds roles, permissions, access levels, and user states. Allows simple or complex user access control implementation.",
 	"license": "MIT",
 	"authors": [
 		{
@@ -9,8 +9,8 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.0",
-		"illuminate/support": "4.2.x"
+		"php": ">=5.4.0",
+		"laravel/framework": "5.0.*"
 	},
 	"autoload": {
 		"classmap": [
@@ -19,8 +19,10 @@
 			"src/models",
 			"src/seeds"
 		],
-		"psr-0": {
-			"Regulus\\Identify": "src/"
+		"psr-4": {
+			"Regulus\\Identify\\": "src/",
+			"Regulus\\Identify\\Commands\\": "src/commands/",
+			"Regulus\\Identify\\Models\\": "src/models/"
 		}
 	},
 	"minimum-stability": "dev"
