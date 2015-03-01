@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
-use Regulus\Identify\User as User;
+use Regulus\Identify\Models\User as User;
 
 class Identify extends Auth {
 
@@ -377,6 +377,19 @@ class Identify extends Auth {
 	}
 
 	/**
+	 * Create a new user account.
+	 *
+	 * @param  mixed    $input
+	 * @param  boolean  $autoActivate
+	 * @param  boolean  $sendEmail
+	 * @return User
+	 */
+	public function createUser($input = null, $autoActivate = false, $sendEmail = true)
+	{
+		return User::createAccount($input, $autoActivate, $sendEmail);
+	}
+
+	/**
 	 * Attempt to activate a user account by the user ID and activation code.
 	 *
 	 * @param  integer  $id
@@ -386,11 +399,10 @@ class Identify extends Auth {
 	public function activate($id = 0, $activationCode = '')
 	{
 		$user = User::find($id);
-		if (!empty($user) && !$user->active && ($this->is('admin') || $activationCode == $user->activation_code))
+
+		if (!empty($user) && !$user->isActivated() && ($this->is('admin') || $activationCode == $user->activation_code))
 		{
-			$user->active       = true;
-			$user->activated_at = date('Y-m-d H:i:s');
-			$user->save();
+			$user->fill(['activated_at' => date('Y-m-d H:i:s')])->save();
 
 			return true;
 		}

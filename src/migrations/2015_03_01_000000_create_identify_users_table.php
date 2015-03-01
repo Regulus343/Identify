@@ -19,7 +19,7 @@ class CreateIdentifyUsersTable extends Migration {
 		Schema::create(Auth::getTableName('users'), function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('username', 64);
+			$table->string('name', 120);
 			$table->string('email')->unique();
 			$table->string('first_name', 48);
 			$table->string('last_name', 48);
@@ -29,7 +29,7 @@ class CreateIdentifyUsersTable extends Migration {
 
 			/* Optional Fields */
 
-			$table->string('city', 76)->nullable();
+			$table->string('city', 120)->nullable();
 			$table->string('region', 100)->nullable(); //province or state
 			$table->string('country', 120)->nullable();
 

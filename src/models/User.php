@@ -18,6 +18,8 @@ use Regulus\Identify\Facade as Auth;
 
 use Regulus\Identify\Permission;
 
+use Regulus\TetraText\Facade as Format;
+
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword, SoftDeletes;
@@ -34,7 +36,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $hidden = ['password'];
+	protected $hidden = ['password', 'remember_token'];
 
 	/**
 	 * The attributes that cannot be updated.
@@ -173,7 +175,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function isActivated()
 	{
-		return $this->activated_at != null;
+		return !is_null($this->activated_at);
 	}
 
 	/**
@@ -183,7 +185,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function isBanned()
 	{
-		return $this->banned_at != null;
+		return !is_null($this->banned_at);
 	}
 
 	/**
@@ -194,7 +196,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function getBanReason()
 	{
 		if (!$this->isBanned())
-			return "";
+			return null;
 
 		return $this->ban_reason;
 	}
@@ -229,13 +231,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function getName($format = 'F L')
 	{
-		$name = str_replace('F', '{first}', $name);
+		$name = str_replace('F', '{first}', $format);
 		$name = str_replace('L', '{last}', $name);
 		$name = str_replace('U', '{user}', $name);
 
 		$name = str_replace('{first}', $this->first_name, $name);
 		$name = str_replace('{last}', $this->last_name, $name);
-		$name = str_replace('{user}', $this->username, $name);
+		$name = str_replace('{user}', $this->name, $name);
 
 		return trim($name);
 	}
@@ -266,20 +268,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * Create a new user account.
 	 *
 	 * @param  mixed    $input
+	 * @param  boolean  $autoActivate
+	 * @param  boolean  $sendEmail
 	 * @return User
 	 */
-	public static function createAccount($input = null)
+	public static function createAccount($input = null, $autoActivate = false, $sendEmail = true)
 	{
 		//get input values
 		if (is_null($input))
-			$input = Input::all();
-
-		//check for role
-		$roleId = Auth::is('admin') && isset($input['role_id']) ? $input['role_id'] : null;
-		$role   = Role::find($roleId);
-
-		if (empty($role) || is_null($roleId))
-			$role = Role::where('default', true)->orderBy('id')->first();
+			$input = Input::except('id');
 
 		//format name, username, and email address
 		if (isset($input['first_name']))
@@ -288,36 +285,51 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (isset($input['last_name']))
 			$input['last_name'] = ucfirst(trim($input['last_name']));
 
-		if (isset($input['username']))
-			$input['username'] = trim($input['username']);
+		if (isset($input['name']))
+			$input['name'] = trim($input['name']);
 
 		if (isset($input['email']))
 			$input['email'] = trim($input['email']);
 
-		//create user
-		$user = static::create($input);
+		if (!isset($input['first_name']) && !isset($input['last_name']))
+			$input['first_name'] = $input['name'];
 
-		//add user role
-		$user->roles()->sync([$roleId]);
+		//set activated timestamp or activation code
+		if ($autoActivate)
+			$input['activated_at'] = date('Y-m-d H:i:s');
+		else
+			$input['activation_code'] = 'Format::getRandomString()';
+
+		$input['password'] = \Hash::make($input['password']);
+
+		//create user
+		$user = new static;
+		$user->fill($input)->save();
+
+		//add user role(s)
+		$roles = [];
+		if (isset($input['roles']) && is_array($input['roles']))
+		{
+			$roles = $input['roles'];
+		}
+		else
+		{
+			$roleId = Auth::is('admin') && isset($input['role_id']) ? $input['role_id'] : null;
+			$role   = Role::find($roleId);
+
+			if (empty($role) || is_null($roleId))
+				$role = Role::where('default', true)->orderBy('id')->first();
+
+			$roles = [$roleId];
+		}
+
+		$user->roles()->sync($roles);
 
 		//send account activation email to user
-		Auth::sendEmail($user, 'signup_confirmation');
+		if ($sendEmail)
+			Auth::sendEmail($user, 'confirmation');
 
 		return $user;
-	}
-
-	/**
-	 * Create a reset password code for a user.
-	 *
-	 * @return boolean
-	 */
-	public function resetPasswordCode()
-	{
-		$this->updateAccount('passwordReset');
-
-		Auth::sendEmail($this, 'reset_password');
-
-		return true;
 	}
 
 	/**
@@ -349,7 +361,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return User::where(function($query) use ($identifier)
 			{
 				$query
-					->where(DB::raw('lower(username)'), $identifier)
+					->where(DB::raw('lower(name)'), $identifier)
 					->orWhere(DB::raw('lower(email)'), $identifier);
 			})->first();
 	}

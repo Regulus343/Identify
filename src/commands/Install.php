@@ -72,8 +72,6 @@ class Install extends Command {
 		$this->comment('Migrating DB tables...');
 		$this->info($divider);
 
-		$this->info('Migrating DB tables...');
-
 		$this->call('migrate', [
 			'--env' => $this->option('env'),
 		]);
@@ -96,6 +94,8 @@ class Install extends Command {
 		$this->comment('Identify installed!');
 		$this->info($divider);
 		$this->output->writeln('');
+
+		return;
 	}
 
 	public function getOptions()
