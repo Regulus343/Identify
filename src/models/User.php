@@ -243,17 +243,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Attempt to activate a user account by the user ID and activation code.
+	 * Attempt to activate a user account by the user ID and activation token.
 	 *
 	 * @param  integer  $id
-	 * @param  string   $activationCode
+	 * @param  string   $activationToken
 	 * @return boolean
 	 */
-	public static function activate($id = 0, $activationCode = '')
+	public static function activate($id, $activationToken = '')
 	{
 		$user = User::find($id);
 
-		if (!empty($user) && !$user->activated && (static::is('admin') || $activationCode == $user->activation_code))
+		if (!empty($user) && !$user->activated && (static::is('admin') || $activationToken == $user->activation_token))
 		{
 			$user->activated_at = date('Y-m-d H:i:s');
 			$user->save();
@@ -294,11 +294,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!isset($input['first_name']) && !isset($input['last_name']))
 			$input['first_name'] = $input['name'];
 
-		//set activated timestamp or activation code
+		//set activated timestamp or activation token
 		if ($autoActivate)
 			$input['activated_at'] = date('Y-m-d H:i:s');
 		else
-			$input['activation_code'] = 'Format::getRandomString()';
+			$input['activation_token'] = str_random(32);
 
 		$input['password'] = \Hash::make($input['password']);
 

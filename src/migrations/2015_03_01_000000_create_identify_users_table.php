@@ -19,7 +19,7 @@ class CreateIdentifyUsersTable extends Migration {
 		Schema::create(Auth::getTableName('users'), function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('name', 120);
+			$table->string('name', 120)->unique();
 			$table->string('email')->unique();
 			$table->string('first_name', 48);
 			$table->string('last_name', 48);
@@ -42,7 +42,7 @@ class CreateIdentifyUsersTable extends Migration {
 
 			$table->integer('access_level');
 
-			$table->string('activation_code')->nullable();
+			$table->string('activation_token', 32)->nullable();
 			$table->rememberToken();
 
 			$table->timestamps();
