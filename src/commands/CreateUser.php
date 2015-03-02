@@ -15,7 +15,7 @@ class CreateUser extends Command {
 	 *
 	 * @var string
 	 */
-	protected $name = 'users:create';
+	protected $name = 'user:create';
 
 	/**
 	 * The console command description.
