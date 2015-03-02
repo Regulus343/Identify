@@ -35,7 +35,12 @@ And add this to the `aliases` array:
 
 **Add and run the install command:**
 
-Add `Regulus\Identify\Commands\Install` to the `commands` variable in `app/Console/Kernel.php` and then run the following command:
+Add the following to the `commands` variable in `app/Console/Kernel.php`:
+
+	'Regulus\Identify\Commands\Install',
+	'Regulus\Identify\Commands\CreateUser',
+
+Then run the following command:
 
 	php artisan identify:install
 
@@ -123,6 +128,20 @@ The third argument is the name of the session variable. The default is 'messages
 	//suppress confirmation email
 	Auth::createUser($input, true, false);
 
+**Create a new user account via the command line interface:**
+
+	//use default password of "password"
+	php artisan user:create username email@address.com
+
+	//use alternate password
+	php artisan user:create username email@address.com --password=anotherpassword
+
+	//automatically activate user
+	php artisan user:create username email@address.com --activate
+
+	//automatically activate user and suppress confirmation email
+	php artisan user:create username email@address.com --activate --suppress
+
 **Send an email to a user with a specific view in `views/emails`:**
 
 	Auth::sendEmail($user, 'confirmation');
@@ -133,7 +152,7 @@ The third argument is the name of the session variable. The default is 'messages
 
 	Auth::sendEmail($user, 'password');
 
-**Activate a user account by ID and activation code:**
+**Activate a user account by ID and activation token:**
 
 	if (Auth::activate(1, 'wHHhONhavZps1J9p8Rs6WIXsTK30tFhl'))
 	{
