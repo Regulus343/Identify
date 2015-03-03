@@ -35,7 +35,7 @@ And add this to the `aliases` array:
 
 **Add and run the install command:**
 
-Add the following to the `commands` variable in `app/Console/Kernel.php`:
+Add the following to the `commands` array in `app/Console/Kernel.php`:
 
 	'Regulus\Identify\Commands\Install',
 	'Regulus\Identify\Commands\CreateUser',

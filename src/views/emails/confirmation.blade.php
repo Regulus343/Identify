@@ -2,9 +2,9 @@
 
 @section(config('auth.section'))
 
-	<p><strong>{{ $user->getName() }}</strong>, you have successfully signed up for a {{ Site::get('name') }} user account.</p>
+	<p><strong>{{ $user->getName() }}</strong>, a user account for {{ Site::get('name') }} has been created for you.</p>
 
-	@if (!$user->isActivated()
+	@if (!$user->isActivated())
 
 		<p>
 			You will not be able to use your account until you <a href="{{ url('auth/activate/'.$user->id.'/'.$user->activation_code) }}" target="_blank">activate it by clicking on this link</a>. If the link doesn't work, copy and paste the following URL into your browser:
