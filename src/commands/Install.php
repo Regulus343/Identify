@@ -81,14 +81,14 @@ class Install extends Command {
 			'--path' => 'vendor/regulus/identify/src/migrations',
 		]);
 
-		$this->output->writeln('');
-
 		//seed database tables
+		$this->output->writeln('');
 		$this->comment('Seeding DB tables...');
 		$this->info($divider);
 
 		$this->call('db:seed', ['--class' => 'IdentifySeeder']);
 
+		//show installed text
 		$this->output->writeln('');
 		$this->info($divider);
 		$this->comment('Identify installed!');
@@ -98,6 +98,21 @@ class Install extends Command {
 		return;
 	}
 
+	/**
+	 * Get the console command arguments.
+	 *
+	 * @return array
+	 */
+	public function getArguments()
+	{
+		return [];
+	}
+
+	/**
+	 * Get the console command arguments.
+	 *
+	 * @return array
+	 */
 	public function getOptions()
 	{
 		return [

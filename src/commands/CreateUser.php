@@ -84,6 +84,11 @@ class CreateUser extends Command {
 		return;
 	}
 
+	/**
+	 * Get the console command arguments.
+	 *
+	 * @return array
+	 */
 	public function getArguments()
 	{
 		return [
@@ -100,6 +105,11 @@ class CreateUser extends Command {
 		];
 	}
 
+	/**
+	 * Get the console command arguments.
+	 *
+	 * @return array
+	 */
 	public function getOptions()
 	{
 		return [

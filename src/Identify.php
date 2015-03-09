@@ -6,11 +6,18 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.0
-		last updated on March 1, 2015
+		v0.8.1
+		last updated on March 8, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
-use Illuminate\Auth\AuthManager as Auth;
+use Illuminate\Auth\Guard;
+
+use Illuminate\Contracts\Auth\UserProvider;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+use Illuminate\Auth\EloquentUserProvider;
+use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
@@ -20,38 +27,35 @@ use Illuminate\Support\Facades\View;
 
 use Regulus\Identify\Models\User as User;
 
-class Identify extends Auth {
-
-	/**
-	 * The user object for the currently logged in user.
-	 *
-	 * @var    mixed
-	 */
-	public $user = null;
+class Identify extends Guard {
 
 	/**
 	 * The permissions array for the currently logged in user.
 	 *
 	 * @var    array
 	 */
-	public $permissions = [];
+	protected $permissions = [];
 
 	/**
 	 * The state array for the currently logged in user.
 	 *
 	 * @var    array
 	 */
-	public $state = [];
+	protected $state = [];
 
 	/**
-	 * Create a new Identify instance.
+	 * Create a new authentication guard.
 	 *
-	 * @param  \Illuminate\Foundation\Application  $app
+	 * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
+	 * @param  \Symfony\Component\HttpFoundation\Session\SessionInterface  $session
+	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return void
 	 */
-	public function __construct($app)
+	public function __construct(UserProvider $provider,
+								SessionInterface $session,
+								Request $request = null)
 	{
-		$this->app = $app;
+		parent::__construct($provider, $session, $request);
 	}
 
 	/**
@@ -78,44 +82,35 @@ class Identify extends Auth {
 	}
 
 	/**
-	 * Returns the active user for the session.
-	 *
-	 * @param  mixed    $roles
-	 * @return boolean
-	 */
-	public function user()
-	{
-		if (is_null($this->user))
-			$this->user = static::user();
-
-		return $this->user;
-	}
-
-	/**
 	 * Attempt to authenticate a user using the given credentials.
 	 *
-	 * @param  array    $credentials
-	 * @param  boolean  $remember
-	 * @param  boolean  $login
-	 * @return boolean
+	 * @param  array  $credentials
+	 * @param  bool   $remember
+	 * @param  bool   $login
+	 * @return bool
 	 */
 	public function attempt(array $credentials = [], $remember = false, $login = true)
 	{
+		$this->fireAttemptEvent($credentials, $remember, $login);
+
+		$this->lastAttempted = $user = $this->provider->retrieveByCredentials($credentials);
+
 		$masterKey = config('auth.master_key');
 
 		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey)
+			$x = "make this work";
+
+		// If an implementation of UserInterface was returned, we'll ask the provider
+		// to validate the user against the given credentials, and if they are in
+		// fact valid we'll log the users into the application and return true.
+		if ($this->hasValidCredentials($user, $credentials))
 		{
-			$user = User::where('username', trim($credentials['username']))->first();
+			if ($login) $this->login($user, $remember);
 
-			if ($user)
-			{
-				static::login($user);
-
-				return true;
-			}
+			return true;
 		}
 
-		return static::attempt($credentials, $remember, $login);
+		return false;
 	}
 
 	/**

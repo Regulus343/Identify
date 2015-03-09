@@ -29,10 +29,6 @@ Add this to the `providers` array in `config/app.php`:
 
 	'Regulus\Identify\IdentifyServiceProvider',
 
-And add this to the `aliases` array:
-
-	'Auth' => 'Regulus\Identify\Facade',
-
 **Add and run the install command:**
 
 Add the following to the `commands` array in `app/Console/Kernel.php`:

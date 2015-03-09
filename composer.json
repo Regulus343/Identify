@@ -17,9 +17,7 @@
 	},
 	"autoload": {
 		"classmap": [
-			"src/commands",
 			"src/migrations",
-			"src/models",
 			"src/seeds"
 		],
 		"psr-4": {

@@ -58,6 +58,24 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Retrieve User by Credentials "Identifier" Settings
+	|--------------------------------------------------------------------------
+	|
+	| If an "identifier" field is passed to anything that uses
+	| retrieveByCredentials() such as Auth::attempt(), you may set it up to
+	| automatically strip spaces from the username and also allow log in by
+	| email address in addition to username.
+	|
+	*/
+	'username' => [
+		'field'        => 'name',
+		'allow_spaces' => false,
+	],
+
+	'log_in_username_or_email' => true,
+
+	/*
+	|--------------------------------------------------------------------------
 	| Path to Picture and Thumbnail Directories
 	|--------------------------------------------------------------------------
 	|

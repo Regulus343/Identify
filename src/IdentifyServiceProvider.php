@@ -23,6 +23,15 @@ class IdentifyServiceProvider extends ServiceProvider {
 		]);
 
 		$this->loadViewsFrom(__DIR__.'/views', 'identify');
+
+		\Auth::extend('eloquent', function($app)
+		{
+			$model = $app['config']['auth.model'];
+
+			$provider = new \Regulus\Identify\IdentifyUserProvider($app['hash'], $model);
+
+			return new \Regulus\Identify\Identify($provider, $this->app['session.store']);
+		});
 	}
 
 	/**
@@ -32,12 +41,7 @@ class IdentifyServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->mergeConfigFrom(__DIR__.'/config/auth.php', 'auth');
-
-		$this->app->singleton('Regulus\Identify\Identify', function($app)
-		{
-			return new Identify($app);
-		});
+		//
 	}
 
 	/**
@@ -47,7 +51,7 @@ class IdentifyServiceProvider extends ServiceProvider {
 	 */
 	public function provides()
 	{
-		return array();
+		return ['Regulus\Identify\Identify'];
 	}
 
 }
