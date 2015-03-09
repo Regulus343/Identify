@@ -366,6 +366,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * Get the username, which could be called "name" or "username" and is specified in the auth config file.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Model
+	 */
+	public function username()
+	{
+		return $this->{config('auth.username.field')};
+	}
+
+	/**
 	 * Get the remember token.
 	 *
 	 * @return string

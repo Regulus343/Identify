@@ -91,6 +91,8 @@ class IdentifyUserProvider implements UserProvider {
 
 		foreach ($credentials as $key => $value)
 		{
+			$value = trim($value);
+
 			if ($key == "identifier")
 			{
 				$usernameField          = config('auth.username.field');
@@ -101,7 +103,7 @@ class IdentifyUserProvider implements UserProvider {
 					$value = str_replace(' ', '', $value);
 
 				if ($logInByUsernameOrEmail)
-					$query->where(function($query)
+					$query->where(function($query) use ($usernameField, $value)
 					{
 						$query
 							->orWhere($usernameField, $value)

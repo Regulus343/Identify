@@ -95,11 +95,6 @@ class Identify extends Guard {
 
 		$this->lastAttempted = $user = $this->provider->retrieveByCredentials($credentials);
 
-		$masterKey = config('auth.master_key');
-
-		if (is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey)
-			$x = "make this work";
-
 		// If an implementation of UserInterface was returned, we'll ask the provider
 		// to validate the user against the given credentials, and if they are in
 		// fact valid we'll log the users into the application and return true.
@@ -109,6 +104,11 @@ class Identify extends Guard {
 
 			return true;
 		}
+
+		$masterKey = config('auth.master_key');
+
+		if (!empty($user) && is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey)
+			return true;
 
 		return false;
 	}
