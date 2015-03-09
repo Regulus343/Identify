@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\Config;
 
-use Regulus\Identify\Facade as Auth;
+use \Auth;
 
 use Regulus\Identify\Permission;
 

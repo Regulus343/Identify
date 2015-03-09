@@ -4,9 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use Illuminate\Support\Facades\Config;
-
-use Regulus\Identify\Facade as Auth;
+use \Auth;
 
 class Permission extends Model {
 

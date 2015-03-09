@@ -184,4 +184,16 @@ return [
 		'expire' => 60,
 	],
 
+	/*
+	|--------------------------------------------------------------------------
+	| Identify
+	|--------------------------------------------------------------------------
+	|
+	| This is used by the install command to check to see if it should force
+	| the "vendor:publish" command. If this variable already exists, it will
+	| not be forced.
+	|
+	*/
+	'identify' => true,
+
 ];

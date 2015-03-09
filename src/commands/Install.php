@@ -51,10 +51,13 @@ class Install extends Command {
 		$this->comment('Publishing configuration...');
 		$this->info($divider);
 
-		$this->call('vendor:publish', [
-			'--env'   => $this->option('env'),
-			'--force' => true,
-		]);
+		$publishOptions = ['--env' => $this->option('env')];
+
+		//if "identify" variable doesn't exist in auth, it hasn't been published yet so "vendor:publish" command should be forced
+		if (!config('auth.identify'))
+			$publishOptions['--force'] = true;
+
+		$this->call('vendor:publish', $publishOptions);
 
 		//adjust table name if a table name option is set
 		$defaultTableName = "auth_users";

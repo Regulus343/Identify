@@ -2,9 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-use Illuminate\Support\Facades\Config;
-
-use Regulus\Identify\Facade as Auth;
+use \Auth;
 
 class StateItem extends Model {
 
