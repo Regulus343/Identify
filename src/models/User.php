@@ -702,12 +702,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			}
 			else if (count($name) == 2)
 			{
-				if (isset($stateData->{$name[0]}) && isset($stateData->{$name[0]}->{$name[1]}))
+				if (isset($stateData->{$name[0]}) && is_object($stateData->{$name[0]}) && isset($stateData->{$name[0]}->{$name[1]}))
 					unset($stateData->{$name[0]}->{$name[1]});
 			}
 			else if (count($name) == 3)
 			{
-				if (isset($stateData->{$name[0]}) && isset($stateData->{$name[0]}->{$name[1]} && isset($stateData->{$name[0]}->{$name[1]}->{$name[2]}))
+				if (isset($stateData->{$name[0]}) && is_object($stateData->{$name[0]})
+				&& isset($stateData->{$name[0]}->{$name[1]}) && is_object($stateData->{$name[0]}->{$name[1]})
+				&& isset($stateData->{$name[0]}->{$name[1]}->{$name[2]}))
 					unset($stateData->{$name[0]}->{$name[1]}->{$name[2]});
 			}
 
