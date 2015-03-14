@@ -7,7 +7,7 @@
 
 		created by Cody Jassman
 		v0.8.1
-		last updated on March 8, 2015
+		last updated on March 14, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
