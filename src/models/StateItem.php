@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-use \Auth;
+use Auth;
 
 class StateItem extends Model {
 
