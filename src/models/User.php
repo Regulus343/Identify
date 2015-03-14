@@ -603,6 +603,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 		$stateData = $this->getStateData();
 
+		if (is_null($stateData))
+			$stateData = (object) [];
+
 		if (substr($name, -2) == "[]")
 		{
 			$name = str_replace('[]', '', $name);
@@ -614,7 +617,29 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				$stateData->{$name}[] = $state;
 
 		} else {
-			$stateData->{$name} = $state;
+			$name = explode('.', $name);
+
+			if (count($name) == 1)
+			{
+				$stateData->{$name[0]} = $state;
+			}
+			else
+			{
+				if (!isset($stateData->{$name[0]}) || !is_object($stateData->{$name[0]}))
+					$stateData->{$name[0]} = (object) [];
+
+				if (count($name) == 2)
+				{
+					$stateData->{$name[0]}->{$name[1]} = $state;
+				}
+				else
+				{
+					if (!isset($stateData->{$name[0]}->{$name[1]}) || !is_object($stateData->{$name[0]}->{$name[1]}))
+						$stateData->{$name[0]}->{$name[1]} = (object) [];
+
+					$stateData->{$name[0]}->{$name[1]}->{$name[2]} = $state;
+				}
+			}
 		}
 
 		if (!$this->stateItem)
