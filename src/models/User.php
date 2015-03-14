@@ -712,9 +712,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				&& isset($stateData->{$name[0]}->{$name[1]}->{$name[2]}))
 					unset($stateData->{$name[0]}->{$name[1]}->{$name[2]});
 			}
-
-			if (isset($stateData->{$name}))
-				unset($stateData->{$name});
 		}
 
 		if (!$this->stateItem) {
