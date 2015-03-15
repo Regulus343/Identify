@@ -577,10 +577,27 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 		$stateData = $this->getStateData();
 
-		if (!isset($stateData->{$name}))
-			return $default;
+		$name = explode('.', $name);
 
-		return $stateData->{$name};
+		if (count($name) == 1)
+		{
+			if (isset($stateData->{$name[0]}))
+				return $stateData->{$name[0]};
+		}
+		else if (count($name) == 2)
+		{
+			if (isset($stateData->{$name[0]}) && is_object($stateData->{$name[0]}) && isset($stateData->{$name[0]}->{$name[1]}))
+				return $stateData->{$name[0]}->{$name[1]};
+		}
+		else if (count($name) == 3)
+		{
+			if (isset($stateData->{$name[0]}) && is_object($stateData->{$name[0]})
+			&& isset($stateData->{$name[0]}->{$name[1]}) && is_object($stateData->{$name[0]}->{$name[1]})
+			&& isset($stateData->{$name[0]}->{$name[1]}->{$name[2]}))
+				return $stateData->{$name[0]}->{$name[1]}->{$name[2]};
+		}
+
+		return $default;
 	}
 
 	/**
@@ -703,14 +720,27 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			else if (count($name) == 2)
 			{
 				if (isset($stateData->{$name[0]}) && is_object($stateData->{$name[0]}) && isset($stateData->{$name[0]}->{$name[1]}))
+				{
 					unset($stateData->{$name[0]}->{$name[1]});
+
+					if (empty((array) $stateData->{$name[0]}))
+						unset($stateData->{$name[0]});
+				}
 			}
 			else if (count($name) == 3)
 			{
 				if (isset($stateData->{$name[0]}) && is_object($stateData->{$name[0]})
 				&& isset($stateData->{$name[0]}->{$name[1]}) && is_object($stateData->{$name[0]}->{$name[1]})
 				&& isset($stateData->{$name[0]}->{$name[1]}->{$name[2]}))
+				{
 					unset($stateData->{$name[0]}->{$name[1]}->{$name[2]});
+
+					if (empty((array) $stateData->{$name[0]}->{$name[1]}))
+						unset($stateData->{$name[0]}->{$name[1]});
+
+					if (empty((array) $stateData->{$name[0]}))
+						unset($stateData->{$name[0]});
+				}
 			}
 		}
 
