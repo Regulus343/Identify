@@ -17,11 +17,11 @@ class CreatePermissionsTable extends Migration {
 		Schema::create(Auth::getTableName('permissions'), function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->integer('parent_id');
+			$table->integer('parent_id')->nullable();
 			$table->string('permission');
 			$table->string('name');
 			$table->text('description')->nullable();
-			$table->integer('access_level');
+			$table->integer('access_level')->default(0);
 			$table->integer('display_order');
 			$table->timestamps();
 			$table->softDeletes();
