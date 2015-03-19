@@ -25,7 +25,7 @@ class CreateIdentifyUsersTable extends Migration {
 			$table->string('last_name', 48);
 			$table->string('password', 60);
 
-			$table->boolean('test'); //used to filter test users out of a live site without removing them
+			$table->boolean('test')->default(false); //used to filter test users out of a live site without removing them
 
 			/* Optional Fields */
 
@@ -35,12 +35,12 @@ class CreateIdentifyUsersTable extends Migration {
 
 			$table->text('about')->nullable();
 
-			$table->boolean('listed');
-			$table->boolean('listed_email');
+			$table->boolean('listed')->default(true);
+			$table->boolean('listed_email')->nullable();
 
 			/* --------------- */
 
-			$table->integer('access_level');
+			$table->integer('access_level')->default(0);
 
 			$table->string('activation_token', 32)->nullable();
 			$table->rememberToken();
@@ -49,7 +49,7 @@ class CreateIdentifyUsersTable extends Migration {
 
 			$table->dateTime('activated_at')->nullable();
 			$table->dateTime('banned_at')->nullable();
-			$table->text('ban_reason');
+			$table->text('ban_reason')->nullable();
 
 			$table->softDeletes();
 		});

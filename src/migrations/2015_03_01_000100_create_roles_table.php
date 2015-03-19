@@ -22,7 +22,7 @@ class CreateRolesTable extends Migration {
 			$table->text('description')->nullable();
 			$table->integer('access_level');
 			$table->integer('display_order');
-			$table->boolean('default');
+			$table->boolean('default')->default(false);
 			$table->timestamps();
 			$table->softDeletes();
 		});
