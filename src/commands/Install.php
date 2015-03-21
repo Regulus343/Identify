@@ -46,20 +46,20 @@ class Install extends Command {
 		$this->comment('Installing Identify...');
 		$this->info($divider);
 
-		//publish config files for Identify and its required packages
+		// publish config files for Identify and its required packages
 		$this->output->writeln('');
 		$this->comment('Publishing configuration...');
 		$this->info($divider);
 
 		$publishOptions = ['--env' => $this->option('env')];
 
-		//if "identify" variable doesn't exist in auth, it hasn't been published yet so "vendor:publish" command should be forced
+		// if "identify" variable doesn't exist in auth, it hasn't been published yet so "vendor:publish" command should be forced
 		if (!config('auth.identify'))
 			$publishOptions['--force'] = true;
 
 		$this->call('vendor:publish', $publishOptions);
 
-		//adjust table name if a table name option is set
+		// adjust table name if a table name option is set
 		$defaultTableName = "auth_users";
 		if ($this->option('table') != $defaultTableName)
 		{
@@ -70,7 +70,7 @@ class Install extends Command {
 			Config::set('auth.table', $this->option('table'));
 		}
 
-		//run database migrations
+		// run database migrations
 		$this->output->writeln('');
 		$this->comment('Migrating DB tables...');
 		$this->info($divider);
@@ -84,14 +84,14 @@ class Install extends Command {
 			'--path' => 'vendor/regulus/identify/src/migrations',
 		]);
 
-		//seed database tables
+		// seed database tables
 		$this->output->writeln('');
 		$this->comment('Seeding DB tables...');
 		$this->info($divider);
 
 		$this->call('db:seed', ['--class' => 'IdentifySeeder']);
 
-		//show installed text
+		// show installed text
 		$this->output->writeln('');
 		$this->info($divider);
 		$this->comment('Identify installed!');
