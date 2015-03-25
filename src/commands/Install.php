@@ -68,6 +68,8 @@ class Install extends Command {
 			file_put_contents('config/auth.php', $config);
 
 			Config::set('auth.table', $this->option('table'));
+		} else {
+			Config::set('auth.table', $defaultTableName);
 		}
 
 		// run database migrations
