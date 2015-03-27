@@ -25,12 +25,12 @@ class CreateIdentifyUsersTable extends Migration {
 			$table->string('last_name', 48);
 			$table->string('password', 60);
 
-			$table->boolean('test')->default(false); //used to filter test users out of a live site without removing them
+			$table->boolean('test')->default(false); // used to filter test users out of a live site without removing them
 
 			/* Optional Fields */
 
 			$table->string('city', 120)->nullable();
-			$table->string('region', 100)->nullable(); //province or state
+			$table->string('region', 100)->nullable(); // province or state
 			$table->string('country', 120)->nullable();
 
 			$table->text('about')->nullable();

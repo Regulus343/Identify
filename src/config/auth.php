@@ -76,6 +76,36 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Fillable Fields for Users Table
+	|--------------------------------------------------------------------------
+	|
+	| Because the necessary fields for the users table will frequently vary
+	| project to project, the fillable fields array is customizable here.
+	|
+	*/
+	'fillable_fields' => [
+		'name',
+		'email',
+		'first_name',
+		'last_name',
+		'password',
+		'test',
+		'city',
+		'region',
+		'country',
+		'about',
+		'listed',
+		'listed_email',
+		'access_level',
+		'activation_token',
+		'remember_token',
+		'activated_at',
+		'banned_at',
+		'ban_reason',
+	],
+
+	/*
+	|--------------------------------------------------------------------------
 	| Path to Picture and Thumbnail Directories
 	|--------------------------------------------------------------------------
 	|
@@ -105,7 +135,7 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| The location of your forum view layout. It is defaulted to
-	| "open-forum::layouts.master" to use OpenForum's built-in view layout,
+	| "identify::layouts.master" to use Identify's built-in view layout,
 	| but you may point it towards a directory of your own for full layout
 	| customization.
 	|
