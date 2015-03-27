@@ -723,7 +723,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				{
 					unset($stateData->{$name[0]}->{$name[1]});
 
-					if (empty((array) $stateData->{$name[0]}))
+					if (empty($stateData->{$name[0]}))
 						unset($stateData->{$name[0]});
 				}
 			}
@@ -735,10 +735,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				{
 					unset($stateData->{$name[0]}->{$name[1]}->{$name[2]});
 
-					if (empty((array) $stateData->{$name[0]}->{$name[1]}))
+					if (empty($stateData->{$name[0]}->{$name[1]}))
 						unset($stateData->{$name[0]}->{$name[1]});
 
-					if (empty((array) $stateData->{$name[0]}))
+					if (empty($stateData->{$name[0]}))
 						unset($stateData->{$name[0]});
 				}
 			}
