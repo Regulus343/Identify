@@ -753,7 +753,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			}
 		}
 
-		if (!$this->stateItem) {
+		if (!$this->stateItem)
+		{
 			$this->stateItem = new StateItem;
 			$this->stateItem->user_id = $this->id;
 		}

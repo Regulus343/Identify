@@ -46,9 +46,9 @@ class Install extends Command {
 		$this->comment('Installing Identify...');
 		$this->info($divider);
 
-		// publish config files for Identify and its required packages
+		// publish config files and assets for Identify and its required packages
 		$this->output->writeln('');
-		$this->comment('Publishing configuration...');
+		$this->comment('Publishing configuration and assets...');
 		$this->info($divider);
 
 		$publishOptions = ['--env' => $this->option('env')];
