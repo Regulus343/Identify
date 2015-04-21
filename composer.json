@@ -25,6 +25,5 @@
 			"Regulus\\Identify\\Commands\\": "src/commands/",
 			"Regulus\\Identify\\Models\\": "src/models/"
 		}
-	},
-	"minimum-stability": "stable"
+	}
 }
