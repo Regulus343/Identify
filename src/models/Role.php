@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Config;
 
 use \Auth;
 
-use Regulus\Identify\Permission;
+use Regulus\Identify\Models\Permission;
 
 class Role extends Model {
 
@@ -71,7 +71,7 @@ class Role extends Model {
 	 */
 	public function rolePermissions()
 	{
-		return $this->belongsToMany('Regulus\Identify\Permission', Auth::getTableName('role_permissions'))
+		return $this->belongsToMany('Regulus\Identify\Models\Permission', Auth::getTableName('role_permissions'))
 			->orderBy('display_order')
 			->orderBy('name');
 	}

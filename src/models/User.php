@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\URL;
 
 use Auth;
 
-use Regulus\Identify\Permission;
+use Regulus\Identify\Models\Permission;
 
 use Regulus\TetraText\Facade as Format;
 
@@ -29,6 +29,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @var string
 	 */
 	protected $table = 'users';
+
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = ['name', 'email', 'password'];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -81,6 +88,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		parent::__construct();
 
 		$this->table = Auth::getTableName($this->table);
+
+		$this->fillable = config('auth.fillable_fields');
 	}
 
 	/**
@@ -414,12 +423,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 		$this->accessLevel = 0;
 
-		if ($this->access_level > $accessLevel)
+		if ($this->access_level > $this->accessLevel)
 			$this->accessLevel = $this->access_level;
 
 		foreach ($this->roles as $role)
 		{
-			if ($role->access_level > $accessLevel)
+			if ($role->access_level > $this->accessLevel)
 				$this->accessLevel = $role->access_level;
 		}
 
@@ -439,7 +448,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			//get user derived permissions
 			foreach ($this->userPermissions as $permission)
 			{
-				if (!in_array($permission->{$field}, $permissions))
+				if (!in_array($permission->{$field}, $this->permissions))
 					$this->permissions[] = $permission->{$field};
 			}
 
@@ -447,16 +456,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			foreach ($this->roles as $role) {
 				foreach ($role->rolePermissions as $permission)
 				{
-					if (!in_array($permission->{$field}, $permissions))
+					if (!in_array($permission->{$field}, $this->permissions))
 						$this->permissions[] = $permission->{$field};
 				}
 			}
 
 			//get access level derived permissions
-			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
+			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel())->get();
 			foreach ($permissions as $permission)
 			{
-				if (!in_array($permission->{$field}, $permissions))
+				if (!in_array($permission->{$field}, $this->permissions))
 					$this->permissions[] = $permission->{$field};
 			}
 
@@ -723,7 +732,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				{
 					unset($stateData->{$name[0]}->{$name[1]});
 
-					if (empty((array) $stateData->{$name[0]}))
+					if (empty($stateData->{$name[0]}))
 						unset($stateData->{$name[0]});
 				}
 			}
@@ -735,16 +744,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				{
 					unset($stateData->{$name[0]}->{$name[1]}->{$name[2]});
 
-					if (empty((array) $stateData->{$name[0]}->{$name[1]}))
+					if (empty($stateData->{$name[0]}->{$name[1]}))
 						unset($stateData->{$name[0]}->{$name[1]});
 
-					if (empty((array) $stateData->{$name[0]}))
+					if (empty($stateData->{$name[0]}))
 						unset($stateData->{$name[0]});
 				}
 			}
 		}
 
-		if (!$this->stateItem) {
+		if (!$this->stateItem)
+		{
 			$this->stateItem = new StateItem;
 			$this->stateItem->user_id = $this->id;
 		}
