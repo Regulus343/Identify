@@ -65,6 +65,26 @@ class Permission extends Model {
 	}
 
 	/**
+	 * The parent permission that the permission belongs to.
+	 *
+	 * @return Regulus\Identify\Models\Permission
+	 */
+	public function parentPermission()
+	{
+		return $this->belongsTo('Regulus\Identify\Models\Permission', 'parent_id');
+	}
+
+	/**
+	 * The sub permissions of the permission.
+	 *
+	 * @return Collection
+	 */
+	public function subPermissions()
+	{
+		return $this->hasMany('Regulus\Identify\Models\Permission', 'parent_id');
+	}
+
+	/**
 	 * Get a select box list of permissions.
 	 *
 	 * @param  mixed    $select

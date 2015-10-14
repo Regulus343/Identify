@@ -23,6 +23,7 @@ class PermissionsTableSeeder extends Seeder {
 			[
 				'permission'    => 'admin',
 				'name'          => 'Administration',
+				'description'   => 'Full administration permissions',
 				'display_order' => 1,
 				'created_at'    => $timestamp,
 				'updated_at'    => $timestamp,

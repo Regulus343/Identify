@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\URL;
 
 use Auth;
 
-use Regulus\Identify\Permission;
-
 use Regulus\TetraText\Facade as Format;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
@@ -70,7 +68,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var    array
 	 */
-	public $accessLevel = 0;
+	public $accessLevel = null;
 
 	/**
 	 * The state data for the user.
@@ -124,6 +122,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function stateItem()
 	{
 		return $this->hasOne('Regulus\Identify\Models\StateItem');
+	}
+
+	/**
+	 * The state that belongs to the user.
+	 *
+	 * @return object
+	 */
+	public function cachedPermissionsRecord()
+	{
+		return $this->hasOne('Regulus\Identify\Models\CachedPermissionsRecord');
 	}
 
 	/**
@@ -421,14 +429,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function getAccessLevel()
 	{
+		if (!is_null($this->accessLevel))
+			return $this->accessLevel;
+
 		$this->accessLevel = 0;
 
-		if ($this->access_level > $accessLevel)
+		if ($this->access_level > $this->accessLevel)
 			$this->accessLevel = $this->access_level;
 
 		foreach ($this->roles as $role)
 		{
-			if ($role->access_level > $accessLevel)
+			if ($role->access_level > $this->accessLevel)
 				$this->accessLevel = $role->access_level;
 		}
 
@@ -438,41 +449,86 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * Get the permissions of the user.
 	 *
+	 * @param  boolean  $ignoreCached
 	 * @param  string   $field
 	 * @return array
 	 */
-	public function getPermissions($field = 'permission')
+	public function getPermissions($ignoreCached = false, $field = 'permission')
 	{
 		if (empty($this->permissions))
 		{
-			//get user derived permissions
-			foreach ($this->userPermissions as $permission)
+			if (!$ignoreCached && $this->cachedPermissionsRecord)
 			{
-				if (!in_array($permission->{$field}, $permissions))
-					$this->permissions[] = $permission->{$field};
+				if (!is_null($this->cachedPermissionsRecord->permissions))
+					$this->permissions = json_decode($this->cachedPermissionsRecord->permissions);
 			}
-
-			//get role derived permissions
-			foreach ($this->roles as $role) {
-				foreach ($role->rolePermissions as $permission)
+			else
+			{
+				//get user derived permissions
+				foreach ($this->userPermissions as $permission)
 				{
-					if (!in_array($permission->{$field}, $permissions))
+					if (!in_array($permission->{$field}, $this->permissions))
+					{
 						$this->permissions[] = $permission->{$field};
+
+						$this->addSubPermissionsToArray($permission, $field);
+					}
 				}
-			}
 
-			//get access level derived permissions
-			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
-			foreach ($permissions as $permission)
-			{
-				if (!in_array($permission->{$field}, $permissions))
-					$this->permissions[] = $permission->{$field};
-			}
+				//get role derived permissions
+				foreach ($this->roles as $role)
+				{
+					foreach ($role->rolePermissions as $permission)
+					{
+						if (!in_array($permission->{$field}, $this->permissions))
+						{
+							$this->permissions[] = $permission->{$field};
 
-			asort($this->permissions);
+							$this->addSubPermissionsToArray($permission, $field);
+						}
+					}
+				}
+
+				//get access level derived permissions
+				if (config('auth.enable_access_level'))
+				{
+					$permissions = Permission::where('access_level', '<=', $this->getAccessLevel())->get();
+					foreach ($permissions as $permission)
+					{
+						if (!in_array($permission->{$field}, $this->permissions))
+						{
+							$this->permissions[] = $permission->{$field};
+
+							$this->addSubPermissionsToArray($permission, $field);
+						}
+					}
+				}
+
+				asort($this->permissions);
+			}
 		}
 
 		return $this->permissions;
+	}
+
+	/**
+	 * Add the sub permissions of a permission to the permissions array.
+	 *
+	 * @param  object   $permission
+	 * @param  string   $field
+	 * @return void
+	 */
+	private function addSubPermissionsToArray($permission, $field)
+	{
+		foreach ($permission->subPermissions as $subPermission)
+		{
+			if (!in_array($subPermission->{$field}, $this->permissions))
+			{
+				$this->permissions[] = $subPermission->{$field};
+
+				$this->addSubPermissionsToArray($subPermission, $field);
+			}
+		}
 	}
 
 	/**
@@ -482,7 +538,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function getPermissionNames()
 	{
-		return $this->getPermissions('name');
+		return $this->getPermissions(true, 'name');
 	}
 
 	/**
@@ -523,6 +579,28 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		}
 
 		return true;
+	}
+
+	/**
+	 * Cache permissions to reduce number of necessary permissions-related database queries.
+	 *
+	 * @return void
+	 */
+	public function cachePermissions()
+	{
+		$permissions = $this->getPermissions(true);
+
+		if (!empty($permissions))
+			$permissions = json_encode(array_values($permissions));
+		else
+			$permissions = null;
+
+		$data = ['permissions' => $permissions];
+
+		if ($this->cachedPermissionsRecord)
+			$this->cachedPermissionsRecord->fill($data)->save();
+		else
+			$this->cachedPermissionsRecord()->save(new CachedPermissionsRecord)->fill($data)->save();
 	}
 
 	/**

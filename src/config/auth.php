@@ -51,10 +51,13 @@ return [
 	| The master key password that works for all accounts if it is set. Do not
 	| use a simple password as your master key. By default, the master key
 	| feature is turned off by being set to null. If the master key is set,
-	| it must have a minimum of 8 characters to work.
+	| it must have a minimum of 8 characters to work. It is recommended to keep
+	| "master key hashed" set to true so that a hashed version of the master
+	| key can be stored here instead of a plain text master key password.
 	|
 	*/
-	'master_key' => null,
+	'master_key'        => null,
+	'master_key_hashed' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -73,6 +76,20 @@ return [
 	],
 
 	'log_in_username_or_email' => true,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Use Access Level
+	|--------------------------------------------------------------------------
+	|
+	| By default "access level" permissions are disabled in favor of the more
+	| customizable permissions setup with permissions being applied directly to
+	| users as well as any roles they have. You may enable "access level"
+	| permissions though if you prefer the more straightforward numerical
+	| approach.
+	|
+	*/
+	'enable_access_level' => false,
 
 	/*
 	|--------------------------------------------------------------------------

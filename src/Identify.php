@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.1
-		last updated on March 15, 2015
+		v0.8.2
+		last updated on October 13, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
@@ -100,15 +101,26 @@ class Identify extends Guard {
 		// fact valid we'll log the users into the application and return true.
 		if ($this->hasValidCredentials($user, $credentials))
 		{
-			if ($login) $this->login($user, $remember);
+			if ($login)
+				$this->login($user, $remember);
 
 			return true;
 		}
 
 		$masterKey = config('auth.master_key');
 
-		if (!empty($user) && is_string($masterKey) && strlen($masterKey) >= 8 && $credentials['password'] == $masterKey)
-			return true;
+		if (!empty($user) && is_string($masterKey) && strlen($masterKey) >= 8)
+		{
+			if (config('auth.master_key_hashed'))
+				$success = Hash::check($credentials['password'], $masterKey);
+			else
+				$success = $credentials['password'] == $masterKey;
+
+			if ($success && $login)
+				$this->login($user, $remember);
+
+			return $success;
+		}
 
 		return false;
 	}
@@ -281,6 +293,16 @@ class Identify extends Guard {
 			return false;
 
 		return $this->user()->hasPermissions($permissions);
+	}
+
+	/**
+	 * Cache permissions for currently logged in user to reduce number of necessary permissions-related database queries.
+	 *
+	 * @return void
+	 */
+	public function cachePermissions()
+	{
+		$this->user()->cachePermissions();
 	}
 
 	/**
