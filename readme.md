@@ -3,6 +3,8 @@ Identify
 
 **A Laravel 5 authentication/authorization package that adds roles, permissions, access levels, and user states. Allows simple or complex user access control implementation.**
 
+[![Latest Stable Version](https://poser.pugx.org/regulus/identify/v/stable.svg)](https://packagist.org/packages/regulus/identify) [![License](https://poser.pugx.org/regulus/identify/license.svg)](https://packagist.org/packages/regulus/identify)
+
 > **Note:** For Laravel 4, you may use <a href="https://github.com/Regulus343/Identify/tree/v0.4.3">version 0.4.3</a>.
 
 - [Composer Package Installation](#composer-package-installation)
