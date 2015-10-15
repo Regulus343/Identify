@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.2
-		last updated on October 13, 2015
+		v0.8.4
+		last updated on October 14, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -138,9 +138,9 @@ class Identify extends Guard {
 		$allowed = false;
 		$matches = 0;
 
-		if (static::check())
+		if ($this->check())
 		{
-			$userRoles = static::user()->roles;
+			$userRoles = $this->user()->roles;
 
 			if (!is_array($roles))
 				$roles = [$roles];
@@ -293,6 +293,20 @@ class Identify extends Guard {
 			return false;
 
 		return $this->user()->hasPermissions($permissions);
+	}
+
+	/**
+	 * An alias for hasPermission().
+	 *
+	 * @param  mixed    $permissions
+	 * @return boolean
+	 */
+	public function can($permissions)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->can($permissions);
 	}
 
 	/**

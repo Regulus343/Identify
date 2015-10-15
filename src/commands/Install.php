@@ -93,6 +93,35 @@ class Install extends Command {
 
 		$this->call('db:seed', ['--class' => 'IdentifySeeder']);
 
+		// copy error views
+		$this->output->writeln('');
+		$this->comment('Copying error views...');
+		$this->info($divider);
+
+		$errorViewsDirectory = "resources/views/errors";
+		if (!is_dir($errorViewsDirectory))
+			mkdir($errorViewsDirectory);
+
+		$errorViewsPartialsDirectory = $errorViewsDirectory.'/partials';
+		if (!is_dir($errorViewsPartialsDirectory))
+			mkdir($errorViewsPartialsDirectory);
+
+		$errorViewsSourceDirectory = "vendor/regulus/identify/src/views/errors";
+
+		$errorViewFiles = [
+			'401',
+			'403',
+			'404',
+			'layout',
+			'partials/dev_info',
+		];
+		foreach ($errorViewFiles as $errorViewFile)
+		{
+			copy($errorViewsSourceDirectory.'/'.$errorViewFile.'.blade.php', $errorViewsDirectory.'/'.$errorViewFile.'.blade.php');
+		}
+
+		$this->info('Error views copied.');
+
 		// show installed text
 		$this->output->writeln('');
 		$this->info($divider);

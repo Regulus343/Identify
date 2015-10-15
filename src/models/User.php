@@ -582,6 +582,17 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * An alias for hasPermission().
+	 *
+	 * @param  mixed    $permissions
+	 * @return boolean
+	 */
+	public function can($permissions)
+	{
+		return $this->hasPermission($permissions);
+	}
+
+	/**
 	 * Cache permissions to reduce number of necessary permissions-related database queries.
 	 *
 	 * @return void

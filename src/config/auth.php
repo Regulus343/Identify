@@ -56,6 +56,7 @@ return [
 	| key can be stored here instead of a plain text master key password.
 	|
 	*/
+
 	'master_key'        => null,
 	'master_key_hashed' => true,
 
@@ -70,6 +71,7 @@ return [
 	| email address in addition to username.
 	|
 	*/
+
 	'username' => [
 		'field'        => 'name',
 		'allow_spaces' => false,
@@ -89,6 +91,7 @@ return [
 	| approach.
 	|
 	*/
+
 	'enable_access_level' => false,
 
 	/*
@@ -100,6 +103,7 @@ return [
 	| project to project, the fillable fields array is customizable here.
 	|
 	*/
+
 	'fillable_fields' => [
 		'name',
 		'email',
@@ -131,6 +135,7 @@ return [
 	| replaced with the user ID.
 	|
 	*/
+
 	'path_picture'           => 'uploads/users/:userId/images/',
 	'path_picture_thumbnail' => 'uploads/users/:userId/images/thumbs/',
 
@@ -143,6 +148,7 @@ return [
 	| automatically replaced with the user ID.
 	|
 	*/
+
 	'filename_picture'           => 'display-picture.jpg',
 	'filename_picture_thumbnail' => 'display-picture.jpg',
 
@@ -157,6 +163,7 @@ return [
 	| customization.
 	|
 	*/
+
 	'layout' => 'identify::layouts.email',
 
 	/*
@@ -167,7 +174,21 @@ return [
 	| The name of the layout section the the email content should appear in.
 	|
 	*/
+
 	'section' => 'content',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Unauthorized Error Code
+	|--------------------------------------------------------------------------
+	|
+	| By default, 403 is used as the unauthorized error code (forbidden), but
+	| you may change it so another code such as 404 if you don't want to make
+	| existence of routes known to unauthorized users.
+	|
+	*/
+
+	'unauthorized_error_code' => 403,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -179,6 +200,7 @@ return [
 	| directory of your own for full view customization.
 	|
 	*/
+
 	'views_location' => 'identify::',
 
 	/*
@@ -192,6 +214,7 @@ return [
 	| Location, you may want to use "emails/auth".
 	|
 	*/
+
 	'views_location_email' => 'emails',
 
 	/*
@@ -203,6 +226,7 @@ return [
 	| authorization email types.
 	|
 	*/
+
 	'email_types' => [
 		'confirmation' => 'Account Activation Instructions',
 		'password'     => 'Reset Your Password',
@@ -241,6 +265,7 @@ return [
 	| not be forced.
 	|
 	*/
+
 	'identify' => true,
 
 ];

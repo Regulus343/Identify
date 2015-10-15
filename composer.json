@@ -23,6 +23,7 @@
 		"psr-4": {
 			"Regulus\\Identify\\": "src/",
 			"Regulus\\Identify\\Commands\\": "src/commands/",
+			"Regulus\\Identify\\Middleware\\": "src/middleware/",
 			"Regulus\\Identify\\Models\\": "src/models/"
 		}
 	}

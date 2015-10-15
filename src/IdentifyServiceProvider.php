@@ -19,7 +19,8 @@ class IdentifyServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->publishes([
-			__DIR__.'/config/auth.php' => config_path('auth.php'),
+			__DIR__.'/config/auth.php'        => config_path('auth.php'),
+			__DIR__.'/config/auth.routes.php' => config_path('auth.routes.php'),
 		]);
 
 		$this->loadViewsFrom(__DIR__.'/views', 'identify');
