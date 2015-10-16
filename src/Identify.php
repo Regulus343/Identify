@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.4
-		last updated on October 14, 2015
+		v0.8.5
+		last updated on October 16, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -31,14 +31,14 @@ use Regulus\Identify\Models\User as User;
 class Identify extends Guard {
 
 	/**
-	 * The permissions array for the currently logged in user.
+	 * The permissions array for the current user.
 	 *
 	 * @var    array
 	 */
 	protected $permissions = [];
 
 	/**
-	 * The state array for the currently logged in user.
+	 * The state array for the current user.
 	 *
 	 * @var    array
 	 */
@@ -241,7 +241,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Get the permissions of the currently logged in user.
+	 * Get the permissions of the current user.
 	 *
 	 * @param  string   $field
 	 * @return array
@@ -258,7 +258,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Get the permission names of the currently logged in user.
+	 * Get the permission names of the current user.
 	 *
 	 * @return array
 	 */
@@ -268,7 +268,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Check if currently logged in user has a particular permission.
+	 * Check if current user has a particular permission.
 	 *
 	 * @param  mixed    $permissions
 	 * @return boolean
@@ -282,7 +282,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Check if currently logged in user has a set of specified permissions.
+	 * Check if current user has a set of specified permissions.
 	 *
 	 * @param  mixed    $permissions
 	 * @return boolean
@@ -310,7 +310,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Cache permissions for currently logged in user to reduce number of necessary permissions-related database queries.
+	 * Cache permissions for current user to reduce number of necessary permissions-related database queries.
 	 *
 	 * @return void
 	 */
@@ -320,7 +320,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Check if currently logged in user has a particular access level.
+	 * Check if current user has a particular access level.
 	 *
 	 * @param  integer  $level
 	 * @return boolean
@@ -334,7 +334,21 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Check a particular state for currently logged in user.
+	 * Check if current user has access to a route.
+	 *
+	 * @param  object   $route
+	 * @return boolean
+	 */
+	public function hasRouteAccess($route)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->hasRouteAccess($route);
+	}
+
+	/**
+	 * Check a particular state for current user.
 	 *
 	 * @param  string   $name
 	 * @param  mixed    $state
@@ -350,7 +364,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Get a particular state for currently logged in user.
+	 * Get a particular state for current user.
 	 *
 	 * @param  string   $name
 	 * @param  mixed    $default
@@ -365,7 +379,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Set a particular name for currently logged in user.
+	 * Set a particular name for current user.
 	 *
 	 * @param  string   $name
 	 * @param  mixed    $state
@@ -380,7 +394,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Remove a particular name for currently logged in user.
+	 * Remove a particular name for current user.
 	 *
 	 * @param  string   $name
 	 * @param  mixed    $state
@@ -395,7 +409,7 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Clear state data for currently logged in user.
+	 * Clear state data for current user.
 	 *
 	 * @return boolean
 	 */

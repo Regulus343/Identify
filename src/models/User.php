@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
@@ -62,6 +63,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @var    array
 	 */
 	public $permissions = [];
+
+	/**
+	 * The route access statuses for the user.
+	 *
+	 * @var    array
+	 */
+	public $routeAccessStatuses = [];
 
 	/**
 	 * The access level of the user.
@@ -549,8 +557,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function hasPermission($permissions)
 	{
-		if (is_string($permissions))
-			$permissions = [$permissions];
+		$permissions = $this->formatPermissionsArray($permissions);
 
 		foreach ($permissions as $permission)
 		{
@@ -569,8 +576,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function hasPermissions($permissions)
 	{
-		if (is_string($permissions))
-			$permissions = [$permissions];
+		$permissions = $this->formatPermissionsArray($permissions);
 
 		foreach ($permissions as $permission)
 		{
@@ -623,6 +629,117 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function hasAccessLevel($level)
 	{
 		return $this->getAccessLevel() >= (int) $level;
+	}
+
+	/**
+	 * Check if a user has access to a route.
+	 *
+	 * @param  object   $route
+	 * @return boolean
+	 */
+	public function hasRouteAccess($route)
+	{
+		$routes = config('auth.routes');
+
+		$baseUrl = str_replace('http://', '', str_replace('https://', '', str_replace('www.', '', config('app.url'))));
+
+		$routeUri    = $route->getUri();
+		$routeAction = $route->getAction();
+
+		if (!isset($routeAction['as']))
+			return $next($request);
+
+		$routeName = $routeAction['as'];
+
+		// if the route access status has already been calculated, use pre-existing access status
+		if (isset($this->routeAccessStatuses[$routeName]))
+			return $this->routeAccessStatuses[$routeName];
+
+		$permissions = null;
+
+		if (isset($routes[$routeName]))
+		{
+			$permissions = $this->formatPermissionsArray($routes[$routeName]);
+		}
+		else
+		{
+			$routeNameArray = explode('.', $routeName);
+
+			for ($r = (count($routeNameArray) - 2); $r >= 0; $r--)
+			{
+				if (is_null($permissions))
+				{
+					$routeNamePartial = "";
+
+					for ($a = 0; $a <= $r; $a++)
+					{
+						if ($routeNamePartial != "")
+							$routeNamePartial .= ".";
+
+						$routeNamePartial .= $routeNameArray[$a];
+					}
+
+					$routeNamePartial .= ".*";
+
+					if (isset($routes[$routeNamePartial]))
+					{
+						$routeName = $routeNamePartial;
+
+						// if the route access status has already been calculated, use pre-existing access status
+						if (isset($this->routeAccessStatuses[$routeName]))
+							return $this->routeAccessStatuses[$routeName];
+
+						$permissions = $this->formatPermissionsArray($routes[$routeName]);
+					}
+				}
+			}
+		}
+
+		$authorized = true;
+
+		if (!is_null($permissions))
+		{
+			$allPermissionsRequired = in_array('[ALL]', $permissions);
+
+			if ($allPermissionsRequired)
+			{
+				foreach ($permissions as $p => $permission)
+				{
+					if ($permission == "[ALL]")
+						unset($permissions[$p]);
+				}
+
+				$authorized = $this->hasPermissions($permissions);
+			}
+			else
+			{
+				$authorized = $this->hasPermission($permissions);
+			}
+
+			if (!$authorized)
+			{
+				Config::set('auth.unauthorized_route.name', $routeName);
+				Config::set('auth.unauthorized_route.permissions', $permissions);
+				Config::set('auth.unauthorized_route.all_permissions_required', $allPermissionsRequired);
+			}
+		}
+
+		$this->routeAccessStatuses[$routeName] = $authorized;
+
+		return $authorized;
+	}
+
+	/**
+	 * Ensure that permissions are an array.
+	 *
+	 * @return array
+	 */
+	private function formatPermissionsArray($permissions)
+	{
+		if (is_string($permissions))
+			$permissions = [$permissions];
+
+		return $permissions;
 	}
 
 	/**
