@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.5
-		last updated on October 16, 2015
+		v0.8.6
+		last updated on October 17, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -26,7 +26,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
-use Regulus\Identify\Models\User as User;
+use Regulus\Identify\Libraries\Router;
+use Regulus\Identify\Models\User;
 
 class Identify extends Guard {
 
@@ -336,7 +337,7 @@ class Identify extends Guard {
 	/**
 	 * Check if current user has access to a route.
 	 *
-	 * @param  object   $route
+	 * @param  mixed    $route
 	 * @return boolean
 	 */
 	public function hasRouteAccess($route)
@@ -345,6 +346,35 @@ class Identify extends Guard {
 			return false;
 
 		return $this->user()->hasRouteAccess($route);
+	}
+
+	/**
+	 * Check if current user has access to a route by URL.
+	 *
+	 * @param  string   $url
+	 * @param  boolean  $default
+	 * @return boolean
+	 */
+	public function hasAccess($url, $default = false)
+	{
+		if ($this->guest())
+			return false;
+
+		return $this->user()->hasAccess($url);
+	}
+
+	/**
+	 * Get a route from a URL.
+	 *
+	 * @param  string   $url
+	 * @return boolean
+	 */
+	public function getRouteFromUrl($url)
+	{
+		$router = new Router(new \Illuminate\Events\Dispatcher());
+		$router->setRoutes(\Route::getRoutes());
+
+		return $router->resolveRouteFromUrl($url);
 	}
 
 	/**

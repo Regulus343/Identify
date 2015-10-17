@@ -29,6 +29,10 @@
 
 		.dev-info { margin: 0 auto; padding: 6px; width: 520px; border: 1px dashed #ccc; text-align: left; }
 		.dev-info .label { display: inline-block; width: 200px; }
+
+		small { font-size: 0.8em; }
+
+		.dev-info small { padding-left: 6px; }
 	</style>
 </head>
 <body>

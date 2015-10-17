@@ -634,22 +634,27 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * Check if a user has access to a route.
 	 *
-	 * @param  object   $route
+	 * @param  mixed    $route
 	 * @return boolean
 	 */
 	public function hasRouteAccess($route)
 	{
 		$routes = config('auth.routes');
 
-		$baseUrl = str_replace('http://', '', str_replace('https://', '', str_replace('www.', '', config('app.url'))));
+		if (is_string($route))
+		{
+			$routeName = $route;
+		}
+		else
+		{
+			$routeUri    = $route->getUri();
+			$routeAction = $route->getAction();
 
-		$routeUri    = $route->getUri();
-		$routeAction = $route->getAction();
+			if (!isset($routeAction['as']))
+				return true;
 
-		if (!isset($routeAction['as']))
-			return $next($request);
-
-		$routeName = $routeAction['as'];
+			$routeName = $routeAction['as'];
+		}
 
 		// if the route access status has already been calculated, use pre-existing access status
 		if (isset($this->routeAccessStatuses[$routeName]))
@@ -727,6 +732,23 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$this->routeAccessStatuses[$routeName] = $authorized;
 
 		return $authorized;
+	}
+
+	/**
+	 * Check if current user has access to a route by URL.
+	 *
+	 * @param  string   $url
+	 * @param  boolean  $default
+	 * @return boolean
+	 */
+	public function hasAccess($url, $default = false)
+	{
+		$route = Auth::getRouteFromUrl($url);
+
+		if (is_null($route))
+			return $default;
+
+		return $this->hasRouteAccess($route);
 	}
 
 	/**

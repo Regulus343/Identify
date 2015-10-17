@@ -18,6 +18,17 @@
 			@endif
 		</div>
 
+		<div>
+			<span class="label">Current Permissions:</span>
+			<strong>{{ implode(', ', Auth::getPermissions()) }}</strong>
+		</div>
+
+		<div>
+			<span class="label">Current User:</span>
+			<strong>{{ Auth::user()->name }}</strong>
+			<small>(ID: {{ Auth::user()->id }})</small>
+		</div>
+
 	</div><!-- /.info -->
 
 @endif
