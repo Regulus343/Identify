@@ -352,29 +352,31 @@ class Identify extends Guard {
 	 * Check if current user has access to a route by URL.
 	 *
 	 * @param  string   $url
+	 * @param  string   $verb
 	 * @param  boolean  $default
 	 * @return boolean
 	 */
-	public function hasAccess($url, $default = false)
+	public function hasAccess($url, $verb = 'get', $default = false)
 	{
 		if ($this->guest())
 			return false;
 
-		return $this->user()->hasAccess($url);
+		return $this->user()->hasAccess($url, $verb, $default);
 	}
 
 	/**
 	 * Get a route from a URL.
 	 *
 	 * @param  string   $url
+	 * @param  string   $verb
 	 * @return boolean
 	 */
-	public function getRouteFromUrl($url)
+	public function getRouteFromUrl($url, $verb = 'get')
 	{
 		$router = new Router(new \Illuminate\Events\Dispatcher());
 		$router->setRoutes(\Route::getRoutes());
 
-		return $router->resolveRouteFromUrl($url);
+		return $router->resolveRouteFromUrl($url, $verb);
 	}
 
 	/**

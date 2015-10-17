@@ -2,12 +2,24 @@
 
 class Router extends \Illuminate\Routing\Router {
 
-	public function resolveRouteFromUrl($url)
+	/**
+	 * Get a route name from a URL.
+	 *
+	 * @param  string   $url
+	 * @param  string   $verb
+	 * @return boolean
+	 */
+	public function resolveRouteFromUrl($url, $verb = 'get')
 	{
-		try {
-			return $this->findRoute(\Illuminate\Http\Request::create($url));
+		try
+		{
+			$verb = strtoupper($verb);
+
+			$request = \Illuminate\Http\Request::create($url, $verb);
+
+			return $this->findRoute($request);
 		}
-		catch (\Exception $e)
+		catch (\Exception $e) // prevent exception from breaking app when checking access permissions
 		{
 			return null;
 		}

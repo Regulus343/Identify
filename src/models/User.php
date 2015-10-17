@@ -738,12 +738,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * Check if current user has access to a route by URL.
 	 *
 	 * @param  string   $url
+	 * @param  string   $verb
 	 * @param  boolean  $default
 	 * @return boolean
 	 */
-	public function hasAccess($url, $default = false)
+	public function hasAccess($url, $verb = 'get', $default = false)
 	{
-		$route = Auth::getRouteFromUrl($url);
+		$route = Auth::getRouteFromUrl($url, $verb);
 
 		if (is_null($route))
 			return $default;
