@@ -7,7 +7,7 @@
 
 		created by Cody Jassman
 		v0.8.6
-		last updated on October 17, 2015
+		last updated on October 20, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -19,11 +19,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\View;
 
 use Regulus\Identify\Libraries\Router;
@@ -44,6 +46,13 @@ class Identify extends Guard {
 	 * @var    array
 	 */
 	protected $state = [];
+
+	/**
+	 * The current user being impersonated.
+	 *
+	 * @var    array
+	 */
+	protected $impersonatingUser;
 
 	/**
 	 * Create a new authentication guard.
@@ -71,16 +80,116 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Returns the active user ID for the session, or null if the user is not logged in.
+	 * Get the currently authenticated user.
 	 *
-	 * @return boolean
+	 * @return bool   $ignoreImpersonated
+	 * @return \Illuminate\Contracts\Auth\Authenticatable|null
 	 */
-	public function userId()
+	public function user($ignoreImpersonated = false)
 	{
-		if (!$this->guest())
-			return $this->user()->id;
+		if ($this->loggedOut)
+			return;
 
-		return null;
+		// If user is impersonating another user, get that one instead
+		if (!$ignoreImpersonated)
+		{
+			if (!is_null($this->impersonatingUser))
+			{
+				return $this->impersonatingUser;
+			}
+
+			if ($impersonatingId = $this->session->get('impersonating_user_id'))
+			{
+				$user = $this->provider->retrieveById($impersonatingId);
+
+				if (!empty($user))
+				{
+					$this->impersonatingUser = $user;
+
+					return $user;
+				}
+			}
+		}
+
+		// If we have already retrieved the user for the current request we can just
+		// return it back immediately. We do not want to pull the user data every
+		// request into the method because that would tremendously slow an app.
+		if (!is_null($this->user))
+		{
+			return $this->user;
+		}
+
+		$id = $this->session->get($this->getName());
+
+		// First we will try to load the user using the identifier in the session if
+		// one exists. Otherwise we will check for a "remember me" cookie in this
+		// request, and if one exists, attempt to retrieve the user using that.
+		$user = null;
+
+		if (!is_null($id))
+		{
+			$user = $this->provider->retrieveById($id);
+		}
+
+		// If the user is null, but we decrypt a "recaller" cookie we can attempt to
+		// pull the user data on that cookie which serves as a remember cookie on
+		// the application. Once we have a user we can return it to the caller.
+		$recaller = $this->getRecaller();
+
+		if (is_null($user) && !is_null($recaller))
+		{
+			$user = $this->getUserByRecaller($recaller);
+
+			if ($user)
+			{
+				$this->updateSession($user->getAuthIdentifier());
+
+				$this->fireLoginEvent($user, true);
+			}
+		}
+
+		return $this->user = $user;
+	}
+
+	/**
+	 * Get the ID for the currently authenticated user.
+	 *
+	 * @return bool   $ignoreImpersonated
+	 * @return int|null
+	 */
+	public function id($ignoreImpersonated = false)
+	{
+		if ($this->loggedOut)
+			return;
+
+		// If user is impersonating another user, get that one instead
+		if (!$ignoreImpersonated)
+		{
+			if (!is_null($this->impersonatingUser))
+			{
+				return $this->impersonatingUser->id;
+			}
+
+			if ($impersonatingId = Session::get('impersonating_user_id'))
+			{
+				$user = $this->provider->retrieveById($impersonatingId);
+
+				if (!empty($user))
+				{
+					$this->impersonatingUser = $user;
+
+					return $user->id;
+				}
+			}
+		}
+
+		$id = $this->session->get($this->getName(), $this->getRecallerId());
+
+		if (is_null($id) && $this->user()) {
+			$id = $this->user()->getAuthIdentifier();
+		}
+
+		return $id;
 	}
 
 	/**
@@ -124,6 +233,43 @@ class Identify extends Guard {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Impersonate a user by ID.
+	 *
+	 * @param  integer  $id
+	 * @return void
+	 */
+	public function impersonate($id)
+	{
+		Session::set('impersonating_user_id', $id);
+
+		$this->impersonatedUser = $this->provider->retrieveById($id);
+	}
+
+	/**
+	 * Check if a user is being impersonated.
+	 *
+	 * @return boolean
+	 */
+	public function isImpersonating()
+	{
+		return (bool) Session::get('impersonating_user_id');
+	}
+
+	/**
+	 * Stop impersonating a user.
+	 *
+	 * @return void
+	 */
+	public function stopImpersonating()
+	{
+		Session::forget('impersonating_user_id');
+
+		$this->impersonatedUser = null;
+
+		$this->user = null;
 	}
 
 	/**
@@ -335,17 +481,127 @@ class Identify extends Guard {
 	}
 
 	/**
-	 * Check if current user has access to a route.
+	 * Check if user has access to a route.
 	 *
 	 * @param  mixed    $route
+	 * @param  mixed    $user
 	 * @return boolean
 	 */
-	public function hasRouteAccess($route)
+	public function hasRouteAccess($route, $user = null)
 	{
-		if ($this->guest())
-			return false;
+		$routes = config('auth.routes');
 
-		return $this->user()->hasRouteAccess($route);
+		if (is_null($user))
+			$user = $this->user();
+
+		if (is_string($route))
+		{
+			$routeName = $route;
+		}
+		else
+		{
+			$routeUri    = $route->getUri();
+			$routeAction = $route->getAction();
+
+			if (!isset($routeAction['as']))
+				return true;
+
+			$routeName = $routeAction['as'];
+		}
+
+		$permissions = false;
+
+		$routeAccessStatuses = [];
+		if (!empty($user))
+			$routeAccessStatuses = $user->getRouteAccessStatuses();
+
+		// if the route access status has already been calculated, use pre-existing access status
+		if (isset($routeAccessStatuses[$routeName]))
+			return $routeAccessStatuses[$routeName];
+
+		if (array_key_exists($routeName, $routes))
+		{
+			$permissions = $this->formatPermissionsArray($routes[$routeName]);
+		}
+		else
+		{
+			$routeNameArray = explode('.', $routeName);
+
+			for ($r = (count($routeNameArray) - 2); $r >= 0; $r--)
+			{
+				if ($permissions === false)
+				{
+					$routeNamePartial = "";
+
+					for ($a = 0; $a <= $r; $a++)
+					{
+						if ($routeNamePartial != "")
+							$routeNamePartial .= ".";
+
+						$routeNamePartial .= $routeNameArray[$a];
+					}
+
+					$routeNamePartial .= ".*";
+
+					if (array_key_exists($routeNamePartial, $routes))
+					{
+						$routeName = $routeNamePartial;
+
+						// if the route access status has already been calculated, use pre-existing access status
+						if (isset($routeAccessStatuses[$routeName]))
+							return $routeAccessStatuses[$routeName];
+
+						$permissions = $this->formatPermissionsArray($routes[$routeName]);
+					}
+				}
+			}
+		}
+
+		$authorized = true;
+
+		if ($permissions !== false)
+		{
+			if (is_null($permissions))
+				$permissions = [];
+
+			// if user does not exist, check whether permissions array is empty
+			if (empty($user))
+			{
+				if (!empty($permissions))
+					$authorized = false;
+
+				return $authorized;
+			}
+
+			$allPermissionsRequired = in_array('[ALL]', $permissions);
+
+			if ($allPermissionsRequired)
+			{
+				foreach ($permissions as $p => $permission)
+				{
+					if ($permission == "[ALL]")
+						unset($permissions[$p]);
+				}
+
+				$authorized = $this->hasPermissions($permissions);
+			}
+			else
+			{
+				$authorized = $this->hasPermission($permissions);
+			}
+
+			if (!$authorized)
+			{
+				Config::set('auth.unauthorized_route.name', $routeName);
+				Config::set('auth.unauthorized_route.permissions', $permissions);
+				Config::set('auth.unauthorized_route.all_permissions_required', $allPermissionsRequired);
+			}
+		}
+
+		if (!empty($user))
+			$user->setRouteAccessStatus($routeName, $authorized);
+
+		return $authorized;
 	}
 
 	/**
@@ -354,14 +610,33 @@ class Identify extends Guard {
 	 * @param  string   $url
 	 * @param  string   $verb
 	 * @param  boolean  $default
+	 * @param  mixed    $user
 	 * @return boolean
 	 */
-	public function hasAccess($url, $verb = 'get', $default = false)
+	public function hasAccess($url, $verb = 'get', $default = false, $user = null)
 	{
-		if ($this->guest())
-			return false;
+		$route = $this->getRouteFromUrl($url, $verb);
 
-		return $this->user()->hasAccess($url, $verb, $default);
+		if (is_null($route))
+			return $default;
+
+		if (is_null($user))
+			$user = $this->user();
+
+		return $this->hasRouteAccess($route);
+	}
+
+	/**
+	 * Ensure that permissions are an array.
+	 *
+	 * @return array
+	 */
+	public function formatPermissionsArray($permissions)
+	{
+		if (is_string($permissions))
+			$permissions = [$permissions];
+
+		return $permissions;
 	}
 
 	/**

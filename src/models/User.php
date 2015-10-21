@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
@@ -557,7 +556,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function hasPermission($permissions)
 	{
-		$permissions = $this->formatPermissionsArray($permissions);
+		$permissions = Auth::formatPermissionsArray($permissions);
 
 		foreach ($permissions as $permission)
 		{
@@ -576,7 +575,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function hasPermissions($permissions)
 	{
-		$permissions = $this->formatPermissionsArray($permissions);
+		$permissions = Auth::formatPermissionsArray($permissions);
 
 		foreach ($permissions as $permission)
 		{
@@ -639,99 +638,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function hasRouteAccess($route)
 	{
-		$routes = config('auth.routes');
-
-		if (is_string($route))
-		{
-			$routeName = $route;
-		}
-		else
-		{
-			$routeUri    = $route->getUri();
-			$routeAction = $route->getAction();
-
-			if (!isset($routeAction['as']))
-				return true;
-
-			$routeName = $routeAction['as'];
-		}
-
-		// if the route access status has already been calculated, use pre-existing access status
-		if (isset($this->routeAccessStatuses[$routeName]))
-			return $this->routeAccessStatuses[$routeName];
-
-		$permissions = null;
-
-		if (isset($routes[$routeName]))
-		{
-			$permissions = $this->formatPermissionsArray($routes[$routeName]);
-		}
-		else
-		{
-			$routeNameArray = explode('.', $routeName);
-
-			for ($r = (count($routeNameArray) - 2); $r >= 0; $r--)
-			{
-				if (is_null($permissions))
-				{
-					$routeNamePartial = "";
-
-					for ($a = 0; $a <= $r; $a++)
-					{
-						if ($routeNamePartial != "")
-							$routeNamePartial .= ".";
-
-						$routeNamePartial .= $routeNameArray[$a];
-					}
-
-					$routeNamePartial .= ".*";
-
-					if (isset($routes[$routeNamePartial]))
-					{
-						$routeName = $routeNamePartial;
-
-						// if the route access status has already been calculated, use pre-existing access status
-						if (isset($this->routeAccessStatuses[$routeName]))
-							return $this->routeAccessStatuses[$routeName];
-
-						$permissions = $this->formatPermissionsArray($routes[$routeName]);
-					}
-				}
-			}
-		}
-
-		$authorized = true;
-
-		if (!is_null($permissions))
-		{
-			$allPermissionsRequired = in_array('[ALL]', $permissions);
-
-			if ($allPermissionsRequired)
-			{
-				foreach ($permissions as $p => $permission)
-				{
-					if ($permission == "[ALL]")
-						unset($permissions[$p]);
-				}
-
-				$authorized = $this->hasPermissions($permissions);
-			}
-			else
-			{
-				$authorized = $this->hasPermission($permissions);
-			}
-
-			if (!$authorized)
-			{
-				Config::set('auth.unauthorized_route.name', $routeName);
-				Config::set('auth.unauthorized_route.permissions', $permissions);
-				Config::set('auth.unauthorized_route.all_permissions_required', $allPermissionsRequired);
-			}
-		}
-
-		$this->routeAccessStatuses[$routeName] = $authorized;
-
-		return $authorized;
+		return Auth::hasRouteAccess($route, $this);
 	}
 
 	/**
@@ -744,25 +651,31 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function hasAccess($url, $verb = 'get', $default = false)
 	{
-		$route = Auth::getRouteFromUrl($url, $verb);
-
-		if (is_null($route))
-			return $default;
-
-		return $this->hasRouteAccess($route);
+		return Auth::hasAccess($url, $verb, $default, $this);
 	}
 
 	/**
-	 * Ensure that permissions are an array.
+	 * Get route access statuses.
 	 *
+	 * @param  string   $routeName
+	 * @param  boolean  $authorized
 	 * @return array
 	 */
-	private function formatPermissionsArray($permissions)
+	public function getRouteAccessStatuses()
 	{
-		if (is_string($permissions))
-			$permissions = [$permissions];
+		return $this->routeAccessStatuses;
+	}
 
-		return $permissions;
+	/**
+	 * Set a route access status.
+	 *
+	 * @param  string   $routeName
+	 * @param  boolean  $authorized
+	 * @return void
+	 */
+	public function setRouteAccessStatus($routeName, $authorized)
+	{
+		$this->routeAccessStatuses[$routeName] = $authorized;
 	}
 
 	/**
