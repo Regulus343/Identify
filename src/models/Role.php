@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\Config;
 
-use \Auth;
-
-use Regulus\Identify\Permission;
+use Auth;
 
 class Role extends Model {
 
