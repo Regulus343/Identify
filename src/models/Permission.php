@@ -4,7 +4,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use \Auth;
+use Auth;
 
 class Permission extends Model {
 

@@ -472,7 +472,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			}
 			else
 			{
-				//get user derived permissions
+				// get user derived permissions
 				foreach ($this->userPermissions as $permission)
 				{
 					if (!in_array($permission->{$field}, $this->permissions))
@@ -483,7 +483,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 					}
 				}
 
-				//get role derived permissions
+				// get role derived permissions
 				foreach ($this->roles as $role)
 				{
 					foreach ($role->rolePermissions as $permission)
@@ -497,7 +497,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 					}
 				}
 
-				//get access level derived permissions
+				// get access level derived permissions
 				if (config('auth.enable_access_level'))
 				{
 					$permissions = Permission::where('access_level', '<=', $this->getAccessLevel())->get();
