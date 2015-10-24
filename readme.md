@@ -69,31 +69,31 @@ You may now skip ahead to the [Basic Usage](#basic-usage) section.
 
 	if (Auth::check())
 	{
-		//the user is logged in
+		// the user is logged in
 	}
 
 **Checking whether a user has a particular role:**
 
 	if (Auth::is('admin'))
 	{
-		//the user has an "admin" role
+		// the user has an "admin" role
 	}
 
 	if (Auth::is(['admin', 'user']))
 	{
-		//the user has an "admin" role and/or a "user" role
+		// the user has an "admin" role and/or a "user" role
 	}
 
-**Checking whether a user has is not particular role:**
+**Checking whether a user does not have a particular role:**
 
 	if (Auth::isNot('admin'))
 	{
-		//the user lacks an "admin" role
+		// the user lacks an "admin" role
 	}
 
 	if (Auth::isNot(['admin', 'user']))
 	{
-		//the user lacks the "admin" and "user" roles
+		// the user lacks the "admin" and "user" roles
 	}
 
 **Authorize a specific role or roles:**
@@ -115,6 +115,20 @@ You may now skip ahead to the [Basic Usage](#basic-usage) section.
 The third argument is the name of the session variable. The default is 'messages' so if the user is redirected, `Session::get('messages')` will return an array like:
 
 	['error' => 'You are not authorized to access the requested page.']
+
+**Check whether a user has route access based on permissions:**
+
+	if (Auth::hasRouteAccess('pages.edit')
+	{
+		// user has access to "pages.edit" route
+	}
+
+**Check whether a user has route access based on permissions:**
+
+	if (Auth::hasAccess('pages/edit/home')
+	{
+		// user has access to "pages/edit/home" URI (based on "config/auth.routes.php" route permissions mapping)
+	}
 
 **Create a new user account:**
 
