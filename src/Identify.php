@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.6
-		last updated on October 20, 2015
+		v0.8.7
+		last updated on October 23, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;

@@ -23,6 +23,8 @@ class IdentifyServiceProvider extends ServiceProvider {
 			__DIR__.'/config/auth.routes.php' => config_path('auth.routes.php'),
 		]);
 
+		$this->loadTranslationsFrom(__DIR__.'/lang', 'identify');
+
 		$this->loadViewsFrom(__DIR__.'/views', 'identify');
 
 		\Auth::extend('eloquent', function($app)

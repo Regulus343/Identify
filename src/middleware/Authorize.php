@@ -3,6 +3,8 @@
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
 
+use Illuminate\Support\Facades\Redirect;
+
 class Authorize {
 
 	/**
@@ -35,7 +37,14 @@ class Authorize {
 		$authorized = $this->auth->hasRouteAccess($request->route());
 
 		if (!$authorized)
+		{
+			if (config('auth.unauthorized_redirect'))
+				return Redirect::route(config('auth.unauthorized_redirect_route'))->with('messages', [
+					'error' => trans('identify::messages.unauthorized'),
+				]);
+
 			abort(config('auth.unauthorized_error_code'));
+		}
 
 		return $next($request);
 	}

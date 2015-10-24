@@ -192,6 +192,21 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Unauthorized Redirect
+	|--------------------------------------------------------------------------
+	|
+	| Set this to true redirect to a URI instead of return an HTTP error
+	| response. By default the redirect behaviour for unauthorized route access
+	| attempts is turned off.
+	|
+	*/
+
+	'unauthorized_redirect'         => false,
+	'unauthorized_redirect_route'   => 'home',
+	'unauthorized_redirect_message' => 'identify::messages.unauthorized',
+
+	/*
+	|--------------------------------------------------------------------------
 	| Views Location
 	|--------------------------------------------------------------------------
 	|
