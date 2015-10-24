@@ -118,14 +118,14 @@ The third argument is the name of the session variable. The default is 'messages
 
 **Check whether a user has route access based on permissions:**
 
-	if (Auth::hasRouteAccess('pages.edit')
+	if (Auth::hasRouteAccess('pages.edit'))
 	{
 		// user has access to "pages.edit" route
 	}
 
 **Check whether a user has route access based on permissions:**
 
-	if (Auth::hasAccess('pages/edit/home')
+	if (Auth::hasAccess('pages/edit/home'))
 	{
 		// user has access to "pages/edit/home" URI (based on "config/auth.routes.php" route permissions mapping)
 	}
