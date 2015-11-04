@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.7
-		last updated on October 23, 2015
+		v0.8.8
+		last updated on November 3, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -34,13 +34,6 @@ use Regulus\Identify\Models\User;
 class Identify extends Guard {
 
 	/**
-	 * The permissions array for the current user.
-	 *
-	 * @var    array
-	 */
-	protected $permissions = [];
-
-	/**
 	 * The state array for the current user.
 	 *
 	 * @var    array
@@ -53,6 +46,20 @@ class Identify extends Guard {
 	 * @var    array
 	 */
 	protected $impersonatingUser;
+
+	/**
+	 * The permissions array for the current user.
+	 *
+	 * @var    array
+	 */
+	protected $permissions = [];
+
+	/**
+	 * The permission sources array for the current user.
+	 *
+	 * @var    array
+	 */
+	protected $permissionSources = [];
 
 	/**
 	 * Create a new authentication guard.
@@ -415,6 +422,22 @@ class Identify extends Guard {
 	}
 
 	/**
+	 * Get the permission sources of the current user.
+	 *
+	 * @return array
+	 */
+	public function getPermissionSources()
+	{
+		if ($this->guest())
+			return [];
+
+		if (empty($this->permissionSources))
+			$this->permissionSources = $this->user()->getPermissionSources();
+
+		return $this->permissionSources;
+	}
+
+	/**
 	 * Check if current user has a particular permission.
 	 *
 	 * @param  mixed    $permissions
@@ -454,6 +477,18 @@ class Identify extends Guard {
 			return false;
 
 		return $this->user()->can($permissions);
+	}
+
+	/**
+	 * Get the source of a permission for current user.
+	 *
+	 * @param  string   $permission
+	 * @param  boolean  $includeRecordInfo
+	 * @return mixed
+	 */
+	public function getPermissionSource($permission, $includeRecordInfo = false)
+	{
+		return $this->user()->getPermissionSource($permission, $includeRecordInfo);
 	}
 
 	/**
