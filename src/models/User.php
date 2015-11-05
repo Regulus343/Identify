@@ -470,7 +470,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function getPermissions($ignoreCached = false, $field = 'permission', $returnSources = false)
 	{
-		if (empty($this->permissions))
+		if (empty($this->permissions) || ($returnSources && empty($this->permissionSources)))
 		{
 			if (!$ignoreCached && $this->cachedPermissionsRecord)
 			{
@@ -484,13 +484,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				{
 					if (!in_array($permission->{$field}, $this->permissions))
 					{
-
 						$this->permissions[] = $permission->{$field};
-
-						$this->permissionSources[$permission->permission] = "User";
-
-						$this->addSubPermissionsToArray($permission, $field);
 					}
+
+					$this->permissionSources[$permission->permission] = "User";
+
+					$this->addSubPermissionsToArray($permission, $field);
 				}
 
 				// get role derived permissions
@@ -501,12 +500,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 						if (!in_array($permission->{$field}, $this->permissions))
 						{
 							$this->permissions[] = $permission->{$field};
-
-							if (!isset($this->permissionSources[$permission->permission]))
-								$this->permissionSources[$permission->permission] = "Role:".$role->role.":".$role->name;
-
-							$this->addSubPermissionsToArray($permission, $field);
 						}
+
+						if (!isset($this->permissionSources[$permission->permission]))
+						{
+							$this->permissionSources[$permission->permission] = "Role:".$role->role.":".$role->name;
+						}
+
+						$this->addSubPermissionsToArray($permission, $field);
 					}
 				}
 
@@ -519,12 +520,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 						if (!in_array($permission->{$field}, $this->permissions))
 						{
 							$this->permissions[] = $permission->{$field};
-
-							if (!isset($this->permissionSources[$permission->permission]))
-								$this->permissionSources[$permission->permission] = "Access Level";
-
-							$this->addSubPermissionsToArray($permission, $field);
 						}
+
+						if (!isset($this->permissionSources[$permission->permission]))
+						{
+							$this->permissionSources[$permission->permission] = "Access Level";
+						}
+
+						$this->addSubPermissionsToArray($permission, $field);
 					}
 				}
 
@@ -573,11 +576,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			{
 				$this->permissions[] = $subPermission->{$field};
 
-				if (!isset($this->permissionSources[$subPermission->permission]))
-					$this->permissionSources[$subPermission->permission] = "Permission:".$permission->permission.":".$permission->name;
-
 				$this->addSubPermissionsToArray($subPermission, $field);
 			}
+
+			if (!isset($this->permissionSources[$subPermission->permission]))
+				$this->permissionSources[$subPermission->permission] = "Permission:".$permission->permission.":".$permission->name;
 		}
 	}
 
@@ -644,6 +647,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 		$permissionSources = $this->getPermissionSources();
 
+		$type = null;
+		$item = null;
+		$name = null;
+
 		if (array_key_exists($permission, $permissionSources))
 		{
 			$permissionSource = explode(':', $permissionSources[$permission]);
@@ -655,15 +662,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 			$item = isset($permissionSource[1]) ? $permissionSource[1] : null;
 			$name = isset($permissionSource[2]) ? $permissionSource[2] : null;
+		}
 
+		if ($includeRecordInfo)
 			return (object) [
 				'type' => $type,
 				'item' => $item,
 				'name' => $name,
 			];
-		}
 
-		return null;
+		return $type;
 	}
 
 	/**
