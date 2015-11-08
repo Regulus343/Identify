@@ -104,22 +104,26 @@ class Role extends Model {
 	 */
 	public function getPermissions($field = 'permission')
 	{
-		if (empty($this->permissions)) {
+		if (empty($this->permissions))
+		{
 			$this->permissions = [];
 
-			//get role derived permissions
-			foreach ($this->roles as $role) {
-				foreach ($role->rolePermissions as $permission) {
-					if (!in_array($permission->{$field}, $permissions))
-						$this->permissions[] = $permission->{$field};
-				}
+			// get role derived permissions
+			foreach ($this->rolePermissions as $permission)
+			{
+				if (!in_array($permission->{$field}, $this->permissions))
+					$this->permissions[] = $permission->{$field};
 			}
 
-			//get access level derived permissions
-			$permissions = Permission::where('access_level', '<=', $this->getAccessLevel)->get();
-			foreach ($permissions as $permission) {
-				if (!in_array($permission->{$field}, $permissions))
-					$this->permissions[] = $permission->{$field};
+			// get access level derived permissions
+			if (config('auth.enable_access_level'))
+			{
+				$permissions = Permission::where('access_level', '<=', $this->access_level)->get();
+				foreach ($permissions as $permission)
+				{
+					if (!in_array($permission->{$field}, $this->permissions))
+						$this->permissions[] = $permission->{$field};
+				}
 			}
 
 			asort($this->permissions);
@@ -136,6 +140,28 @@ class Role extends Model {
 	public function getPermissionNames()
 	{
 		return $this->getPermissions('name');
+	}
+
+	/**
+	 * Check if a role has a particular permission.
+	 *
+	 * @param  mixed    $permissions
+	 * @return boolean
+	 */
+	public function hasPermission($permissions)
+	{
+		$permissions = Auth::formatPermissionsArray($permissions);
+
+		if (empty($permissions))
+			return true;
+
+		foreach ($permissions as $permission)
+		{
+			if (in_array($permission, $this->getPermissions()))
+				return true;
+		}
+
+		return false;
 	}
 
 	/**
