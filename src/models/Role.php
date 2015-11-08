@@ -138,4 +138,80 @@ class Role extends Model {
 		return $this->getPermissions('name');
 	}
 
+	/**
+	 * Add a permission to the role.
+	 *
+	 * @return boolean
+	 */
+	public function addPermission($permission)
+	{
+		if (!$this->hasDirectPermission($permission))
+		{
+			$permissionRecord = null;
+
+			if (is_integer($permission))
+				$permissionRecord = Permission::find($permission);
+
+			if (is_string($permission))
+				$permissionRecord = Permission::where('permission', $permission)->first();
+
+			if (!empty($permissionRecord))
+			{
+				$this->rolePermissions()->attach($permissionRecord->id);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Remove a permission from the role.
+	 *
+	 * @return boolean
+	 */
+	public function removePermission($permission)
+	{
+		if ($this->hasDirectPermission($permission))
+		{
+			$permissionRecord = null;
+
+			if (is_integer($permission))
+				$permissionRecord = Permission::find($permission);
+
+			if (is_string($permission))
+				$permissionRecord = Permission::where('permission', $permission)->first();
+
+			if (!empty($permissionRecord))
+			{
+				$this->rolePermissions()->detach($permissionRecord->id);
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a permission has been directly applied to the role.
+	 *
+	 * @param  mixed    $permission
+	 * @return boolean
+	 */
+	public function hasDirectPermission($permission)
+	{
+		foreach ($this->rolePermissions as $permissionListed)
+		{
+			if (is_integer($permission) && $permissionListed->id == $permission)
+				return true;
+
+			if (is_string($permission) && $permissionListed->permission == $permission)
+				return true;
+		}
+
+		return false;
+	}
+
 }

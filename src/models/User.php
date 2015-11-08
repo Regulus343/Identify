@@ -697,6 +697,86 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * Add a permission to the user.
+	 *
+	 * @return boolean
+	 */
+	public function addPermission($permission)
+	{
+		if (!$this->hasDirectPermission($permission))
+		{
+			$permissionRecord = null;
+
+			if (is_integer($permission))
+				$permissionRecord = Permission::find($permission);
+
+			if (is_string($permission))
+				$permissionRecord = Permission::where('permission', $permission)->first();
+
+			if (!empty($permissionRecord))
+			{
+				$this->userPermissions()->attach($permissionRecord->id);
+
+				$this->cachePermissions();
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Remove a permission from the user.
+	 *
+	 * @return boolean
+	 */
+	public function removePermission($permission)
+	{
+		if ($this->hasDirectPermission($permission))
+		{
+			$permissionRecord = null;
+
+			if (is_integer($permission))
+				$permissionRecord = Permission::find($permission);
+
+			if (is_string($permission))
+				$permissionRecord = Permission::where('permission', $permission)->first();
+
+			if (!empty($permissionRecord))
+			{
+				$this->userPermissions()->detach($permissionRecord->id);
+
+				$this->cachePermissions();
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a permission has been directly applied to the user.
+	 *
+	 * @param  mixed    $permission
+	 * @return boolean
+	 */
+	public function hasDirectPermission($permission)
+	{
+		foreach ($this->userPermissions as $permissionListed)
+		{
+			if (is_integer($permission) && $permissionListed->id == $permission)
+				return true;
+
+			if (is_string($permission) && $permissionListed->permission == $permission)
+				return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Check if a user has a particular access level.
 	 *
 	 * @param  integer  $level
