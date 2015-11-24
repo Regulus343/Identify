@@ -777,6 +777,88 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * Checks whether the user is in one or all of the given roles ($roles can be an array of roles
+	 * or a string of a single role).
+	 *
+	 * @param  mixed    $roles
+	 * @param  boolean  $all
+	 * @return boolean
+	 */
+	public function is($roles, $all = false)
+	{
+		$allowed = false;
+		$matches = 0;
+
+		$userRoles = $this->roles;
+
+		if (!is_array($roles))
+			$roles = [$roles];
+
+		foreach ($userRoles as $userRole)
+		{
+			foreach ($roles as $role)
+			{
+				if (strtolower($userRole->role) == strtolower($role))
+				{
+					$allowed = true;
+					$matches ++;
+				}
+			}
+		}
+
+		if ($all && $matches < count($roles))
+			$allowed = false;
+
+		return $allowed;
+	}
+
+	/**
+	 * Alias of is().
+	 *
+	 * @param  mixed    $roles
+	 * @param  boolean  $all
+	 * @return boolean
+	 */
+	public function hasRole($roles, $all = false)
+	{
+		return $this->is($roles, $all);
+	}
+
+	/**
+	 * Checks whether the user is in all of the given roles ($roles can be an array of roles
+	 * or a string of a single role).
+	 *
+	 * @param  mixed    $roles
+	 * @return boolean
+	 */
+	public function isAll($roles)
+	{
+		return $this->is($roles, true);
+	}
+
+	/**
+	 * Alias of isAll().
+	 *
+	 * @param  mixed    $roles
+	 * @return boolean
+	 */
+	public function hasRoles($roles)
+	{
+		return $this->isAll($roles);
+	}
+
+	/**
+	 * A simple inversion of the is() method to check if a user should be denied access to the subsequent content.
+	 *
+	 * @param  mixed    $roles
+	 * @return boolean
+	 */
+	public function isNot($roles)
+	{
+		return ! $this->is($roles);
+	}
+
+	/**
 	 * Check if a user has a particular access level.
 	 *
 	 * @param  integer  $level
