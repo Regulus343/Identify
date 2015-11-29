@@ -7,7 +7,7 @@
 
 		created by Cody Jassman
 		v0.8.9
-		last updated on November 23, 2015
+		last updated on November 29, 2015
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\Guard;
@@ -289,7 +289,7 @@ class Identify extends Guard {
 	 */
 	public function is($roles, $all = false)
 	{
-		if ($this->check())
+		if ($this->guest())
 			return false;
 
 		return $this->user()->is($roles, $all);
