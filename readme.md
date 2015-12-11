@@ -29,11 +29,11 @@ Then run `php composer.phar update` from the command line. Composer will install
 
 Add this to the `providers` array in `config/app.php`:
 
-	'Regulus\Identify\IdentifyServiceProvider',
+	Regulus\Identify\IdentifyServiceProvider::class,
 
 And add this to the `aliases` array:
 
-	'Auth' => 'Regulus\Identify\Facade',
+	'Auth' => Regulus\Identify\Facade::class,
 
 **Add middleware to the `routeMiddleware` array in `app/Http/Kernal.php`:**
 
