@@ -6,11 +6,11 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.8.9
-		last updated on November 29, 2015
+		v0.9.0
+		last updated on January 8, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
-use Illuminate\Auth\Guard;
+use Illuminate\Auth\SessionGuard;
 
 use Illuminate\Contracts\Auth\UserProvider;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -31,7 +31,7 @@ use Illuminate\Support\Facades\View;
 use Regulus\Identify\Libraries\Router;
 use Regulus\Identify\Models\User;
 
-class Identify extends Guard {
+class Identify extends SessionGuard {
 
 	/**
 	 * The state array for the current user.
@@ -69,21 +69,27 @@ class Identify extends Guard {
 	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return void
 	 */
-	public function __construct(UserProvider $provider,
+	public function __construct($name,
+								UserProvider $provider,
 								SessionInterface $session,
 								Request $request = null)
 	{
-		parent::__construct($provider, $session, $request);
+		parent::__construct($name, $provider, $session, $request);
 	}
 
 	/**
-	 * Adds the table prefix to the auth tables based on the "auth.table" config variable.
+	 * Adds the table prefix to the auth tables based on the "auth.tables_prefix" config variable.
 	 *
 	 * @return string
 	 */
 	public function getTableName($name = 'users')
 	{
-		return str_replace('users', $name, config('auth.table'));
+		$prefix = config('auth.tables_prefix');
+
+		if (is_null($prefix) || $prefix === false)
+			$prefix = "";
+
+		return $prefix.$name;
 	}
 
 	/**

@@ -27,13 +27,13 @@ class IdentifyServiceProvider extends ServiceProvider {
 
 		$this->loadViewsFrom(__DIR__.'/views', 'identify');
 
-		\Auth::extend('eloquent', function($app)
+		\Auth::extend('session', function($app, $name, array $config)
 		{
-			$model = $app['config']['auth.model'];
+			$model = $app['config']['auth.providers.users.model'];
 
-			$provider = new \Regulus\Identify\IdentifyUserProvider($app['hash'], $model);
+			$provider = new IdentifyUserProvider($app['hash'], $model);
 
-			return new \Regulus\Identify\Identify($provider, $this->app['session.store']);
+			return new Identify($name, $provider, $this->app['session.store'], $this->app['request']);
 		});
 	}
 

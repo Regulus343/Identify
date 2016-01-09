@@ -2,7 +2,7 @@
 
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
-use Illuminate\Contracts\Auth\Authenticatable as UserContract;
+use Illuminate\Contracts\Auth\Authenticatable;
 
 class IdentifyUserProvider implements UserProvider {
 
@@ -69,7 +69,7 @@ class IdentifyUserProvider implements UserProvider {
 	 * @param  string  $token
 	 * @return void
 	 */
-	public function updateRememberToken(UserContract $user, $token)
+	public function updateRememberToken(Authenticatable $user, $token)
 	{
 		$user->setRememberToken($token);
 
@@ -128,7 +128,7 @@ class IdentifyUserProvider implements UserProvider {
 	 * @param  array  $credentials
 	 * @return bool
 	 */
-	public function validateCredentials(UserContract $user, array $credentials)
+	public function validateCredentials(Authenticatable $user, array $credentials)
 	{
 		$plain = $credentials['password'];
 
