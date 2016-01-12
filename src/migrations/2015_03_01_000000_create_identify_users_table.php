@@ -65,16 +65,6 @@ class CreateIdentifyUsersTable extends Migration {
 	public function down()
 	{
 		Schema::drop(Auth::getTableName('users'));
-
-		Schema::create('users', function(Blueprint $table)
-		{
-			$table->increments('id');
-			$table->string('name');
-			$table->string('email')->unique();
-			$table->string('password', 60);
-			$table->rememberToken();
-			$table->timestamps();
-		});
 	}
 
 }
