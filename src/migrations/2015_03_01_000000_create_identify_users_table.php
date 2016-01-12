@@ -14,9 +14,11 @@ class CreateIdentifyUsersTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::dropIfExists('users');
+		$tableName = Auth::getTableName('users');
 
-		Schema::create(Auth::getTableName('users'), function(Blueprint $table)
+		Schema::dropIfExists($tableName);
+
+		Schema::create($tableName, function(Blueprint $table)
 		{
 			$table->increments('id');
 			$table->string('name', 120)->unique();
