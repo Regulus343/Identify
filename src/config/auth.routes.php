@@ -20,8 +20,9 @@ return [
 	|
 	*/
 
-	'admin.*'       => ['manage'],
-	'admin.pages.*' => ['manage-pages'],
-	'admin.forms.*' => ['manage-pages', 'manage-forms', '[ALL]'],
+	'admin.*'          => ['manage'],                                // user must have "manage" permission
+	'admin.pages.*'    => ['manage-pages', 'demo'],                  // user must have "manage-pages" or "demo" permission
+	'admin.forms.*'    => ['manage-pages', 'manage-forms', '[ALL]'], // user must have "manage-pages" and "manage-forms" permission
+	'admin.forms.view' => ['view-forms'],                            // the most specifically defined route will always be checked
 
 ];

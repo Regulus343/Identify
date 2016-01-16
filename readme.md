@@ -37,7 +37,7 @@ And add this to the `aliases` array:
 
 **Add middleware to the `routeMiddleware` array in `app/Http/Kernal.php`:**
 
-	'auth.permissions' => 'Regulus\Identify\Middleware\Authorize',
+	'auth.permissions' => \Regulus\Identify\Middleware\Authorize::class,
 
 **Add and run the install command:**
 
@@ -81,7 +81,17 @@ You may now skip ahead to the [Basic Usage](#basic-usage) section.
 
 	if (Auth::is(['admin', 'user']))
 	{
-		// the user has an "admin" role and/or a "user" role
+		// the user has an "admin" and/or "user" role
+	}
+
+	if (Auth::hasRole(['admin', 'user']))
+	{
+		// the user has an "admin" and/or "user" role (hasRole() is an alias of the is() method)
+	}
+
+	if (Auth::isAll(['admin', 'user']))
+	{
+		// the user has an "admin" and "user" role
 	}
 
 **Checking whether a user does not have a particular role:**
@@ -96,70 +106,116 @@ You may now skip ahead to the [Basic Usage](#basic-usage) section.
 		// the user lacks the "admin" and "user" roles
 	}
 
+**Checking whether a user has a particular permission:**
+
+	if (Auth::can('manage-posts'))
+	{
+		// the user has a "manage-posts" permission
+	}
+
+	if (Auth::can(['manage-posts', 'manage-users']))
+	{
+		// the user has a "manage-posts" and/or "manage-users" permission
+	}
+
+	if (Auth::hasPermission(['manage-posts', 'manage-users']))
+	{
+		// the user has a "manage-posts" and/or "manage-users" permission (hasPermission() is an alias of the has() method)
+	}
+
+	if (Auth::hasPermissions(['manage-posts', 'manage-users']))
+	{
+		// the user has a "manage-posts" and "manage-users" permission
+	}
+
+> **Note:** Permissions can be hierarchical, so a "manage" permission may contain "manage-posts", "manage-users", etc. In this case, `Auth::can('manage-posts')` will be satisfied if the user has the parent "manage" permission. Users may have permissions directly applied to their user accounts or indirectly via roles. Roles may have a set of permissions associated with them that users will inherit.
+
 **Authorize a specific role or roles:**
 
-	//redirect to "home" URI if the user does not have one of the specified roles
-	Auth::authorize(['admin', 'user'], 'home');
+	// redirect to "home" URI if the user does not have one of the specified roles
+	Auth::authorizeByRole(['admin', 'user'], 'home');
 
-	//with a custom message (otherwise a default one is provided)
-	Auth::authorize(['admin', 'user'], 'home', 'You are not authorized to access the requested page.');
+	// with a custom message (otherwise a default one is provided)
+	Auth::authorizeByRole(['admin', 'user'], 'home', 'You are not authorized to access the requested page.');
+
+**Authorize a specific permission or permissions:**
+
+	// redirect to "home" URI if the user does not have one of the specified roles
+	Auth::authorize(['manage-posts', 'manage-users'], 'home');
+
+	// with a custom message (otherwise a default one is provided)
+	Auth::authorize(['manage-posts', 'manage-users'], 'home', 'You are not authorized to access the requested page.');
 
 **Automatically redirect to a URI with the unauthorized message:**
 
-	//redirect to "home" URI if the user does not have one of the specified roles
+	// redirect to "home" URI if the user does not have one of the specified roles
 	return Auth::unauthorized('home');
 
-	//with a custom message (otherwise a default one is provided)
+	// with a custom message (otherwise a default one is provided)
 	return Auth::unauthorized('home', 'You are not authorized to access the requested page.');
 
 The third argument is the name of the session variable. The default is 'messages' so if the user is redirected, `Session::get('messages')` will return an array like:
 
 	['error' => 'You are not authorized to access the requested page.']
 
-**Check whether a user has route access based on permissions:**
+**Check whether a user has route access based on route permissions:**
 
 	if (Auth::hasRouteAccess('pages.edit'))
 	{
 		// user has access to "pages.edit" route
 	}
 
-**Check whether a user has route access based on permissions:**
+> **Note:** This and the hasAccess() require you to set up route permissions in `config/auth.routes.php`.
+
+**Check whether a user has access to a URI based on route permissions:**
 
 	if (Auth::hasAccess('pages/edit/home'))
 	{
 		// user has access to "pages/edit/home" URI (based on "config/auth.routes.php" route permissions mapping)
 	}
 
+To use hasRouteAccess() and hasAccess(), you may set up `config/auth.routes.php` to include the routes you would like to set permissions on:
+
+	return [
+
+		'admin.*'          => ['manage'],                                // user must have "manage" permission
+		'admin.pages.*'    => ['manage-pages', 'demo'],                  // user must have "manage-pages" or "demo" permission
+		'admin.forms.*'    => ['manage-pages', 'manage-forms', '[ALL]'], // user must have "manage-pages" and "manage-forms" permission
+		'admin.forms.view' => ['view-forms'],                            // the most specifically defined route will always be checked
+
+	];
+
 **Create a new user account:**
 
 	Auth::createUser();
 
-	//use custom input array
+	// use custom input array
 	Auth::createUser([
-		'username' => 'TestUser',
-		'email'    => 'test@localhost',
-		'password' => 'password',
-		'role_id'  => 2,
+		'name'        => 'TestUser',
+		'email'       => 'test@localhost',
+		'password'    => 'password',
+		'role_id'     => 2,
+		'permissions' => ['manage-pages', 'manage-users'],
 	]);
 
-	//automatically activate user account
+	// automatically activate user account
 	Auth::createUser($input, true);
 
-	//suppress confirmation email
+	// suppress confirmation email
 	Auth::createUser($input, true, false);
 
 **Create a new user account via the command line interface:**
 
-	//use default password of "password"
+	// use default password of "password"
 	php artisan user:create username email@address.com
 
-	//use alternate password
+	// use alternate password
 	php artisan user:create username email@address.com --password=anotherpassword
 
-	//automatically activate user
+	// automatically activate user
 	php artisan user:create username email@address.com --activate
 
-	//automatically activate user and suppress confirmation email
+	// automatically activate user and suppress confirmation email
 	php artisan user:create username email@address.com --activate --suppress
 
 **Send an email to a user with a specific view in `views/emails`:**
@@ -176,5 +232,5 @@ The third argument is the name of the session variable. The default is 'messages
 
 	if (Auth::activate(1, 'wHHhONhavZps1J9p8Rs6WIXsTK30tFhl'))
 	{
-		//user ID #1 has been activated
+		// user ID #1 has been activated
 	}

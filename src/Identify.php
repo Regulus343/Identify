@@ -21,7 +21,6 @@ use Illuminate\Contracts\Hashing\Hasher as HasherContract;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
@@ -355,12 +354,29 @@ class Identify extends SessionGuard {
 	 * @param  string   $messageVar
 	 * @return boolean
 	 */
-	public function unauthorized($uri = '', $message = false, $messagesVar = 'messages')
+	public function unauthorized($uri = '', $message = null, $messagesVar = 'messages')
 	{
-		if (!$message)
-			$message = Lang::get('identify::messages.unauthorized');
+		if (!$message && $message !== false)
+			$message = trans('identify::messages.unauthorized');
 
 		return Redirect::to($uri)->with($messagesVar, ['error' => $message]);
+	}
+
+	/**
+	 * Redirect to a specified page with an error message. A default message is supplied if a custom message not set.
+	 *
+	 * @param  mixed    $permissions
+	 * @param  string   $uri
+	 * @param  mixed    $message
+	 * @param  string   $messageVar
+	 * @return boolean
+	 */
+	public function authorize($permissions, $uri = '', $message = null, $messagesVar = 'messages')
+	{
+		if (!$this->can($permissions))
+			return $this->unauthorized($uri, $message, $messagesVar);
+
+		return false;
 	}
 
 	/**
@@ -372,7 +388,7 @@ class Identify extends SessionGuard {
 	 * @param  string   $messageVar
 	 * @return boolean
 	 */
-	public function authorize($roles, $uri = '', $message = false, $messagesVar = 'messages')
+	public function authorizeByRole($roles, $uri = '', $message = null, $messagesVar = 'messages')
 	{
 		if ($this->isNot($roles))
 			return $this->unauthorized($uri, $message, $messagesVar);
@@ -815,24 +831,25 @@ class Identify extends SessionGuard {
 	 */
 	public function sendEmail($user, $type)
 	{
-		foreach (config('auth.email_types') as $view => $subject)
+		$emailTypes = config('auth.email_types');
+
+		if (isset($emailTypes[$type]))
 		{
-			if ($type == $view)
+			$viewLocation = config('auth.views_location').config('auth.views_location_email').'.';
+
+			$subject = $emailTypes[$type];
+
+			Mail::send($viewLocation.$type, ['user' => $user], function($mail) use ($user, $subject)
 			{
-				$viewLocation = config('auth.views_location').config('auth.views_location_email').'.';
+				$mail
+					->to($user->email, $user->getName())
+					->subject($subject);
+			});
 
-				Mail::send($viewLocation.$view, ['user' => $user], function($mail) use ($user, $subject)
-				{
-					$mail
-						->to($user->email, $user->getName())
-						->subject($subject);
-				});
-
-				return true;
-			}
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 }

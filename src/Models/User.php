@@ -308,7 +308,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (is_null($input))
 			$input = Input::except('id');
 
-		//format name, username, and email address
+		// format name, username, and email address
 		if (isset($input['first_name']))
 			$input['first_name'] = ucfirst(trim($input['first_name']));
 
@@ -316,7 +316,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			$input['last_name'] = ucfirst(trim($input['last_name']));
 
 		if (isset($input['name']))
-			$input['name'] = trim($input['name']);
+			$input['name'] = ucfirst(trim($input['name']));
 
 		if (isset($input['email']))
 			$input['email'] = trim($input['email']);
@@ -324,7 +324,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!isset($input['first_name']) && !isset($input['last_name']))
 			$input['first_name'] = $input['name'];
 
-		//set activated timestamp or activation token
+		// set activated timestamp or activation token
 		if ($autoActivate)
 			$input['activated_at'] = date('Y-m-d H:i:s');
 		else
@@ -332,11 +332,10 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 		$input['password'] = \Hash::make($input['password']);
 
-		//create user
-		$user = new static;
-		$user->fill($input)->save();
+		// create user
+		$user = static::create($input);
 
-		//add user role(s)
+		// add user role(s)
 		$roles = [];
 		if (isset($input['roles']) && is_array($input['roles']))
 		{
@@ -355,7 +354,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 		$user->roles()->sync($roles);
 
-		//send account activation email to user
+		// add user permission(s)
+		$permissions = [];
+		if (isset($input['permissions']) && is_array($input['permissions']))
+		{
+			$permissions = $input['permissions'];
+		}
+
+		$user->permissions()->sync($permissions);
+
+		// send account activation email to user
 		if ($sendEmail)
 			Auth::sendEmail($user, 'confirmation');
 
