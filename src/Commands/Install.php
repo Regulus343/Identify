@@ -83,7 +83,7 @@ class Install extends Command {
 
 		$this->call('migrate', [
 			'--env'  => $this->option('env'),
-			'--path' => 'vendor/regulus/identify/src/migrations',
+			'--path' => 'vendor/regulus/identify/src/database/migrations',
 		]);
 
 		// seed database tables
@@ -106,7 +106,7 @@ class Install extends Command {
 		if (!is_dir($errorViewsPartialsDirectory))
 			mkdir($errorViewsPartialsDirectory);
 
-		$errorViewsSourceDirectory = "vendor/regulus/identify/src/views/errors";
+		$errorViewsSourceDirectory = "vendor/regulus/identify/src/resources/views/errors";
 
 		$errorViewFiles = [
 			'401',

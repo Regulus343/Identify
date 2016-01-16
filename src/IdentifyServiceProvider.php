@@ -23,9 +23,9 @@ class IdentifyServiceProvider extends ServiceProvider {
 			__DIR__.'/config/auth.routes.php' => config_path('auth.routes.php'),
 		]);
 
-		$this->loadTranslationsFrom(__DIR__.'/lang', 'identify');
+		$this->loadTranslationsFrom(__DIR__.'/resources/lang', 'identify');
 
-		$this->loadViewsFrom(__DIR__.'/views', 'identify');
+		$this->loadViewsFrom(__DIR__.'/resources/views', 'identify');
 
 		\Auth::extend('session', function($app, $name, array $config)
 		{

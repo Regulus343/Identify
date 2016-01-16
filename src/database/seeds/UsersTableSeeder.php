@@ -20,7 +20,7 @@ class UsersTableSeeder extends Seeder {
 		DB::table($tableUserRoles)->truncate();
 
 		$defaultPassword = Hash::make('password');
-		$timestamp     = date('Y-m-d H:i:s');
+		$timestamp       = date('Y-m-d H:i:s');
 
 		$users = [
 			[

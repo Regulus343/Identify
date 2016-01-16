@@ -24,9 +24,9 @@ class StateItem extends Model {
 	 * The constructor which adds the table prefix from the config settings.
 	 *
 	 */
-	public function __construct()
+	public function __construct(array $attributes = [])
 	{
-		parent::__construct();
+		parent::__construct($attributes);
 
 		$this->table = Auth::getTableName($this->table);
 	}
