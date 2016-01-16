@@ -17,7 +17,7 @@ Identify
 To install Identify, make sure "regulus/identify" has been added to Laravel 5's `composer.json` file.
 
 	"require": {
-		"regulus/identify": "0.8.*"
+		"regulus/identify": "0.9.*"
 	},
 
 Then run `php composer.phar update` from the command line. Composer will install the Identify package.
@@ -43,18 +43,18 @@ And add this to the `aliases` array:
 
 Add the following to the `commands` array in `app/Console/Kernel.php`:
 
-	'Regulus\Identify\Commands\Install',
-	'Regulus\Identify\Commands\CreateUser',
+	\Regulus\Identify\Commands\Install::class,
+	\Regulus\Identify\Commands\CreateUser::class,
 
 Then run the following command:
 
 	php artisan identify:install
 
-Identify will now be installed. This includes all necessary DB migrations, DB seeding, and config publishing. The config file that is published is `auth.php` and will overwrite Laravel 5's default auth configuration. The default table names are prefixed with `auth_`, but you may alter the users table name (from which the other table names are derived) by adding a `--table` option to the install line:
+Identify will now be installed. This includes all necessary DB migrations, DB seeding, and config publishing. The config file that is published is `auth.php` and will overwrite Laravel 5's default auth configuration. The default table names are prefixed with `auth_`, but you may alter the tables prefix by adding a `--tables-prefix` option to the install line:
 
-	php artisan identify:install --table=users
+	php artisan identify:install --tables-prefix=
 
-	php artisan identify:install --table=identify_users
+	php artisan identify:install --tables-prefix=identify_
 
 The former example will remove the prefix from all of the table names, so you will get `users`, `roles`, etc. The latter example will change the default table prefix of `auth_` to `identify_` so your table names will be `identify_users`, `identify_roles`, etc.
 

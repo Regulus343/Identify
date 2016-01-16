@@ -60,16 +60,18 @@ class Install extends Command {
 		$this->call('vendor:publish', $publishOptions);
 
 		// adjust table name if a table name option is set
-		$defaultTableName = "auth_users";
-		if ($this->option('table') != $defaultTableName)
+		$defaultTablesPrefix = "auth_";
+		if ($this->option('tables-prefix') != $defaultTablesPrefix)
 		{
-			$config = str_replace($defaultTableName, $this->option('table'), file_get_contents('config/auth.php'));
+			$replacePrefix = "'tables_prefix' => '";
+
+			$config = str_replace($replacePrefix.$defaultTablesPrefix, $replacePrefix.$this->option('tables-prefix'), file_get_contents('config/auth.php'));
 
 			file_put_contents('config/auth.php', $config);
 
-			Config::set('auth.table', $this->option('table'));
+			Config::set('auth.tables_prefix', $this->option('tables-prefix'));
 		} else {
-			Config::set('auth.table', $defaultTableName);
+			Config::set('auth.tables_prefix', $defaultTablesPrefix);
 		}
 
 		// run database migrations
@@ -151,11 +153,11 @@ class Install extends Command {
 	{
 		return [
 			[
-				'table',
+				'tables-prefix',
 				't',
 				InputOption::VALUE_OPTIONAL,
-				'The name of the users table (from which the other table names are derived).',
-				'auth_users',
+				'The prefix for the users tables.',
+				'auth_',
 			],
 		];
 	}
