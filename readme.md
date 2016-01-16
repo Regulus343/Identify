@@ -5,11 +5,11 @@ Identify
 
 [![Latest Stable Version](https://poser.pugx.org/regulus/identify/v/stable.svg)](https://packagist.org/packages/regulus/identify) [![License](https://poser.pugx.org/regulus/identify/license.svg)](https://packagist.org/packages/regulus/identify)
 
-> **Note:** For Laravel 4, you may use <a href="https://github.com/Regulus343/Identify/tree/v0.4.3">version 0.4.3</a>.
-
 - [Composer Package Installation](#composer-package-installation)
 - [Installation](#installation)
 - [Basic Usage](#basic-usage)
+- [Route Permissions](#route-permissions)
+- [Creating Accounts and Sending Emails](#accounts-emails)
 
 <a name="composer-package-installation"></a>
 ## Composer Package Installation
@@ -52,7 +52,7 @@ Then run the following command:
 
 Identify will now be installed. This includes all necessary DB migrations, DB seeding, and config publishing. The config file that is published is `auth.php` and will overwrite Laravel 5's default auth configuration. The default table names are prefixed with `auth_`, but you may alter the tables prefix by adding a `--tables-prefix` option to the install line:
 
-	php artisan identify:install --tables-prefix=
+	php artisan identify:install --tables-prefix=none
 
 	php artisan identify:install --tables-prefix=identify_
 
@@ -158,6 +158,9 @@ The third argument is the name of the session variable. The default is 'messages
 
 	['error' => 'You are not authorized to access the requested page.']
 
+<a name="route-permissions"></a>
+## Route Permissions
+
 **Check whether a user has route access based on route permissions:**
 
 	if (Auth::hasRouteAccess('pages.edit'))
@@ -184,6 +187,9 @@ To use hasRouteAccess() and hasAccess(), you may set up `config/auth.routes.php`
 		'admin.forms.view' => ['view-forms'],                            // the most specifically defined route will always be checked
 
 	];
+
+<a name="accounts-emails"></a>
+## Creating Accounts and Sending Emails
 
 **Create a new user account:**
 

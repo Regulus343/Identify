@@ -61,15 +61,19 @@ class Install extends Command {
 
 		// adjust table name if a table name option is set
 		$defaultTablesPrefix = "auth_";
-		if ($this->option('tables-prefix') != $defaultTablesPrefix)
+		$tablesPrefix        = $this->option('tables-prefix');
+		if ($tablesPrefix != $defaultTablesPrefix)
 		{
+			if (in_array($tablesPrefix, ['none', 'null', 'false']))
+				$tablesPrefix = "";
+
 			$replacePrefix = "'tables_prefix' => '";
 
-			$config = str_replace($replacePrefix.$defaultTablesPrefix, $replacePrefix.$this->option('tables-prefix'), file_get_contents('config/auth.php'));
+			$config = str_replace($replacePrefix.$defaultTablesPrefix, $replacePrefix.$tablesPrefix, file_get_contents('config/auth.php'));
 
 			file_put_contents('config/auth.php', $config);
 
-			Config::set('auth.tables_prefix', $this->option('tables-prefix'));
+			Config::set('auth.tables_prefix', $tablesPrefix);
 		} else {
 			Config::set('auth.tables_prefix', $defaultTablesPrefix);
 		}
