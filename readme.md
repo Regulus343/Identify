@@ -54,9 +54,9 @@ Identify will now be installed. This includes all necessary DB migrations, DB se
 
 	php artisan identify:install --tables-prefix=none
 
-	php artisan identify:install --tables-prefix=identify_
+	php artisan identify:install --tables-prefix=identify
 
-The former example will remove the prefix from all of the table names, so you will get `users`, `roles`, etc. The latter example will change the default table prefix of `auth_` to `identify_` so your table names will be `identify_users`, `identify_roles`, etc.
+The former example will remove the prefix from all of the table names, so you will get `users`, `roles`, etc. The latter example will change the default table prefix of `auth` to `identify` so your table names will be `identify_users`, `identify_roles`, etc.
 
 You should now have 4 users, `Admin`, `TestUser`, `TestUser2`, and `TestUser3`. All of the default passwords are simply `password` and the usernames are case insensitive, so you may simply type `admin` and `password` to log in. The 3 initial roles are `Administrator`, `Moderator`, and `Member`. `Admin` has the `Administrator` role, `TestUser` has the `Moderator` role, and the final 2 users have the `Member` role.
 

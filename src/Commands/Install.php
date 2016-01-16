@@ -60,7 +60,7 @@ class Install extends Command {
 		$this->call('vendor:publish', $publishOptions);
 
 		// adjust table name if a table name option is set
-		$defaultTablesPrefix = "auth_";
+		$defaultTablesPrefix = "auth";
 		$tablesPrefix        = $this->option('tables-prefix');
 		if ($tablesPrefix != $defaultTablesPrefix)
 		{
@@ -161,7 +161,7 @@ class Install extends Command {
 				't',
 				InputOption::VALUE_OPTIONAL,
 				'The prefix for the users tables.',
-				'auth_',
+				'auth',
 			],
 		];
 	}

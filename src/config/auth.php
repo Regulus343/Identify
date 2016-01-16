@@ -104,13 +104,13 @@ return [
 	| Tables Prefix
 	|--------------------------------------------------------------------------
 	|
-	| The prefix for authentication tables. You may use false or null to avoid
-	| using a prefix, but it is recommended you use one to keep all of your
-	| authentication / authorization tables together.
+	| The prefix for authentication tables. You may use false, null, or blank
+	| to avoid using a prefix, but it is recommended you use one to keep all of
+	| your authentication / authorization tables together.
 	|
 	*/
 
-	'tables_prefix' => 'auth_',
+	'tables_prefix' => 'auth',
 
 	/*
 	|--------------------------------------------------------------------------

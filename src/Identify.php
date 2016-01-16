@@ -85,8 +85,10 @@ class Identify extends SessionGuard {
 	{
 		$prefix = config('auth.tables_prefix');
 
-		if (is_null($prefix) || $prefix === false)
+		if (is_null($prefix) || $prefix === false || $prefix == "")
 			$prefix = "";
+		else
+			$prefix .= "_";
 
 		return $prefix.$name;
 	}
