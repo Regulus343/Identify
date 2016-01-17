@@ -2,7 +2,7 @@
 
 @section(config('auth.section'))
 
-	<p><strong>{{ $user->getName() }}</strong>, a user account for {{ Site::get('name') }} has been created for you.</p>
+	<p><strong>{{ $user->getName() }}</strong>, a user account for <a href="{{ url('') }}">{{ Site::name() }}</a> has been created for you.</p>
 
 	@if (!$user->isActivated())
 
@@ -14,6 +14,6 @@
 
 	@endif
 
-	<p>Your username is <strong>{{ $user->username }}</strong>.</p>
+	<p>Your username is <strong>{{ $user->name }}</strong>.</p>
 
 @stop

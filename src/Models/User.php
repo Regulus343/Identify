@@ -97,11 +97,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function __construct(array $attributes = [])
 	{
+		$this->fillable = config('auth.fillable_fields');
+
 		parent::__construct($attributes);
 
 		$this->table = Auth::getTableName($this->table);
-
-		$this->fillable = config('auth.fillable_fields');
 	}
 
 	/**
@@ -113,7 +113,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 		return $this->belongsToMany('Regulus\Identify\Models\Role', Auth::getTableName('user_roles'))
 			->orderBy('display_order')
-			->orderBy('name');
+			->orderBy('name')
+			->withTimestamps();
 	}
 
 	/**
@@ -125,7 +126,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	{
 		return $this->belongsToMany('Regulus\Identify\Models\Permission', Auth::getTableName('user_permissions'))
 			->orderBy('display_order')
-			->orderBy('name');
+			->orderBy('name')
+			->withTimestamps();
 	}
 
 	/**
@@ -347,9 +349,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			$role   = Role::find($roleId);
 
 			if (empty($role) || is_null($roleId))
+			{
 				$role = Role::where('default', true)->orderBy('id')->first();
 
-			$roles = [$roleId];
+				if (!empty($role))
+					$roleId = $role->id;
+			}
+
+			if (!is_null($roleId))
+				$roles = [$roleId];
 		}
 
 		$user->roles()->sync($roles);
@@ -361,7 +369,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			$permissions = $input['permissions'];
 		}
 
-		$user->permissions()->sync($permissions);
+		$user->userPermissions()->sync($permissions);
 
 		// send account activation email to user
 		if ($sendEmail)

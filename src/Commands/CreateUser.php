@@ -123,16 +123,14 @@ class CreateUser extends Command {
 			[
 				'activate',
 				'a',
-				InputOption::VALUE_OPTIONAL,
+				InputOption::VALUE_NONE,
 				'Whether to automatically activate the user.',
-				false,
 			],
 			[
 				'suppress',
 				's',
-				InputOption::VALUE_OPTIONAL,
+				InputOption::VALUE_NONE,
 				'Whether to suppress the confirmation email.',
-				false,
 			],
 		];
 	}
