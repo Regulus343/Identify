@@ -67,7 +67,7 @@ class Permission extends Model {
 	/**
 	 * The parent permission that the permission belongs to.
 	 *
-	 * @return Regulus\Identify\Models\Permission
+	 * @return Permission
 	 */
 	public function parentPermission()
 	{

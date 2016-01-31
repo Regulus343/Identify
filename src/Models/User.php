@@ -97,7 +97,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function __construct(array $attributes = [])
 	{
-		$this->fillable = config('auth.fillable_fields');
+		if (count($this->fillable) <= 3) // allow extended User model to override "fillable" directly rather than via config
+			$this->fillable = config('auth.fillable_fields');
 
 		parent::__construct($attributes);
 
@@ -133,7 +134,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * The state that belongs to the user.
 	 *
-	 * @return object
+	 * @return StateItem
 	 */
 	public function stateItem()
 	{
@@ -143,7 +144,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * The state that belongs to the user.
 	 *
-	 * @return object
+	 * @return CachedPermissionsRecord
 	 */
 	public function cachedPermissionsRecord()
 	{
@@ -158,6 +159,56 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function content()
 	{
 		return $this->morphTo();
+	}
+
+	/**
+	 * Filter out users that do not have a role or roles.
+	 *
+	 * @param  mixed    $roles
+	 * @param  boolean  $joinRoles
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeOnlyRoles($query, $roles, $joinRoles = true)
+	{
+		if (is_string($roles))
+			$roles = [$roles];
+
+		if ($joinRoles)
+			$query = $this->scopeJoinRoles($query);
+
+		return $query->whereIn('auth_roles.role', $roles);
+	}
+
+	/**
+	 * Filter out users that have a role or roles.
+	 *
+	 * @param  mixed    $roles
+	 * @param  boolean  $joinRoles
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeExceptRoles($query, $roles, $joinRoles = true)
+	{
+		if (is_string($roles))
+			$roles = [$roles];
+
+		if ($joinRoles)
+			$query = $this->scopeJoinRoles($query);
+
+		return $query->whereNotIn('auth_roles.role', $roles);
+	}
+
+	/**
+	 * Join the roles for use with other scopes.
+	 *
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeJoinRoles($query)
+	{
+		return $query
+			->select('auth_users.*')
+			->leftJoin('auth_user_roles', 'auth_user_roles.user_id', '=', 'auth_users.id')
+			->join('auth_roles', 'auth_roles.id', '=', 'auth_user_roles.role_id')
+			->groupBy('auth_users.id');
 	}
 
 	/**
@@ -691,12 +742,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Cache permissions to reduce number of necessary permissions-related database queries.
+	 * Cache permissions to reduce number of necessary permissions-related database queries per request.
 	 *
 	 * @return void
 	 */
 	public function cachePermissions()
 	{
+		$this->userPermissions = $this->userPermissions()->get();
+		$this->roles           = $this->roles()->get();
+
 		$permissions = $this->getPermissions(true);
 
 		if (!empty($permissions))
@@ -715,9 +769,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * Add a permission to the user.
 	 *
+	 * @param  mixed    $permission
+	 * @param  boolean  $cache
 	 * @return boolean
 	 */
-	public function addPermission($permission)
+	public function addPermission($permission, $cache = true)
 	{
 		if (!$this->hasDirectPermission($permission))
 		{
@@ -733,7 +789,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			{
 				$this->userPermissions()->attach($permissionRecord->id);
 
-				$this->cachePermissions();
+				if ($cache)
+					$this->cachePermissions();
 
 				return true;
 			}
@@ -745,9 +802,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * Remove a permission from the user.
 	 *
+	 * @param  mixed    $permission
+	 * @param  boolean  $cache
 	 * @return boolean
 	 */
-	public function removePermission($permission)
+	public function removePermission($permission, $cache = true)
 	{
 		if ($this->hasDirectPermission($permission))
 		{
@@ -763,13 +822,54 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			{
 				$this->userPermissions()->detach($permissionRecord->id);
 
-				$this->cachePermissions();
+				if ($cache)
+					$this->cachePermissions();
 
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Add multiple permissions to the user.
+	 *
+	 * @param  array    $permissions
+	 * @return integer
+	 */
+	public function addPermissions(array $permissions)
+	{
+		$added = 0;
+
+		foreach ($permissions as $permission)
+		{
+			$added += (int) $this->addPermission($permission, false);
+		}
+
+		$this->cachePermissions();
+
+		return $added;
+	}
+
+	/**
+	 * Remove multiple permissions to the user.
+	 *
+	 * @param  array    $permissions
+	 * @return integer
+	 */
+	public function removePermissions(array $permissions)
+	{
+		$added = 0;
+
+		foreach ($permissions as $permission)
+		{
+			$added += (int) $this->removePermission($permission, false);
+		}
+
+		$this->cachePermissions();
+
+		return $added;
 	}
 
 	/**
@@ -790,6 +890,20 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get an array of roles for the user.
+	 *
+	 * @param  string   $field
+	 * @return array
+	 */
+	public function getRoles($field = 'name')
+	{
+		if (!$this->roles)
+			return [];
+
+		return $this->roles()->lists($field)->toArray();
 	}
 
 	/**

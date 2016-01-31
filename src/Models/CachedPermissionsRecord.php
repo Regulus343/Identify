@@ -34,7 +34,7 @@ class CachedPermissionsRecord extends Model {
 	/**
 	 * The user that the state belongs to.
 	 *
-	 * @return object
+	 * @return User
 	 */
 	public function user()
 	{

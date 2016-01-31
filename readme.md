@@ -130,6 +130,26 @@ You may now skip ahead to the [Basic Usage](#basic-usage) section.
 
 > **Note:** Permissions can be hierarchical, so a "manage" permission may contain "manage-posts", "manage-users", etc. In this case, `Auth::can('manage-posts')` will be satisfied if the user has the parent "manage" permission. Users may have permissions directly applied to their user accounts or indirectly via roles. Roles may have a set of permissions associated with them that users will inherit.
 
+**Adding or removing permissions:**
+
+	$user = Auth::user();
+
+	$user->addPermission('manage-posts'); // add "manage-posts" permission
+
+	$user->addPermission(1); // add permission with ID of 1
+
+	$user->removePermission('manage-posts'); // remove "manage-posts" permission
+
+	$user->removePermission(1); // remove permission with ID of 1
+
+	// adding or removing multiple permissions
+
+	$user->addPermissions(['manage-posts', 'manage-users']);
+
+	$user->removePermissions(['manage-posts', 'manage-users']);
+
+> **Note:** These methods are necessary because there is an `auth_user_permissions_cached` table that is updated when permissions are updated to reduce the number of necessary permissions-related database queries.
+
 **Authorize a specific role or roles:**
 
 	// redirect to "home" URI if the user does not have one of the specified roles
@@ -157,6 +177,18 @@ You may now skip ahead to the [Basic Usage](#basic-usage) section.
 The third argument is the name of the session variable. The default is 'messages' so if the user is redirected, `Session::get('messages')` will return an array like:
 
 	['error' => 'You are not authorized to access the requested page.']
+
+**Querying users based on a specific role or roles:**
+
+	$users = User::onlyRoles('admin')->get(); // get users that have "admin" role
+
+	$users = User::onlyRoles(['admin', 'mod'])->get(); // get users that have "admin" or "mod" role
+
+	$users = User::exceptRoles('admin')->get(); // get users that do not have "admin" role
+
+	$users = User::exceptRoles(['admin', 'mod'])->get(); // get users that do not have "admin" or "mod" role
+
+> **Note:** The `exceptRoles()` scope will still return users that have another role that isn't in the array.
 
 <a name="route-permissions"></a>
 ## Route Permissions
