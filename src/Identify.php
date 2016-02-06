@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.1
-		last updated on January 31, 2016
+		v0.9.2
+		last updated on February 6, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -551,7 +551,10 @@ class Identify extends SessionGuard {
 	 */
 	public function hasRouteAccess($route, $user = null)
 	{
-		$routes = config('auth.routes');
+		$routes = config('auth_routes');
+
+		if (!is_array($routes))
+			$routes = [];
 
 		if (is_null($user))
 			$user = $this->user();

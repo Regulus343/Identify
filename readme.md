@@ -200,16 +200,16 @@ The third argument is the name of the session variable. The default is 'messages
 		// user has access to "pages.edit" route
 	}
 
-> **Note:** This and the hasAccess() require you to set up route permissions in `config/auth.routes.php`.
+> **Note:** This and the hasAccess() require you to set up route permissions in `config/auth_routes.php`.
 
 **Check whether a user has access to a URI based on route permissions:**
 
 	if (Auth::hasAccess('pages/edit/home'))
 	{
-		// user has access to "pages/edit/home" URI (based on "config/auth.routes.php" route permissions mapping)
+		// user has access to "pages/edit/home" URI (based on "config/auth_routes.php" route permissions mapping)
 	}
 
-To use hasRouteAccess() and hasAccess(), you may set up `config/auth.routes.php` to include the routes you would like to set permissions on:
+To use hasRouteAccess() and hasAccess(), you may set up `config/auth_routes.php` to include the routes you would like to set permissions on:
 
 	return [
 

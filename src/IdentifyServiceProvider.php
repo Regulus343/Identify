@@ -20,21 +20,12 @@ class IdentifyServiceProvider extends ServiceProvider {
 	{
 		$this->publishes([
 			__DIR__.'/config/auth.php'        => config_path('auth.php'),
-			__DIR__.'/config/auth.routes.php' => config_path('auth.routes.php'),
+			__DIR__.'/config/auth_routes.php' => config_path('auth_routes.php'),
 		]);
 
 		$this->loadTranslationsFrom(__DIR__.'/resources/lang', 'identify');
 
 		$this->loadViewsFrom(__DIR__.'/resources/views', 'identify');
-
-		\Auth::extend('session', function($app, $name, array $config)
-		{
-			$model = $app['config']['auth.providers.users.model'];
-
-			$provider = new IdentifyUserProvider($app['hash'], $model);
-
-			return new Identify($name, $provider, $this->app['session.store'], $this->app['request']);
-		});
 	}
 
 	/**
@@ -44,7 +35,14 @@ class IdentifyServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		//
+		\Auth::extend('session', function($app, $name, array $config)
+		{
+			$model = $app['config']['auth.providers.users.model'];
+
+			$provider = new IdentifyUserProvider($app['hash'], $model);
+
+			return new Identify($name, $provider, $this->app['session.store'], $this->app['request']);
+		});
 	}
 
 	/**
