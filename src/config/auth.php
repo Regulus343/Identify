@@ -190,6 +190,7 @@ return [
 		'activation_token',
 		'remember_token',
 		'activated_at',
+		'last_logged_in_at',
 		'banned_at',
 		'ban_reason',
 	],

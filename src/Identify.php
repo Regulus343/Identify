@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.2
-		last updated on February 6, 2016
+		v0.9.3
+		last updated on February 11, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Hashing\Hasher as HasherContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -247,6 +248,36 @@ class Identify extends SessionGuard {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Log a user into the application.
+	 *
+	 * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
+	 * @param  bool  $remember
+	 * @return void
+	 */
+	public function login(AuthenticatableContract $user, $remember = false)
+	{
+		$this->updateSession($user->getAuthIdentifier());
+
+		// If the user should be permanently "remembered" by the application we will
+		// queue a permanent cookie that contains the encrypted copy of the user
+		// identifier. We will then decrypt this later to retrieve the users.
+		if ($remember) {
+			$this->createRememberTokenIfDoesntExist($user);
+
+			$this->queueRecallerCookie($user);
+		}
+
+		// If we have an event dispatcher instance set we will fire an event so that
+		// any listeners will hook into the authentication events and run actions
+		// based on the login and logout events fired from the guard instances.
+		$this->fireLoginEvent($user, $remember);
+
+		$this->setUser($user);
+
+		$user->fill(['last_logged_in_at' => date('Y-m-d H:i:s')])->save();
 	}
 
 	/**
