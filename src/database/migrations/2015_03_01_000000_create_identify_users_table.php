@@ -51,6 +51,7 @@ class CreateIdentifyUsersTable extends Migration {
 
 			$table->timestamp('activated_at')->nullable();
 			$table->timestamp('last_logged_in_at')->nullable();
+			$table->timestamp('password_changed_at')->nullable();
 			$table->timestamp('banned_at')->nullable();
 			$table->text('ban_reason')->nullable();
 

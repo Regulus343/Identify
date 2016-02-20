@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.3
-		last updated on February 11, 2016
+		v0.9.4
+		last updated on February 20, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -75,6 +75,8 @@ class Identify extends SessionGuard {
 								Request $request = null)
 	{
 		parent::__construct($name, $provider, $session, $request);
+
+		$this->setCookieJar(app()['cookie']);
 	}
 
 	/**
