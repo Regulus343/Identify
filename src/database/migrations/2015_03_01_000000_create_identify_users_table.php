@@ -21,10 +21,10 @@ class CreateIdentifyUsersTable extends Migration {
 		Schema::create($tableName, function(Blueprint $table)
 		{
 			$table->increments('id');
-			$table->string('name', 120)->unique();
-			$table->string('email')->unique();
-			$table->string('first_name', 48);
-			$table->string('last_name', 48);
+			$table->string('username', 132);
+			$table->string('email');
+			$table->string('first_name', 76);
+			$table->string('last_name', 76);
 			$table->string('password', 60);
 
 			$table->boolean('test')->default(false); // used to filter test users out of a live site without removing them
@@ -47,7 +47,7 @@ class CreateIdentifyUsersTable extends Migration {
 			$table->string('activation_token', 32)->nullable();
 			$table->rememberToken();
 
-			$table->timestamps();
+			$table->nullableTimestamps();
 
 			$table->timestamp('activated_at')->nullable();
 			$table->timestamp('last_logged_in_at')->nullable();

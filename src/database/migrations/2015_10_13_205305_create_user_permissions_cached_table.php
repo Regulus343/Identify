@@ -18,8 +18,10 @@ class CreateUserPermissionsCachedTable extends Migration {
 		{
 			$table->increments('id');
 			$table->integer('user_id');
+
 			$table->text('permissions')->nullable();
-			$table->timestamps();
+
+			$table->nullableTimestamps();
 		});
 	}
 

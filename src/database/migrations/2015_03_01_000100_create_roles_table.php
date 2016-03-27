@@ -17,13 +17,15 @@ class CreateRolesTable extends Migration {
 		Schema::create(Auth::getTableName('roles'), function(Blueprint $table)
 		{
 			$table->increments('id');
+
 			$table->string('role');
 			$table->string('name');
 			$table->text('description')->nullable();
 			$table->integer('access_level');
 			$table->integer('display_order');
 			$table->boolean('default')->default(false);
-			$table->timestamps();
+
+			$table->nullableTimestamps();
 			$table->softDeletes();
 		});
 	}

@@ -18,8 +18,10 @@ class CreateUserStatesTable extends Migration {
 		{
 			$table->increments('id');
 			$table->integer('user_id');
+
 			$table->text('data')->nullable();
-			$table->timestamps();
+
+			$table->nullableTimestamps();
 		});
 	}
 

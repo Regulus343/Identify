@@ -320,7 +320,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 		$name = str_replace('{first}', $this->first_name, $name);
 		$name = str_replace('{last}', $this->last_name, $name);
-		$name = str_replace('{user}', $this->name, $name);
+		$name = str_replace('{user}', $this->{config('auth.username.field')}, $name);
 
 		return trim($name);
 	}
@@ -1229,7 +1229,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				if (empty($stateData->{$name}))
 					unset($stateData->{$name});
 			}
-		} else {
+		}
+		else
+		{
 			$name = explode('.', $name);
 
 			if (count($name) == 1)
@@ -1294,6 +1296,20 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$this->stateItem->save();
 
 		return true;
+	}
+
+	/**
+	 * Get a "unique" validation rule for a field such as username or email address that ignores soft-deleted records.
+	 *
+	 * @param  string   $field
+	 * @param  mixed    $id
+	 * @return string
+	 */
+	public static function getUniqueRule($field = 'email', $id = null)
+	{
+		$user = new static;
+
+		return "unique:".$user->table.",".$field.($id ? ','.$id : ',NULL').",id,deleted_at,NULL";
 	}
 
 }

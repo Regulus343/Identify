@@ -137,12 +137,12 @@ return [
 	| If an "identifier" field is passed to anything that uses
 	| retrieveByCredentials() such as Auth::attempt(), you may set it up to
 	| automatically strip spaces from the username and also allow log in by
-	| email address in addition to username.
+	| email address at the same time.
 	|
 	*/
 
 	'username' => [
-		'field'        => 'name',
+		'field'        => 'username',
 		'allow_spaces' => false,
 	],
 
@@ -174,7 +174,7 @@ return [
 	*/
 
 	'fillable_fields' => [
-		'name',
+		'username',
 		'email',
 		'first_name',
 		'last_name',

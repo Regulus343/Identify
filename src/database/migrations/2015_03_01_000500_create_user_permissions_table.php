@@ -19,7 +19,8 @@ class CreateUserPermissionsTable extends Migration {
 			$table->increments('id');
 			$table->integer('user_id');
 			$table->integer('permission_id');
-			$table->timestamps();
+
+			$table->nullableTimestamps();
 			$table->softDeletes();
 		});
 	}
