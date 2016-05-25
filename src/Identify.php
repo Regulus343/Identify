@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.6
-		last updated on May 4, 2016
+		v0.9.7
+		last updated on May 24, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\View;
 
 use Regulus\Identify\Libraries\Router;
 use Regulus\Identify\Models\User;
+
+use Regulus\SolidSite\Facade as Site;
 
 class Identify extends SessionGuard {
 
@@ -593,19 +595,9 @@ class Identify extends SessionGuard {
 			$user = $this->user();
 
 		if (is_string($route))
-		{
 			$routeName = $route;
-		}
 		else
-		{
-			$routeUri    = $route->getUri();
-			$routeAction = $route->getAction();
-
-			if (!isset($routeAction['as']))
-				return true;
-
-			$routeName = $routeAction['as'];
-		}
+			$routeName = $this->getRouteName($route);
 
 		$permissions = false;
 
@@ -725,6 +717,60 @@ class Identify extends SessionGuard {
 	}
 
 	/**
+	 * Get a route name from a route. If no route name is applied to the route, one will be created from the prefix, controller, and function.
+	 *
+	 * @param  mixed    $route
+	 * @return string
+	 */
+	public function getRouteName($route = null)
+	{
+		if (is_null($route))
+			$route = Route::current();
+
+		$routeAction = $route->getAction();
+
+		if (isset($routeAction['as']))
+		{
+			$routeName = $routeAction['as'];
+		}
+		else // create route name from route data
+		{
+			$prefix = $routeAction['prefix'];
+			if (!is_null($prefix))
+			{
+				if (substr($prefix, 0, 1) == "/")
+					$prefix = substr($prefix, 1);
+
+				$routeName = str_replace('/', '.', $prefix);
+			}
+			else
+			{
+				$routeName = "";
+			}
+
+			$uses       = explode('@', $routeAction['uses']);
+			$controller = explode('\\', $uses[0]);
+
+			if ($routeName != "")
+				$routeName .= ".";
+
+			$routeName .= strtolower(str_replace('Controller', '', end($controller)));
+
+			if (count($uses) > 1)
+			{
+				$function = end($uses);
+
+				if ($routeName != "")
+					$routeName .= ".";
+
+				$routeName .= str_slug(str_replace('get', '', str_replace('post', '', str_replace('any', '', $function))));
+			}
+		}
+
+		return $routeName;
+	}
+
+	/**
 	 * Ensure that permissions are an array.
 	 *
 	 * @return array
@@ -747,7 +793,8 @@ class Identify extends SessionGuard {
 	public function getRouteFromUrl($url, $verb = 'get')
 	{
 		$router = new Router(new \Illuminate\Events\Dispatcher());
-		$router->setRoutes(\Route::getRoutes());
+
+		$router->setRoutes(Route::getRoutes());
 
 		return $router->resolveRouteFromUrl($url, $verb);
 	}
@@ -871,11 +918,14 @@ class Identify extends SessionGuard {
 	{
 		$emailTypes = config('auth.email_types');
 
-		if (isset($emailTypes[$type]))
+		if (in_array($type, $emailTypes))
 		{
 			$viewLocation = config('auth.views_location').config('auth.views_location_email').'.';
 
-			$subject = $emailTypes[$type];
+			$subject = trans('identify::email_subjects.'.$type);
+
+			if (config('auth.site_name_email_subject_prefix'))
+				$subject = Site::name().': '.$subject;
 
 			Mail::send($viewLocation.$type, ['user' => $user], function($mail) use ($user, $subject)
 			{

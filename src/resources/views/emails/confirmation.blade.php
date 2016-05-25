@@ -2,18 +2,16 @@
 
 @section(config('auth.section'))
 
-	<p><strong>{{ $user->getName() }}</strong>, a user account for <a href="{{ url('') }}">{{ Site::name() }}</a> has been created for you.</p>
+	<p>
+		{{ $user->getName() }},<br /><br />
 
-	@if (!$user->isActivated())
+		Your user account has been registered at <a href="{{ $user->getActivationUrl() }}">{{ Site::name() }}</a>. Please <a href="{{ $user->getActivationUrl() }}">click here to activate your account</a>. If the link doesn't work, you may copy and paste the following URL into your browser:
+	</p>
 
-		<p>
-			You will not be able to use your account until you <a href="{{ url('auth/activate/'.$user->id.'/'.$user->activation_code) }}" target="_blank">activate it by clicking on this link</a>. If the link doesn't work, copy and paste the following URL into your browser:
-		</p>
+	<p><strong>{{ $user->getActivationUrl() }}</strong></p>
 
-		<p><strong>{{ url('auth/activate/'.$user->id.'/'.$user->activation_code) }}</strong></p>
-
-	@endif
-
-	<p>Your username is <strong>{{ $user->name }}</strong>.</p>
+	<p>
+		After you have activated your account, you may log in with either <strong>{{ $user->username }}</strong> or <a href="mailto:{{ $user->email }}">{{ $user->email }}</a>.
+	</p>
 
 @stop

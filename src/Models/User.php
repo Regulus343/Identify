@@ -326,6 +326,35 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * Get the account activation URL for the user.
+	 *
+	 * @return string
+	 */
+	public function getActivationUrl()
+	{
+		return url('activate/'.$this->id.'/'.$this->activation_token);
+	}
+
+	/**
+	 * Get the password reset email for a token.
+	 *
+	 * @param  mixed    $token
+	 * @return string
+	 */
+	public function getPasswordResetUrl($token = null)
+	{
+		if (is_null($token))
+		{
+			$resetRequest = DB::table('password_resets')->where('email', $this->email)->orderBy('created_at', 'desc')->first();
+
+			if ($resetRequest)
+				$token = $resetRequest->token;
+		}
+
+		return url('password/reset', $token).'?email='.urlencode($this->email);
+	}
+
+	/**
 	 * Attempt to activate a user account by the user ID and activation token.
 	 *
 	 * @param  integer  $id

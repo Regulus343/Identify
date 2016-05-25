@@ -308,17 +308,27 @@ return [
 	| Email Types Setup
 	|--------------------------------------------------------------------------
 	|
-	| An array of view => subject line pairs for the different
-	| authorization email types.
+	| An array of views for the different user-related email types.
 	|
 	*/
 
 	'email_types' => [
-		'confirmation' => 'Account Activation Instructions',
-		'password'     => 'Reset Your Password',
-		'banned'       => 'Account Banned',
-		'deleted'      => 'Account Deleted',
+		'confirmation',
+		'password',
+		'banned',
+		'closed',
 	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| Site Name Email Subject Prefix
+	|--------------------------------------------------------------------------
+	|
+	| Whether to prefix all email subjects with the site name.
+	|
+	*/
+
+	'site_name_email_subject_prefix' => true,
 
 	/*
 	|--------------------------------------------------------------------------

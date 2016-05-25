@@ -21,6 +21,8 @@ class IdentifyServiceProvider extends ServiceProvider {
 		$this->publishes([
 			__DIR__.'/config/auth.php'        => config_path('auth.php'),
 			__DIR__.'/config/auth_routes.php' => config_path('auth_routes.php'),
+			__DIR__.'/resources/lang'         => resource_path('lang/vendor/identify'),
+			__DIR__.'/resources/views'        => resource_path('views/vendor/identify'),
 		]);
 
 		$this->loadTranslationsFrom(__DIR__.'/resources/lang', 'identify');
