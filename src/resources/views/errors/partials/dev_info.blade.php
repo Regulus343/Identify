@@ -3,8 +3,18 @@
 	<div class="dev-info">
 
 		<div>
+			<span class="label">Current Route Name:</span>
+			<strong>{{ Auth::getRouteName() }}</strong>
+		</div>
+
+		<div>
 			<span class="label">Matched Route Name:</span>
 			<strong>{{ config('auth.unauthorized_route.name') }}</strong>
+		</div>
+
+		<div>
+			<span class="label">Current Permissions:</span>
+			<strong>{{ implode(', ', Auth::getPermissions()) }}</strong>
 		</div>
 
 		<div>
@@ -19,13 +29,8 @@
 		</div>
 
 		<div>
-			<span class="label">Current Permissions:</span>
-			<strong>{{ implode(', ', Auth::getPermissions()) }}</strong>
-		</div>
-
-		<div>
 			<span class="label">Current User:</span>
-			<strong>{{ Auth::user()->name }}</strong>
+			<strong>{{ Auth::user()->username }}</strong>
 			<small>(ID: {{ Auth::user()->id }})</small>
 		</div>
 
