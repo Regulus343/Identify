@@ -150,7 +150,7 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Use Access Level
+	| Enable Access Level
 	|--------------------------------------------------------------------------
 	|
 	| By default "access level" permissions are disabled in favor of the more
@@ -194,6 +194,23 @@ return [
 		'password_changed_at',
 		'banned_at',
 		'ban_reason',
+	],
+
+	/*
+	|--------------------------------------------------------------------------
+	| State Defaults
+	|--------------------------------------------------------------------------
+	|
+	| The default values for user state data items. You may also use the keys
+	| to validate whether items should be able to be set if you set these with
+	| a generalized API function.
+	|
+	*/
+
+	'state_defaults' => [
+
+		// 'some_key' => 'Default Value',
+
 	],
 
 	/*

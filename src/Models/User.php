@@ -1104,15 +1104,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function checkState($name, $state = true, $default = false)
 	{
-		$stateData = $this->getStateData();
+		$value = $this->getState($name, $default);
 
-		if (!isset($stateData->{$name}))
-			return $default;
-
-		if (is_array($stateData->{$name}) || is_object($stateData->{$name}))
-			return is_array($stateData->{$name}) && in_array($state, $stateData->{$name});
+		if (is_array($value) || is_object($value))
+			return is_array($value) && in_array($state, $value);
 		else
-			return $stateData->{$name} == $state;
+			return $value == $state;
 	}
 
 	/**
@@ -1125,8 +1122,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function getState($name, $default = null)
 	{
 		$stateData = $this->getStateData();
-
-		$name = explode('.', $name);
+		$fullName  = $name;
+		$name      = explode('.', $name);
 
 		if (count($name) == 1)
 		{
@@ -1146,7 +1143,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				return $stateData->{$name[0]}->{$name[1]}->{$name[2]};
 		}
 
-		return $default;
+		return !is_null($default) ? $default : config('auth.state_defaults.'.snake_case($fullName));
 	}
 
 	/**
