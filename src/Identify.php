@@ -807,10 +807,10 @@ class Identify extends SessionGuard {
 	 * @param  mixed    $default
 	 * @return boolean
 	 */
-	public function checkState($name, $state = true, $default = false)
+	public function checkState($name, $state = true, $default = null)
 	{
 		if ($this->guest())
-			return $default;
+			return false;
 
 		return $this->user()->checkState($name, $state, $default);
 	}

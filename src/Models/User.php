@@ -1102,7 +1102,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @param  mixed    $default
 	 * @return boolean
 	 */
-	public function checkState($name, $state = true, $default = false)
+	public function checkState($name, $state = true, $default = null)
 	{
 		$value = $this->getState($name, $default);
 
