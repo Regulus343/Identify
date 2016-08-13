@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.9
-		last updated on June 2, 2016
+		v0.9.10
+		last updated on August 13, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -329,24 +329,24 @@ class Identify extends SessionGuard {
 	 * @param  boolean  $all
 	 * @return boolean
 	 */
-	public function is($roles, $all = false)
+	public function hasRole($roles, $all = false)
 	{
 		if ($this->guest())
 			return false;
 
-		return $this->user()->is($roles, $all);
+		return $this->user()->hasRole($roles, $all);
 	}
 
 	/**
-	 * Alias of is().
+	 * Alias of hasRole().
 	 *
 	 * @param  mixed    $roles
 	 * @param  boolean  $all
 	 * @return boolean
 	 */
-	public function hasRole($roles, $all = false)
+	public function is($roles, $all = false)
 	{
-		return $this->is($roles, $all);
+		return $this->hasRole($roles, $all);
 	}
 
 	/**
@@ -356,20 +356,20 @@ class Identify extends SessionGuard {
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public function isAll($roles)
+	public function hasRoles($roles)
 	{
 		return $this->is($roles, true);
 	}
 
 	/**
-	 * Alias of isAll().
+	 * Alias of hasRoles().
 	 *
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public function hasRoles($roles)
+	public function isAll($roles)
 	{
-		return $this->isAll($roles);
+		return $this->hasRoles($roles);
 	}
 
 	/**
@@ -380,7 +380,7 @@ class Identify extends SessionGuard {
 	 */
 	public function isNot($roles)
 	{
-		return ! $this->is($roles);
+		return !$this->is($roles);
 	}
 
 	/**

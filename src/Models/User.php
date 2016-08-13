@@ -943,7 +943,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @param  boolean  $all
 	 * @return boolean
 	 */
-	public function is($roles, $all = false)
+	public function hasRole($roles, $all = false)
 	{
 		$allowed = false;
 		$matches = 0;
@@ -972,38 +972,26 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Alias of is().
-	 *
-	 * @param  mixed    $roles
-	 * @param  boolean  $all
-	 * @return boolean
-	 */
-	public function hasRole($roles, $all = false)
-	{
-		return $this->is($roles, $all);
-	}
-
-	/**
 	 * Checks whether the user is in all of the given roles ($roles can be an array of roles
 	 * or a string of a single role).
 	 *
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public function isAll($roles)
+	public function hasRoles($roles)
 	{
-		return $this->is($roles, true);
+		return $this->hasRole($roles, true);
 	}
 
 	/**
-	 * Alias of isAll().
+	 * Alias of hasRole().
 	 *
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public function hasRoles($roles)
+	public function isAll($roles)
 	{
-		return $this->isAll($roles);
+		return $this->hasRoles($roles);
 	}
 
 	/**
@@ -1014,7 +1002,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function isNot($roles)
 	{
-		return ! $this->is($roles);
+		return !$this->hasRole($roles);
 	}
 
 	/**
