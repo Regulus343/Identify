@@ -25,6 +25,10 @@ class IdentifyServiceProvider extends ServiceProvider {
 			__DIR__.'/resources/views'        => resource_path('views/vendor/identify'),
 		]);
 
+		$this->publishes([
+			__DIR__.'/database/migrations' => database_path('migrations'),
+		], 'migrations');
+
 		$this->loadTranslationsFrom(__DIR__.'/resources/lang', 'identify');
 
 		$this->loadViewsFrom(__DIR__.'/resources/views', 'identify');

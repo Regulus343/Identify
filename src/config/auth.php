@@ -146,7 +146,8 @@ return [
 		'allow_spaces' => false,
 	],
 
-	'log_in_username_or_email' => true,
+	'log_in_username_or_email'   => true,
+	'reset_auth_token_on_log_in' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -170,6 +171,8 @@ return [
 	|
 	| Because the necessary fields for the users table will frequently vary
 	| project to project, the fillable fields array is customizable here.
+	| Alternately, you may just extend the User model and set a fillable array
+	| in your extended model.
 	|
 	*/
 
@@ -187,6 +190,7 @@ return [
 		'listed',
 		'listed_email',
 		'access_level',
+		'auth_token',
 		'activation_token',
 		'remember_token',
 		'activated_at',

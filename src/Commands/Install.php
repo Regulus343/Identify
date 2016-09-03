@@ -84,11 +84,6 @@ class Install extends Command {
 		$this->info($divider);
 
 		$this->call('migrate', [
-			'--env'  => $this->option('env'),
-			'--path' => 'vendor/regulus/identify/src/database/migrations',
-		]);
-
-		$this->call('migrate', [
 			'--env' => $this->option('env'),
 		]);
 

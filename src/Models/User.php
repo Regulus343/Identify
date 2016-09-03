@@ -355,6 +355,20 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * Reset the user's auth token.
+	 *
+	 * @return string
+	 */
+	public function resetAuthToken()
+	{
+		$authToken = str_random(128);
+
+		$this->fill(['auth_token' => $authToken])->save();
+
+		return $authToken;
+	}
+
+	/**
 	 * Attempt to activate a user account by the user ID and activation token.
 	 *
 	 * @param  integer  $id
@@ -406,13 +420,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!isset($input['first_name']) && !isset($input['last_name']))
 			$input['first_name'] = $input['name'];
 
+		$input['password'] = \Hash::make($input['password']);
+
+		// set auth token
+		$input['auth_token'] = str_random(128);
+
 		// set activated timestamp or activation token
 		if ($autoActivate)
 			$input['activated_at'] = date('Y-m-d H:i:s');
 		else
 			$input['activation_token'] = str_random(32);
-
-		$input['password'] = \Hash::make($input['password']);
 
 		// create user
 		$user = static::create($input);

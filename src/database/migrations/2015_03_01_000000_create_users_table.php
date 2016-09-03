@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 
 use Regulus\Identify\Facade as Auth;
 
-class CreateIdentifyUsersTable extends Migration {
+class CreateUsersTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -16,8 +16,6 @@ class CreateIdentifyUsersTable extends Migration {
 	{
 		$tableName = Auth::getTableName('users');
 
-		Schema::dropIfExists($tableName);
-
 		Schema::create($tableName, function(Blueprint $table)
 		{
 			$table->increments('id');
@@ -25,7 +23,7 @@ class CreateIdentifyUsersTable extends Migration {
 			$table->string('email');
 			$table->string('first_name', 76);
 			$table->string('last_name', 76);
-			$table->string('password', 60);
+			$table->string('password');
 
 			$table->boolean('test')->default(false); // used to filter test users out of a live site without removing them
 
@@ -44,6 +42,7 @@ class CreateIdentifyUsersTable extends Migration {
 
 			$table->integer('access_level')->default(0);
 
+			$table->string('auth_token', 128)->nullable();
 			$table->string('activation_token', 32)->nullable();
 			$table->rememberToken();
 

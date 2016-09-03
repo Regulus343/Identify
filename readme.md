@@ -38,6 +38,7 @@ And add this to the `aliases` array:
 **Add middleware to the `routeMiddleware` array in `app/Http/Kernal.php`:**
 
 	'auth.permissions' => \Regulus\Identify\Middleware\Authorize::class,
+	'auth.token'       => \Regulus\Identify\Middleware\AuthenticateByToken::class,
 
 **Add and run the install command:**
 

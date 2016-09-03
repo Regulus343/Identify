@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.10
-		last updated on August 13, 2016
+		v0.9.11
+		last updated on September 2, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -282,6 +282,9 @@ class Identify extends SessionGuard {
 		$this->setUser($user);
 
 		$user->fill(['last_logged_in_at' => date('Y-m-d H:i:s')])->save();
+
+		if (config('auth.reset_auth_token_on_log_in'))
+			$user->resetAuthToken();
 	}
 
 	/**
