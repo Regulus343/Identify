@@ -4,7 +4,8 @@ use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-use Illuminate\Support\Facades\Config;
+use Config;
+use File;
 
 class Install extends Command {
 
@@ -82,6 +83,15 @@ class Install extends Command {
 		$this->output->writeln('');
 		$this->comment('Migrating DB tables...');
 		$this->info($divider);
+
+		// remove Laravel's own users table migration
+		$migrationFile = database_path('migrations/2014_10_12_000000_create_users_table.php');
+		if (File::exists($migrationFile))
+		{
+			File::delete($migrationFile);
+
+			$this->comment('Removed Laravel\'s own "create_users_table" migration.');
+		}
 
 		$this->call('migrate', [
 			'--env' => $this->option('env'),

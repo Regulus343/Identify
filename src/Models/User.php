@@ -15,8 +15,6 @@ use Illuminate\Support\Facades\URL;
 
 use Auth;
 
-use Regulus\TetraText\Facade as Format;
-
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
 	use Authenticatable, CanResetPassword, SoftDeletes;
