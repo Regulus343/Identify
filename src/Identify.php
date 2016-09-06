@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.11
-		last updated on September 2, 2016
+		v0.9.13
+		last updated on September 5, 2016
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -828,7 +828,7 @@ class Identify extends SessionGuard {
 	public function getState($name, $default = null)
 	{
 		if ($this->guest())
-			return $default;
+			return !is_null($default) ? $default : config('auth.state_defaults.'.snake_case($name));
 
 		return $this->user()->getState($name, $default);
 	}
