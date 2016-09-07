@@ -952,7 +952,14 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!$this->roles)
 			return [];
 
-		return $this->roles()->lists($field)->toArray();
+		$roles = $this->roles();
+
+		if (method_exists($roles, 'lists'))
+			$roles = $roles->lists($field);
+		else
+			$roles = $roles->pluck($field);
+
+		return $roles->toArray();
 	}
 
 	/**
