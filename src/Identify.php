@@ -6,14 +6,14 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.14
-		last updated on September 6, 2016
+		v0.9.15
+		last updated on January 25, 2017
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
 
 use Illuminate\Contracts\Auth\UserProvider;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Illuminate\Session\Store;
 use Symfony\Component\HttpFoundation\Request;
 
 use Illuminate\Auth\EloquentUserProvider;
@@ -67,13 +67,13 @@ class Identify extends SessionGuard {
 	 * Create a new authentication guard.
 	 *
 	 * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
-	 * @param  \Symfony\Component\HttpFoundation\Session\SessionInterface  $session
+	 * @param  \Illuminate\Session\Store  $session
 	 * @param  \Symfony\Component\HttpFoundation\Request  $request
 	 * @return void
 	 */
 	public function __construct($name,
 								UserProvider $provider,
-								SessionInterface $session,
+								Store $session,
 								Request $request = null)
 	{
 		parent::__construct($name, $provider, $session, $request);
@@ -147,17 +147,18 @@ class Identify extends SessionGuard {
 
 		if (!is_null($id))
 		{
-			$user = $this->provider->retrieveById($id);
+			if ($user = $this->provider->retrieveById($id))
+				$this->fireAuthenticatedEvent($user);
 		}
 
 		// If the user is null, but we decrypt a "recaller" cookie we can attempt to
 		// pull the user data on that cookie which serves as a remember cookie on
 		// the application. Once we have a user we can return it to the caller.
-		$recaller = $this->getRecaller();
+		$recaller = $this->recaller();
 
 		if (is_null($user) && !is_null($recaller))
 		{
-			$user = $this->getUserByRecaller($recaller);
+			$user = $this->userFromRecaller($recaller);
 
 			if ($user)
 			{
