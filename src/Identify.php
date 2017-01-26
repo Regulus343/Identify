@@ -6,7 +6,7 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.14
+		v0.9.15
 		last updated on January 25, 2017
 ----------------------------------------------------------------------------------------------------------*/
 
@@ -296,7 +296,7 @@ class Identify extends SessionGuard {
 	 */
 	public function impersonate($id)
 	{
-		Session::set('impersonating_user_id', $id);
+		Session::put('impersonating_user_id', $id);
 
 		$this->impersonatedUser = $this->provider->retrieveById($id);
 	}
