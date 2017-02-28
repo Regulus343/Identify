@@ -4,12 +4,12 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
@@ -18,7 +18,7 @@ use Auth;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
-	use Notifiable, Authenticatable, CanResetPassword, SoftDeletes;
+	use Authenticatable, CanResetPassword, Notifiable, SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -485,7 +485,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @param  integer  $id
 	 * @return object
 	 */
-	public static function getActiveById($id)
+	public static function findActiveById($id)
 	{
 		return static::orderBy('id')
 			->where('id', $id)
@@ -501,24 +501,24 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * @param  string   $identifier
 	 * @return boolean
 	 */
-	public static function getByUsernameOrEmail($identifier = '')
+	public static function findByUsernameOrEmail($identifier = '')
 	{
 		$identifier = trim(strtolower($identifier));
 
 		return User::where(function($query) use ($identifier)
 			{
 				$query
-					->where(DB::raw('lower(name)'), $identifier)
+					->where(DB::raw('lower('.config('auth.username.field').')'), $identifier)
 					->orWhere(DB::raw('lower(email)'), $identifier);
 			})->first();
 	}
 
 	/**
-	 * Get the username, which could be called "name" or "username" and is specified in the auth config file.
+	 * Get the username, which could be called "username" or "name" and is specified in the auth config file.
 	 *
 	 * @return \Illuminate\Database\Eloquent\Model
 	 */
-	public function username()
+	public function getUsername()
 	{
 		return $this->{config('auth.username.field')};
 	}
