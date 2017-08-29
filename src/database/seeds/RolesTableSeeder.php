@@ -1,8 +1,9 @@
-<?php
+<?php namespace Regulus\Identify\Seeder;
 
 use Illuminate\Database\Seeder;
 
-use Regulus\Identify\Facade as Auth;
+use Auth;
+use DB;
 
 class RolesTableSeeder extends Seeder {
 
@@ -27,8 +28,6 @@ class RolesTableSeeder extends Seeder {
 				'name'          => 'Administrator',
 				'access_level'  => 1000,
 				'display_order' => 1,
-				'created_at'    => $timestamp,
-				'updated_at'    => $timestamp,
 				'permissions'   => [1],
 			],
 			[
@@ -36,8 +35,6 @@ class RolesTableSeeder extends Seeder {
 				'name'          => 'Moderator',
 				'access_level'  => 500,
 				'display_order' => 2,
-				'created_at'    => $timestamp,
-				'updated_at'    => $timestamp,
 			],
 			[
 				'role'          => 'member',
@@ -45,13 +42,16 @@ class RolesTableSeeder extends Seeder {
 				'access_level'  => 100,
 				'display_order' => 3,
 				'default'       => true,
-				'created_at'    => $timestamp,
-				'updated_at'    => $timestamp,
 			],
 		];
 
 		foreach ($roles as $role)
 		{
+			$role = array_merge($role, [
+				'created_at' => $timestamp,
+				'updated_at' => $timestamp,
+			]);
+
 			$permissions = isset($role['permissions']) ? $role['permissions'] : [];
 
 			if (isset($role['permissions']))

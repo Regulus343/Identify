@@ -1,9 +1,9 @@
-<?php
+<?php namespace Regulus\Identify\Seeder;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
 
-class IdentifySeeder extends Seeder {
+class DatabaseSeeder extends Seeder {
 
 	/**
 	 * Run the database seeds.
@@ -18,7 +18,7 @@ class IdentifySeeder extends Seeder {
 
 		foreach ($seeds as $seed)
 		{
-			$this->call($seed.'TableSeeder');
+			$this->call('Regulus\Identify\Seeder\\'.$seed.'TableSeeder');
 		}
 	}
 

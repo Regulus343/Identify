@@ -1,8 +1,10 @@
-<?php
+<?php namespace Regulus\Identify\Seeder;
 
 use Illuminate\Database\Seeder;
 
-use Regulus\Identify\Facade as Auth;
+use Auth;
+use DB;
+use Hash;
 
 class UsersTableSeeder extends Seeder {
 
@@ -24,56 +26,50 @@ class UsersTableSeeder extends Seeder {
 
 		$users = [
 			[
-				'username'     => 'Admin',
-				'password'     => $defaultPassword,
-				'email'        => 'admin@localhost.com',
-				'first_name'   => 'Admin',
-				'last_name'    => 'Istrator',
-				'created_at'   => $timestamp,
-				'updated_at'   => $timestamp,
-				'activated_at' => $timestamp,
-				'roles'        => [1],
+				'username'   => 'Admin',
+				'password'   => $defaultPassword,
+				'email'      => 'admin@localhost.com',
+				'first_name' => 'Admin',
+				'last_name'  => 'Istrator',
+				'roles'      => [1],
 			],
 			[
-				'username'     => 'TestUser',
-				'password'     => $defaultPassword,
-				'email'        => 'test@localhost.com',
-				'first_name'   => 'Test',
-				'last_name'    => 'Userone',
-				'created_at'   => $timestamp,
-				'updated_at'   => $timestamp,
-				'activated_at' => $timestamp,
-				'test'         => true,
-				'roles'        => [2],
+				'username'   => 'TestUser',
+				'password'   => $defaultPassword,
+				'email'      => 'test@localhost.com',
+				'first_name' => 'Test',
+				'last_name'  => 'Userone',
+				'test'       => true,
+				'roles'      => [2],
 			],
 			[
-				'username'     => 'TestUser2',
-				'password'     => $defaultPassword,
-				'email'        => 'test2@localhost.com',
-				'first_name'   => 'Test',
-				'last_name'    => 'Usertwo',
-				'created_at'   => $timestamp,
-				'updated_at'   => $timestamp,
-				'activated_at' => $timestamp,
-				'test'         => true,
-				'roles'        => [3],
+				'username'   => 'TestUser2',
+				'password'   => $defaultPassword,
+				'email'      => 'test2@localhost.com',
+				'first_name' => 'Test',
+				'last_name'  => 'Usertwo',
+				'test'       => true,
+				'roles'      => [3],
 			],
 			[
-				'username'     => 'TestUser3',
-				'password'     => $defaultPassword,
-				'email'        => 'test3@localhost.com',
-				'first_name'   => 'Test',
-				'last_name'    => 'Userthree',
-				'created_at'   => $timestamp,
-				'updated_at'   => $timestamp,
-				'activated_at' => $timestamp,
-				'test'         => true,
-				'roles'        => [3],
+				'username'   => 'TestUser3',
+				'password'   => $defaultPassword,
+				'email'      => 'test3@localhost.com',
+				'first_name' => 'Test',
+				'last_name'  => 'Userthree',
+				'test'       => true,
+				'roles'      => [3],
 			],
 		];
 
 		foreach ($users as $user)
 		{
+			$user = array_merge($user, [
+				'created_at'   => $timestamp,
+				'updated_at'   => $timestamp,
+				'activated_at' => $timestamp,
+			]);
+
 			$roles = isset($user['roles']) ? $user['roles'] : [];
 
 			if (isset($user['roles']))

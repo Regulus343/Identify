@@ -1,8 +1,9 @@
-<?php
+<?php namespace Regulus\Identify\Seeder;
 
 use Illuminate\Database\Seeder;
 
-use Regulus\Identify\Facade as Auth;
+use Auth;
+use DB;
 
 class PermissionsTableSeeder extends Seeder {
 
@@ -23,15 +24,18 @@ class PermissionsTableSeeder extends Seeder {
 			[
 				'permission'    => 'admin',
 				'name'          => 'Administration',
-				'description'   => 'Full administration permissions',
+				'description'   => 'Full administrative permissions',
 				'display_order' => 1,
-				'created_at'    => $timestamp,
-				'updated_at'    => $timestamp,
 			],
 		];
 
 		foreach ($permissions as $permission)
 		{
+			$permission = array_merge($permission, [
+				'created_at' => $timestamp,
+				'updated_at' => $timestamp,
+			]);
+
 			DB::table($table)->insert($permission);
 		}
 	}

@@ -102,7 +102,7 @@ class Install extends Command {
 		$this->comment('Seeding DB tables...');
 		$this->info($divider);
 
-		$this->call('db:seed', ['--class' => 'IdentifySeeder']);
+		$this->call('db:seed', ['--class' => 'Regulus\Identify\Seeder\DatabaseSeeder']);
 
 		// copy error views
 		$this->output->writeln('');
