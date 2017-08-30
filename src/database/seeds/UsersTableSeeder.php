@@ -27,7 +27,6 @@ class UsersTableSeeder extends Seeder {
 		$users = [
 			[
 				'username'   => 'Admin',
-				'password'   => $defaultPassword,
 				'email'      => 'admin@localhost.com',
 				'first_name' => 'Admin',
 				'last_name'  => 'Istrator',
@@ -35,7 +34,6 @@ class UsersTableSeeder extends Seeder {
 			],
 			[
 				'username'   => 'TestUser',
-				'password'   => $defaultPassword,
 				'email'      => 'test@localhost.com',
 				'first_name' => 'Test',
 				'last_name'  => 'Userone',
@@ -44,7 +42,6 @@ class UsersTableSeeder extends Seeder {
 			],
 			[
 				'username'   => 'TestUser2',
-				'password'   => $defaultPassword,
 				'email'      => 'test2@localhost.com',
 				'first_name' => 'Test',
 				'last_name'  => 'Usertwo',
@@ -53,7 +50,6 @@ class UsersTableSeeder extends Seeder {
 			],
 			[
 				'username'   => 'TestUser3',
-				'password'   => $defaultPassword,
 				'email'      => 'test3@localhost.com',
 				'first_name' => 'Test',
 				'last_name'  => 'Userthree',
@@ -65,6 +61,7 @@ class UsersTableSeeder extends Seeder {
 		foreach ($users as $user)
 		{
 			$user = array_merge($user, [
+				'password'     => $defaultPassword,
 				'created_at'   => $timestamp,
 				'updated_at'   => $timestamp,
 				'activated_at' => $timestamp,

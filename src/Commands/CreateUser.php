@@ -39,7 +39,7 @@ class CreateUser extends Command {
 	 *
 	 * @return void
 	 */
-	public function fire()
+	public function handle()
 	{
 		$input = [
 			'name'     => trim($this->argument('name')),
