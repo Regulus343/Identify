@@ -52,7 +52,10 @@ class Install extends Command {
 		$this->comment('Publishing configuration and assets...');
 		$this->info($divider);
 
-		$publishOptions = ['--env' => $this->option('env')];
+		$publishOptions = [
+			'--env'      => $this->option('env'),
+			'--provider' => 'Regulus\Identify\IdentifyServiceProvider',
+		];
 
 		// if "identify" variable doesn't exist in auth, it hasn't been published yet so "vendor:publish" command should be forced
 		if (!config('auth.identify'))
