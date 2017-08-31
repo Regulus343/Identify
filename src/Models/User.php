@@ -1023,12 +1023,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * A simple inversion of the is() method to check if a user should be denied access to the subsequent content.
+	 * A simple inversion of the hasRole() method to check if a user should be denied access to the subsequent content.
 	 *
 	 * @param  mixed    $roles
 	 * @return boolean
 	 */
-	public function isNot($roles)
+	public function isNotRole($roles)
 	{
 		return !$this->hasRole($roles);
 	}
