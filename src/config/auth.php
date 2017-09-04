@@ -146,8 +146,8 @@ return [
 		'allow_spaces' => false,
 	],
 
-	'log_in_username_or_email'   => true,
-	'reset_auth_token_on_log_in' => true,
+	'log_in_username_or_email'  => true,
+	'reset_api_token_on_log_in' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -163,42 +163,6 @@ return [
 	*/
 
 	'enable_access_level' => false,
-
-	/*
-	|--------------------------------------------------------------------------
-	| Fillable Fields for Users Table
-	|--------------------------------------------------------------------------
-	|
-	| Because the necessary fields for the users table will frequently vary
-	| project to project, the fillable fields array is customizable here.
-	| Alternately, you may just extend the User model and set a fillable array
-	| in your extended model.
-	|
-	*/
-
-	'fillable_fields' => [
-		'username',
-		'email',
-		'first_name',
-		'last_name',
-		'password',
-		'test',
-		'city',
-		'region',
-		'country',
-		'about',
-		'listed',
-		'listed_email',
-		'access_level',
-		'auth_token',
-		'activation_token',
-		'remember_token',
-		'activated_at',
-		'last_logged_in_at',
-		'password_changed_at',
-		'banned_at',
-		'ban_reason',
-	],
 
 	/*
 	|--------------------------------------------------------------------------

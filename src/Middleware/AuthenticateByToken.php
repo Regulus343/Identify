@@ -17,11 +17,11 @@ class AuthenticateByToken {
 	 */
 	public function handle($request, Closure $next)
 	{
-		$token = $request->get('auth_token');
+		$token = $request->get('api_token');
 
 		if (!Auth::check() && !is_null($token) && $token != "")
 		{
-			$user = User::where('auth_token', $token)->first();
+			$user = User::where('api_token', $token)->first();
 
 			if ($user)
 				Auth::login($user);

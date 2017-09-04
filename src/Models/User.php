@@ -32,7 +32,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $fillable = ['name', 'email', 'password'];
+	protected $fillable = [
+		'username',
+		'email',
+		'first_name',
+		'last_name',
+		'password',
+		'activated_at',
+		'last_logged_in_at',
+		'password_changed_at',
+		'banned_at',
+		'ban_reason',
+	];
 
 	/**
 	 * The attributes excluded from the model's JSON form.
@@ -41,7 +52,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = [
 		'password',
-		'auth_token',
+		'api_token',
 		'activation_token',
 		'remember_token',
 	];
@@ -363,13 +374,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @return string
 	 */
-	public function resetAuthToken()
+	public function resetApiToken()
 	{
-		$authToken = str_random(128);
+		$apiToken = str_random(128);
 
-		$this->fill(['auth_token' => $authToken])->save();
+		$this->fill(['api_token' => $apiToken])->save();
 
-		return $authToken;
+		return $apiToken;
 	}
 
 	/**
@@ -426,8 +437,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 		$input['password'] = \Hash::make($input['password']);
 
-		// set auth token
-		$input['auth_token'] = str_random(128);
+		// set API token
+		$input['api_token'] = str_random(128);
 
 		// set activated timestamp or activation token
 		if ($autoActivate)
