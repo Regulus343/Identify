@@ -928,8 +928,8 @@ class Identify extends SessionGuard {
 
 			$subject = trans('identify::email_subjects.'.$type);
 
-			if (config('auth.site_name_email_subject_prefix'))
-				$subject = Site::name().': '.$subject;
+			if (config('auth.app_name_email_subject_prefix'))
+				$subject = config('app.name').': '.$subject;
 
 			Mail::send($viewLocation.$type, ['user' => $user], function($mail) use ($user, $subject)
 			{

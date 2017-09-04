@@ -306,14 +306,14 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Site Name Email Subject Prefix
+	| App Name Email Subject Prefix
 	|--------------------------------------------------------------------------
 	|
-	| Whether to prefix all email subjects with the site name.
+	| Whether to prefix all email subjects with the app name.
 	|
 	*/
 
-	'site_name_email_subject_prefix' => true,
+	'app_name_email_subject_prefix' => true,
 
 	/*
 	|--------------------------------------------------------------------------
