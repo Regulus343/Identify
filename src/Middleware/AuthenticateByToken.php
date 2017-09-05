@@ -3,8 +3,6 @@
 use Auth;
 use Closure;
 
-use Regulus\Identify\Models\User;
-
 class AuthenticateByToken {
 
 	/**
@@ -21,10 +19,10 @@ class AuthenticateByToken {
 
 		if (!Auth::check() && !is_null($token) && $token != "")
 		{
-			$user = User::where('api_token', $token)->first();
+			$user = Auth::getProvider()->createModel()->where('api_token', $token)->first();
 
 			if ($user)
-				Auth::login($user);
+				Auth::login($user, false, true);
 		}
 
 		return $next($request);
