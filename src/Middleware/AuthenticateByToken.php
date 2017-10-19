@@ -15,7 +15,7 @@ class AuthenticateByToken {
 	 */
 	public function handle($request, Closure $next)
 	{
-		$token = $request->get('api_token');
+		$token = $request->header('api-token');
 
 		if (!Auth::check() && !is_null($token) && $token != "")
 		{

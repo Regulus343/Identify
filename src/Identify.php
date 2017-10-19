@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.22
-		last updated on September 4, 2017
+		v0.9.23
+		last updated on October 18, 2017
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
