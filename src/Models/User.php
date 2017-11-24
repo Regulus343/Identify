@@ -954,24 +954,36 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
+	 * Get the first role for the user.
+	 *
+	 * @return boolean
+	 */
+	public function getRole()
+	{
+		if ($this->roles->count())
+			return $this->roles[0]->name;
+
+		return null;
+	}
+
+	/**
 	 * Get an array of roles for the user.
 	 *
-	 * @param  string   $field
 	 * @return array
 	 */
-	public function getRoles($field = 'name')
+	public function getRoles()
 	{
+		$roles = [];
+
 		if (!$this->roles)
-			return [];
+			return $roles;
 
-		$roles = $this->roles();
+		foreach ($this->roles as $role)
+		{
+			$roles[$role->role] = $role->name;
+		}
 
-		if (method_exists($roles, 'lists'))
-			$roles = $roles->lists($field);
-		else
-			$roles = $roles->pluck($field);
-
-		return $roles->toArray();
+		return $roles;
 	}
 
 	/**
