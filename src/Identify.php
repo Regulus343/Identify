@@ -6,7 +6,7 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.25
+		v0.9.26
 		last updated on November 27, 2017
 ----------------------------------------------------------------------------------------------------------*/
 

@@ -38,12 +38,19 @@ class Authorize {
 
 		if (!$authorized)
 		{
-			if (config('auth.unauthorized_redirect'))
-				return Redirect::route(config('auth.unauthorized_redirect_route'))->with('messages', [
-					'error' => trans('identify::messages.unauthorized'),
-				]);
+			if ($request->ajax() || $request->wantsJson())
+			{
+				return response(trans('identify::messages.unauthorized_api'), 403);
+			}
+			else
+			{
+				if (config('auth.unauthorized_redirect'))
+					return Redirect::route(config('auth.unauthorized_redirect_route'))->with('messages', [
+						'error' => trans('identify::messages.unauthorized'),
+					]);
 
-			abort(config('auth.unauthorized_error_code'));
+				abort(config('auth.unauthorized_error_code'));
+			}
 		}
 
 		return $next($request);
