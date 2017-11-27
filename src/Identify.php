@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.24
-		last updated on November 24, 2017
+		v0.9.25
+		last updated on November 27, 2017
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -260,10 +260,10 @@ class Identify extends SessionGuard {
 	 *
 	 * @param  \Illuminate\Contracts\Auth\Authenticatable  $user
 	 * @param  bool  $remember
-	 * @param  bool  $ignoreTokenReset
+	 * @param  bool  $byToken
 	 * @return void
 	 */
-	public function login(AuthenticatableContract $user, $remember = false, $ignoreTokenReset = false)
+	public function login(AuthenticatableContract $user, $remember = false, $byToken = false)
 	{
 		$this->updateSession($user->getAuthIdentifier());
 
@@ -283,10 +283,13 @@ class Identify extends SessionGuard {
 
 		$this->setUser($user);
 
-		$user->fill(['last_logged_in_at' => date('Y-m-d H:i:s')])->save();
+		if (!$byToken)
+		{
+			$user->update(['last_logged_in_at' => date('Y-m-d H:i:s')]);
 
-		if (!$ignoreTokenReset && config('auth.reset_api_token_on_log_in'))
-			$user->resetApiToken();
+			if (config('auth.reset_api_token_on_log_in'))
+				$user->resetApiToken();
+		}
 	}
 
 	/**
