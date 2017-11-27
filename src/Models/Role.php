@@ -32,6 +32,15 @@ class Role extends Model {
 	protected $dates = ['deleted_at'];
 
 	/**
+	 * The attributes that should be cast to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'default' => 'boolean',
+	];
+
+	/**
 	 * The permissions array for the role.
 	 *
 	 * @var    array
