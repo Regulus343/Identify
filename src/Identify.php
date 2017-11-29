@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.9.26
-		last updated on November 27, 2017
+		v0.9.27
+		last updated on November 28, 2017
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -744,6 +744,7 @@ class Identify extends SessionGuard {
 		else // create route name from route data
 		{
 			$prefix = $routeAction['prefix'];
+
 			if (!is_null($prefix))
 			{
 				if (substr($prefix, 0, 1) == "/")
@@ -759,10 +760,15 @@ class Identify extends SessionGuard {
 			$uses       = explode('@', $routeAction['uses']);
 			$controller = explode('\\', $uses[0]);
 
-			if ($routeName != "")
+			$controller = str_replace('_', '-', snake_case(str_replace('Controller', '', end($controller))));
+
+			if ($controller != substr($routeName, -strlen($controller)))
+			{
+				if ($routeName != "")
 				$routeName .= ".";
 
-			$routeName .= strtolower(str_replace('Controller', '', end($controller)));
+				$routeName .= $controller;
+			}
 
 			if (count($uses) > 1)
 			{
@@ -771,7 +777,12 @@ class Identify extends SessionGuard {
 				if ($routeName != "")
 					$routeName .= ".";
 
-				$routeName .= str_slug(str_replace('get', '', str_replace('post', '', str_replace('any', '', $function))));
+				if (!in_array($function, ['get', 'post', 'any']))
+				{
+					$function = str_replace('get', '', str_replace('post', '', str_replace('any', '', $function)));
+				}
+
+				$routeName .= str_replace('_', '-', snake_case($function));
 			}
 		}
 
