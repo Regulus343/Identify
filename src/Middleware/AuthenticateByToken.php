@@ -17,6 +17,9 @@ class AuthenticateByToken {
 	{
 		$token = $request->header('api-token');
 
+		if (is_null($token))
+			$token = $request->get('api_token');
+
 		if (!Auth::check() && !is_null($token) && $token != "")
 		{
 			$user = Auth::getProvider()->createModel()->where('api_token', $token)->first();
