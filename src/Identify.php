@@ -6,8 +6,8 @@
 		and user states. Allows simple or complex user access control implementation.
 
 		created by Cody Jassman
-		v0.10.1
-		last updated on March 2, 2018
+		v0.11.0
+		last updated on March 10, 2018
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -62,6 +62,13 @@ class Identify extends SessionGuard {
 	 * @var    array
 	 */
 	protected $permissionSources = [];
+
+	/**
+	 * The new API token from a successful login.
+	 *
+	 * @var    array
+	 */
+	protected $newApiToken = null;
 
 	/**
 	 * Create a new authentication guard.
@@ -270,7 +277,8 @@ class Identify extends SessionGuard {
 		// If the user should be permanently "remembered" by the application we will
 		// queue a permanent cookie that contains the encrypted copy of the user
 		// identifier. We will then decrypt this later to retrieve the users.
-		if ($remember) {
+		if ($remember)
+		{
 			$this->createRememberTokenIfDoesntExist($user);
 
 			$this->queueRecallerCookie($user);
@@ -283,13 +291,42 @@ class Identify extends SessionGuard {
 
 		$this->setUser($user);
 
+		// if we're not logging in via an API token, use this authentication as a chance to reset/create one
 		if (!$byToken)
 		{
 			$user->update(['last_logged_in_at' => date('Y-m-d H:i:s')]);
 
-			if (config('auth.reset_api_token_on_log_in'))
-				$user->resetApiToken();
+			$user->resetApiToken();
 		}
+	}
+
+	/**
+	 * Make a new API token.
+	 *
+	 * @param  bool  $tokenOnly
+	 * @return mixed
+	 */
+	public function makeNewApiToken()
+	{
+		$this->newApiToken = str_random(72);
+//var_dump('yeah! : '.$this->newApiToken);
+		return $this->newApiToken;
+	}
+
+	/**
+	 * Get the new API token.
+	 *
+	 * @param  bool  $tokenOnly
+	 * @return mixed
+	 */
+	public function getNewApiToken($tokenOnly = false)
+	{
+		$token = $this->newApiToken;
+
+		if (!$tokenOnly && !is_null($token) && static::check())
+			$token = static::user()->id.':'.$token;
+
+		return $token;
 	}
 
 	/**

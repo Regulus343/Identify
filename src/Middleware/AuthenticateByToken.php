@@ -2,6 +2,7 @@
 
 use Auth;
 use Closure;
+use Hash;
 
 class AuthenticateByToken {
 
@@ -22,10 +23,17 @@ class AuthenticateByToken {
 
 		if (!Auth::check() && !is_null($token) && $token != "")
 		{
-			$user = Auth::getProvider()->createModel()->where('api_token', $token)->first();
+			$token = explode(':', $token);
 
-			if ($user)
-				Auth::login($user, false, true);
+			if (count($token) == 2)
+			{
+				$user = Auth::getProvider()->createModel()->find($token[0]);
+
+				if ($user && $user->checkApiToken($token[1]))
+				{
+					Auth::login($user, false, true);
+				}
+			}
 		}
 
 		return $next($request);

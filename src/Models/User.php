@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\URL;
 
 use Auth;
+use Hash;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
@@ -38,6 +39,8 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		'first_name',
 		'last_name',
 		'password',
+		'api_token',
+		'api_token_expired_at',
 		'activated_at',
 		'last_logged_in_at',
 		'password_changed_at',
@@ -164,6 +167,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function cachedPermissionsRecord()
 	{
 		return $this->hasOne('Regulus\Identify\Models\CachedPermissionsRecord');
+	}
+
+	/**
+	 * The API tokens that belongs to the user.
+	 *
+	 * @return Collection
+	 */
+	public function apiTokens()
+	{
+		return $this->hasMany('Regulus\Identify\Models\ApiToken');
 	}
 
 	/**
@@ -370,17 +383,49 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Reset the user's auth token.
+	 * Reset the user's API token.
 	 *
 	 * @return string
 	 */
 	public function resetApiToken()
 	{
-		$apiToken = str_random(128);
+		$token = Auth::makeNewApiToken();
 
-		$this->fill(['api_token' => $apiToken])->save();
+		$max = config('auth.api_tokens.max');
 
-		return $apiToken;
+		$tokenLifetime = config('auth.api_tokens.lifetime');
+
+		$expiredAt = !is_null($tokenLifetime) ? date('Y-m-d H:i:s', time() + ($tokenLifetime * 60)) : null;
+
+		if ($max > 1) // if max tokens is greater than 1, use relationship (otherwise just use "api_token" column)
+		{
+			$this->apiTokens()->onlyExpired()->delete(); // delete expired tokens
+
+			$tokenData = [
+				'token'      => Hash::make($token),
+				'expired_at' => $expiredAt,
+			];
+
+			if ($this->apiTokens()->count() >= $max)
+			{
+				$apiToken = $this->apiTokens()->orderBy('updated_at', 'id')->first();
+
+				$apiToken->update($tokenData);
+			}
+			else
+			{
+				$this->apiTokens()->save(new ApiToken($tokenData));
+			}
+		}
+		else
+		{
+			$this->update([
+				'api_token'            => Hash::make($token),
+				'api_token_expired_at' => $expiredAt,
+			]);
+		}
+
+		return $token;
 	}
 
 	/**
@@ -435,10 +480,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!isset($input['first_name']) && !isset($input['last_name']))
 			$input['first_name'] = $input['name'];
 
-		$input['password'] = \Hash::make($input['password']);
-
-		// set API token
-		$input['api_token'] = str_random(128);
+		$input['password'] = Hash::make($input['password']);
 
 		// set activated timestamp or activation token
 		if ($autoActivate)
@@ -822,9 +864,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$data = ['permissions' => $permissions];
 
 		if ($this->cachedPermissionsRecord)
-			$this->cachedPermissionsRecord->fill($data)->save();
+			$this->cachedPermissionsRecord->update($data);
 		else
-			$this->cachedPermissionsRecord()->save(new CachedPermissionsRecord)->fill($data)->save();
+			$this->cachedPermissionsRecord()->save(new CachedPermissionsRecord)->update($data);
 	}
 
 	/**
@@ -1361,6 +1403,45 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$this->stateItem->save();
 
 		return true;
+	}
+
+	/**
+	 * Filter out expired API tokens.
+	 *
+	 * @param  boolean  $token
+	 * @return boolean
+	 */
+	public function checkApiToken($token)
+	{
+		$max = config('auth.api_tokens.max');
+
+		$tokenLifetime = config('auth.api_tokens.lifetime');
+
+		$expiredAt = !is_null($tokenLifetime) ? time() + ($tokenLifetime * 1000) : null;
+
+		if ($max > 1) // if max tokens is greater than 1, use relationship (otherwise just use "api_token" column)
+		{
+			$apiTokens = $this->apiTokens()->onlyActive()->get();
+
+			foreach ($apiTokens as $apiToken)
+			{
+				if ($apiToken->check($token))
+				{
+					return true;
+				}
+			}
+		}
+		else
+		{
+			$expired = !is_null($this->api_token_expired_at) && strtotime($this->api_token_expired_at) <= time();
+
+			if (Hash::check($token, $this->api_token) && !$expired)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
