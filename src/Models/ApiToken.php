@@ -49,7 +49,12 @@ class ApiToken extends Model {
 	 */
 	public function scopeOnlyActive($query)
 	{
-		return $query->where('expired_at', '>', date('Y-m-d H:i:s'));
+		return $query->where(function($query)
+		{
+			$query
+				->whereNull('expired_at')
+				->orWhere('expired_at', '>', date('Y-m-d H:i:s'));
+		});
 	}
 
 	/**
@@ -59,7 +64,12 @@ class ApiToken extends Model {
 	 */
 	public function scopeOnlyExpired($query)
 	{
-		return $query->where('expired_at', '<=', date('Y-m-d H:i:s'));
+		return $query->where(function($query)
+		{
+			$query
+				->whereNotNull('expired_at')
+				->orWhere('expired_at', '<=', date('Y-m-d H:i:s'));
+		});
 	}
 
 	/**
