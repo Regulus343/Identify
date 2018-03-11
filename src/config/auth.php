@@ -164,7 +164,7 @@ return [
 	*/
 
 	'api_tokens' => [
-		'max'             => 1,
+		'max'             => 6,
 		'lifetime'        => 1440 * 30, // lifetime in minutes (default is 30 days)
 		'lifetime_mobile' => null, // defaults to perpetual sessions for mobile
 	],
