@@ -296,8 +296,58 @@ class Identify extends SessionGuard {
 		{
 			$user->update(['last_logged_in_at' => date('Y-m-d H:i:s')]);
 
-			$user->resetApiToken();
+			$tokenLifetime = !$remember ? true : null;
+
+			$user->resetApiToken($tokenLifetime);
 		}
+	}
+
+	/**
+	 * Log the user out of the application.
+	 *
+	 * @return void
+	 */
+	public function logout()
+	{
+		$user = $this->user();
+
+		// If we have an event dispatcher instance, we can fire off the logout event
+		// so any further processing can be done. This allows the developer to be
+		// listening for anytime a user signs out of this application manually.
+		$this->clearUserDataFromStorage();
+
+		if (! is_null($this->user)) {
+			$this->cycleRememberToken($user);
+		}
+
+		if (isset($this->events)) {
+			$this->events->dispatch(new Events\Logout($user));
+		}
+
+		// delete API token if one exists
+		$request = request();
+
+		$token = $request->header('api-token');
+
+		if (is_null($token))
+			$token = $request->get('api_token');
+
+		if ($user && !is_null($token) && $token != "")
+		{
+			$token = explode(':', $token);
+
+			if (count($token) == 2)
+			{
+				$user->deleteApiToken($token[1]);
+			}
+		}
+
+		// Once we have fired the logout event we will clear the users out of memory
+		// so they are no longer available as the user is no longer considered as
+		// being signed into this application and should not be available here.
+		$this->user = null;
+
+		$this->loggedOut = true;
 	}
 
 	/**
@@ -309,7 +359,7 @@ class Identify extends SessionGuard {
 	public function makeNewApiToken()
 	{
 		$this->newApiToken = str_random(72);
-//var_dump('yeah! : '.$this->newApiToken);
+
 		return $this->newApiToken;
 	}
 

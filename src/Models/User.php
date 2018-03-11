@@ -385,17 +385,28 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	/**
 	 * Reset the user's API token.
 	 *
+	 * @param  mixed    $tokenLifetime
 	 * @return string
 	 */
-	public function resetApiToken()
+	public function resetApiToken($tokenLifetime = true)
 	{
 		$token = Auth::makeNewApiToken();
 
 		$max = config('auth.api_tokens.max');
 
-		$tokenLifetime = config('auth.api_tokens.lifetime');
+		$mobile = preg_match("/(android|phone|ipad|tablet)/i", request()->userAgent());
 
-		$expiredAt = !is_null($tokenLifetime) ? date('Y-m-d H:i:s', time() + ($tokenLifetime * 60)) : null;
+		if ($tokenLifetime !== true)
+		{
+			$tokenLifetime = config('auth.api_tokens.lifetime'.($mobile ? '_mobile' : ''));
+
+			if ($mobile && $tokenLifetime === false)
+			{
+				$tokenLifetime = config('auth.api_tokens.lifetime');
+			}
+		}
+
+		$expiredAt = !is_null($tokenLifetime) && is_integer($tokenLifetime) ? date('Y-m-d H:i:s', time() + ($tokenLifetime * 60)) : null;
 
 		if ($max > 1) // if max tokens is greater than 1, use relationship (otherwise just use "api_token" column)
 		{
@@ -1406,12 +1417,13 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Filter out expired API tokens.
+	 * Check that the supplied API token is valid for the user.
 	 *
-	 * @param  boolean  $token
+	 * @param  string   $token
+	 * @param  boolean  $delete
 	 * @return boolean
 	 */
-	public function checkApiToken($token)
+	public function checkApiToken($token, $delete = false)
 	{
 		$max = config('auth.api_tokens.max');
 
@@ -1427,6 +1439,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			{
 				if ($apiToken->check($token))
 				{
+					if ($delete)
+					{
+						$apiToken->delete();
+					}
+
 					return true;
 				}
 			}
@@ -1437,11 +1454,30 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 			if (Hash::check($token, $this->api_token) && !$expired)
 			{
+				if ($delete)
+				{
+					$this->update([
+						'api_token'            => null,
+						'api_token_expired_at' => null,
+					]);
+				}
+
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Delete the API token for the user.
+	 *
+	 * @param  string   $token
+	 * @return boolean
+	 */
+	public function deleteApiToken($token)
+	{
+		return $this->checkApiToken($token, true);
 	}
 
 	/**

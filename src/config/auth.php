@@ -157,13 +157,16 @@ return [
 	| API tokens per user. SEt it to 1 to just use the "api_token" column in
 	| the users table. The default is 6 and therefore will use the
 	| "auth_api_tokens" table and allow up to 6 devices to be simultaneously
-	| signed in.
+	| signed in. For the mobile lifetime, you can set it to false to use the
+	| same lifetime as for non-mobile devices (user agent is used to determine
+	| if a mobile device is being authenticated).
 	|
 	*/
 
 	'api_tokens' => [
-		'max'      => 6,
-		'lifetime' => 1440 * 30, // lifetime in minutes (default is 30 days)
+		'max'             => 1,
+		'lifetime'        => 1440 * 30, // lifetime in minutes (default is 30 days)
+		'lifetime_mobile' => null, // defaults to perpetual sessions for mobile
 	],
 
 	/*
