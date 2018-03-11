@@ -396,7 +396,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 
 		$mobile = preg_match("/(android|phone|ipad|tablet)/i", request()->userAgent());
 
-		if ($tokenLifetime !== true)
+		if ($tokenLifetime === true)
 		{
 			$tokenLifetime = config('auth.api_tokens.lifetime'.($mobile ? '_mobile' : ''));
 
@@ -1426,10 +1426,6 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function checkApiToken($token, $delete = false)
 	{
 		$max = config('auth.api_tokens.max');
-
-		$tokenLifetime = config('auth.api_tokens.lifetime');
-
-		$expiredAt = !is_null($tokenLifetime) ? time() + ($tokenLifetime * 1000) : null;
 
 		if ($max > 1) // if max tokens is greater than 1, use relationship (otherwise just use "api_token" column)
 		{
