@@ -360,7 +360,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function getActivationUrl()
 	{
-		return url('activate/'.$this->id.'/'.$this->activation_token);
+		return url('account/activate/'.$this->id.'/'.$this->activation_token);
 	}
 
 	/**
@@ -386,15 +386,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 * Reset the user's API token.
 	 *
 	 * @param  mixed    $tokenLifetime
+	 * @param  boolean  $returnTokenOnly
 	 * @return string
 	 */
-	public function resetApiToken($tokenLifetime = true)
+	public function resetApiToken($tokenLifetime = true, $returnTokenOnly = false)
 	{
 		$token = Auth::makeNewApiToken();
 
 		$max = config('auth.api_tokens.max');
 
-		$mobile = preg_match("/(android|phone|ipad|tablet)/i", request()->userAgent());
+		$mobile = preg_match('/(android|phone|ipad|tablet)/i', request()->userAgent());
 
 		if ($tokenLifetime === true)
 		{
@@ -435,6 +436,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 				'api_token_expired_at' => $expiredAt,
 			]);
 		}
+
+		if (!$returnTokenOnly)
+			$token =$this->id.':'.$token;
 
 		return $token;
 	}
