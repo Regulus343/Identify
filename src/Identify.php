@@ -852,7 +852,7 @@ class Identify extends SessionGuard {
 			if ($controller != substr($routeName, -strlen($controller)))
 			{
 				if ($routeName != "")
-				$routeName .= ".";
+					$routeName .= ".";
 
 				$routeName .= $controller;
 			}
@@ -863,11 +863,6 @@ class Identify extends SessionGuard {
 
 				if ($routeName != "")
 					$routeName .= ".";
-
-				if (!in_array($function, ['get', 'post', 'any']))
-				{
-					$function = str_replace('get', '', str_replace('post', '', str_replace('any', '', $function)));
-				}
 
 				$routeName .= str_replace('_', '-', snake_case($function));
 			}
