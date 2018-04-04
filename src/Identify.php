@@ -7,7 +7,7 @@
 
 		created by Cody Jassman
 		v0.11.0
-		last updated on March 14, 2018
+		last updated on April 4, 2018
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;

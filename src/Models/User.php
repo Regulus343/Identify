@@ -866,10 +866,12 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function cachePermissions()
 	{
-		$this->userPermissions = $this->userPermissions()->get();
-		$this->roles           = $this->roles()->get();
+		$this->userPermissions = $this->userPermissions()->get(); // refresh directly applied permissions
+		$this->roles           = $this->roles()->get(); // refresh roles
 
-		$permissions = $this->getPermissions(true);
+		$this->permissions = []; // clear permissions array in case it has already been populated
+
+		$permissions = $this->getPermissions(true); // get permissions array and ignore currently cached permissions set
 
 		if (!empty($permissions))
 			$permissions = json_encode(array_values($permissions));
