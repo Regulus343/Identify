@@ -7,7 +7,7 @@
 
 		created by Cody Jassman
 		v0.11.0
-		last updated on April 4, 2018
+		last updated on April 5, 2018
 ----------------------------------------------------------------------------------------------------------*/
 
 use Illuminate\Auth\SessionGuard;
@@ -673,7 +673,7 @@ class Identify extends SessionGuard {
 	}
 
 	/**
-	 * Check if user has access to a route.
+	 * Check if user has access to a route or routes.
 	 *
 	 * @param  mixed    $route
 	 * @param  mixed    $user
@@ -681,112 +681,126 @@ class Identify extends SessionGuard {
 	 */
 	public function hasRouteAccess($route, $user = null)
 	{
-		$routes = config('auth_routes');
-
-		if (!is_array($routes))
-			$routes = [];
-
-		if (is_null($user))
-			$user = $this->user();
-
-		if (is_string($route))
-			$routeName = $route;
-		else
-			$routeName = $this->getRouteName($route);
-
-		$permissions = false;
-
-		$routeAccessStatuses = [];
-		if (!empty($user))
-			$routeAccessStatuses = $user->getRouteAccessStatuses();
-
-		// if the route access status has already been calculated, use pre-existing access status
-		if (isset($routeAccessStatuses[$routeName]))
-			return $routeAccessStatuses[$routeName];
-
-		if (array_key_exists($routeName, $routes))
+		if (is_array($route)) // multiple routes are being checked; return true if any one of them is accessible
 		{
-			$permissions = $this->formatPermissionsArray($routes[$routeName]);
-		}
-		else
-		{
-			$routeNameArray = explode('.', $routeName);
-
-			for ($r = (count($routeNameArray) - 2); $r >= 0; $r--)
+			$routes = $route;
+			foreach ($routes as $route)
 			{
-				if ($permissions === false)
+				if ($this->hasRouteAccess($route, $user))
 				{
-					$routeNamePartial = "";
-
-					for ($a = 0; $a <= $r; $a++)
-					{
-						if ($routeNamePartial != "")
-							$routeNamePartial .= ".";
-
-						$routeNamePartial .= $routeNameArray[$a];
-					}
-
-					$routeNamePartial .= ".*";
-
-					if (array_key_exists($routeNamePartial, $routes))
-					{
-						$routeName = $routeNamePartial;
-
-						// if the route access status has already been calculated, use pre-existing access status
-						if (isset($routeAccessStatuses[$routeName]))
-							return $routeAccessStatuses[$routeName];
-
-						$permissions = $this->formatPermissionsArray($routes[$routeName]);
-					}
+					return true;
 				}
 			}
 		}
-
-		$authorized = true;
-
-		if ($permissions !== false)
+		else // otherwise, check the individual route
 		{
-			if (is_null($permissions))
-				$permissions = [];
+			$routes = config('auth_routes');
 
-			// if user does not exist, check whether permissions array is empty
-			if (empty($user))
+			if (!is_array($routes))
+				$routes = [];
+
+			if (is_null($user))
+				$user = $this->user();
+
+			if (is_string($route))
+				$routeName = $route;
+			else
+				$routeName = $this->getRouteName($route);
+
+			$permissions = false;
+
+			$routeAccessStatuses = [];
+			if (!empty($user))
+				$routeAccessStatuses = $user->getRouteAccessStatuses();
+
+			// if the route access status has already been calculated, use pre-existing access status
+			if (isset($routeAccessStatuses[$routeName]))
+				return $routeAccessStatuses[$routeName];
+
+			if (array_key_exists($routeName, $routes))
 			{
-				if (!empty($permissions))
-					$authorized = false;
-
-				return $authorized;
-			}
-
-			$allPermissionsRequired = in_array('[ALL]', $permissions);
-
-			if ($allPermissionsRequired)
-			{
-				foreach ($permissions as $p => $permission)
-				{
-					if ($permission == "[ALL]")
-						unset($permissions[$p]);
-				}
-
-				$authorized = $this->hasPermissions($permissions);
+				$permissions = $this->formatPermissionsArray($routes[$routeName]);
 			}
 			else
 			{
-				$authorized = $this->hasPermission($permissions);
+				$routeNameArray = explode('.', $routeName);
+
+				for ($r = (count($routeNameArray) - 2); $r >= 0; $r--)
+				{
+					if ($permissions === false)
+					{
+						$routeNamePartial = "";
+
+						for ($a = 0; $a <= $r; $a++)
+						{
+							if ($routeNamePartial != "")
+								$routeNamePartial .= ".";
+
+							$routeNamePartial .= $routeNameArray[$a];
+						}
+
+						$routeNamePartial .= ".*";
+
+						if (array_key_exists($routeNamePartial, $routes))
+						{
+							$routeName = $routeNamePartial;
+
+							// if the route access status has already been calculated, use pre-existing access status
+							if (isset($routeAccessStatuses[$routeName]))
+								return $routeAccessStatuses[$routeName];
+
+							$permissions = $this->formatPermissionsArray($routes[$routeName]);
+						}
+					}
+				}
 			}
 
-			if (!$authorized)
+			$authorized = true;
+
+			if ($permissions !== false)
 			{
-				Config::set('auth.unauthorized_route.name', $routeName);
-				Config::set('auth.unauthorized_route.permissions', $permissions);
-				Config::set('auth.unauthorized_route.all_permissions_required', $allPermissionsRequired);
+				if (is_null($permissions))
+					$permissions = [];
+
+				// if user does not exist, check whether permissions array is empty
+				if (empty($user))
+				{
+					if (!empty($permissions))
+						$authorized = false;
+
+					return $authorized;
+				}
+
+				$allPermissionsRequired = in_array('[ALL]', $permissions);
+
+				if ($allPermissionsRequired)
+				{
+					foreach ($permissions as $p => $permission)
+					{
+						if ($permission == "[ALL]")
+							unset($permissions[$p]);
+					}
+
+					$authorized = $this->hasPermissions($permissions);
+				}
+				else
+				{
+					$authorized = $this->hasPermission($permissions);
+				}
+
+				if (!$authorized)
+				{
+					Config::set('auth.unauthorized_route.name', $routeName);
+					Config::set('auth.unauthorized_route.permissions', $permissions);
+					Config::set('auth.unauthorized_route.all_permissions_required', $allPermissionsRequired);
+				}
 			}
+
+			if (!empty($user))
+				$user->setRouteAccessStatus($routeName, $authorized);
+
+			return $authorized;
 		}
-
-		if (!empty($user))
-			$user->setRouteAccessStatus($routeName, $authorized);
-
-		return $authorized;
 	}
 
 	/**

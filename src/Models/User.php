@@ -1127,7 +1127,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	}
 
 	/**
-	 * Check if a user has access to a route.
+	 * Check if a user has access to a route or routes.
 	 *
 	 * @param  mixed    $route
 	 * @return boolean
