@@ -21,6 +21,15 @@ class StateItem extends Model {
 	protected $guarded = ['id'];
 
 	/**
+	 * The attributes that should be cast to native types.
+	 *
+	 * @var array
+	 */
+	protected $casts = [
+		'data' => 'json',
+	];
+
+	/**
 	 * The constructor which adds the table prefix from the config settings.
 	 *
 	 */

@@ -660,7 +660,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			if (!$ignoreCached && $this->cachedPermissionsRecord)
 			{
 				if (!is_null($this->cachedPermissionsRecord->permissions))
-					$this->permissions = json_decode($this->cachedPermissionsRecord->permissions);
+					$this->permissions = $this->cachedPermissionsRecord->permissions;
 			}
 			else
 			{
@@ -874,7 +874,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		$permissions = $this->getPermissions(true); // get permissions array and ignore currently cached permissions set
 
 		if (!empty($permissions))
-			$permissions = json_encode(array_values($permissions));
+			$permissions = array_values($permissions);
 		else
 			$permissions = null;
 
@@ -1181,12 +1181,22 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	public function getStateData()
 	{
-		if (empty($this->stateData))
+		if (!$this->stateData)
 		{
 			if ($this->stateItem && !is_null($this->stateItem->data))
-				$this->stateData = json_decode($this->stateItem->data);
+				$this->stateData = (object) $this->stateItem->data;
 			else
 				$this->stateData = (object) [];
+
+			foreach (config('auth.state_defaults') as $item => $defaultValue)
+			{
+				$item = camel_case($item);
+
+				if (!isset($this->stateData->{$item}))
+				{
+					$this->stateData->{$item} = $defaultValue;
+				}
+			}
 		}
 
 		return $this->stateData;
@@ -1306,10 +1316,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		if (!$this->stateItem)
 		{
 			$this->stateItem = new StateItem;
+
 			$this->stateItem->user_id = $this->id;
 		}
 
-		$this->stateItem->data = json_encode($stateData);
+		$this->stateItem->data = $stateData;
+
+		if (empty($this->stateItem->data))
+			$this->stateItem->data = null;
+
 		$this->stateItem->save();
 
 		return true;
@@ -1396,9 +1411,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 			$this->stateItem->user_id = $this->id;
 		}
 
-		$this->stateItem->data = json_encode($stateData);
+		$this->stateItem->data = $stateData;
 
-		if ($this->stateItem->data == "{}")
+		if (empty($this->stateItem->data))
 			$this->stateItem->data = null;
 
 		$this->stateItem->save();
