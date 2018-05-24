@@ -17,10 +17,8 @@ Identify
 To install Identify, make sure "regulus/identify" has been added to Laravel 5's `composer.json` file.
 
 	"require": {
-		"regulus/identify": "0.9.*"
+		"regulus/identify": "1.0.*"
 	},
-
-> **Note:** For Laravel 5.4, use [v0.9.18](https://github.com/Regulus343/Identify/tree/v0.9.18). For Laravel 5.3 and down, use [v0.9.13](https://github.com/Regulus343/Identify/tree/v0.9.13).
 
 Then run `php composer.phar update` from the command line. Composer will install the Identify package.
 
