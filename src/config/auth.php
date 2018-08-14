@@ -154,7 +154,7 @@ return [
 	|--------------------------------------------------------------------------
 	|
 	| Max API tokens will allow you to set a max number of authenticatable
-	| API tokens per user. SEt it to 1 to just use the "api_token" column in
+	| API tokens per user. Set it to 1 to just use the "api_token" column in
 	| the users table. The default is 6 and therefore will use the
 	| "auth_api_tokens" table and allow up to 6 devices to be simultaneously
 	| signed in. For the mobile lifetime, you can set it to false to use the
@@ -164,7 +164,7 @@ return [
 	*/
 
 	'api_tokens' => [
-		'max'             => 6,
+		'max'             => 8,
 		'lifetime'        => 1440 * 30, // lifetime in minutes (default is 30 days)
 		'lifetime_mobile' => null, // defaults to perpetual sessions for mobile
 	],
