@@ -131,9 +131,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function roles()
 	{
 		return $this->belongsToMany('Regulus\Identify\Models\Role', Auth::getTableName('user_roles'))
+			->withTimestamps()
 			->orderBy('display_order')
-			->orderBy('name')
-			->withTimestamps();
+			->orderBy('name');
 	}
 
 	/**
@@ -144,9 +144,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	public function userPermissions()
 	{
 		return $this->belongsToMany('Regulus\Identify\Models\Permission', Auth::getTableName('user_permissions'))
+			->withTimestamps()
 			->orderBy('display_order')
-			->orderBy('name')
-			->withTimestamps();
+			->orderBy('name');
 	}
 
 	/**

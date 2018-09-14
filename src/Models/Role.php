@@ -77,6 +77,7 @@ class Role extends Model {
 	public function rolePermissions()
 	{
 		return $this->belongsToMany('Regulus\Identify\Models\Permission', Auth::getTableName('role_permissions'))
+			->withTimestamps()
 			->orderBy('display_order')
 			->orderBy('name');
 	}
